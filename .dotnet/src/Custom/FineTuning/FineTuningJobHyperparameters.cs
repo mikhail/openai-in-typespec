@@ -39,7 +39,7 @@ public readonly partial struct FineTuningJobHyperparameters
         }
     }
 
-    public int GetCycleCount() => (int) HandleDefaults(CycleCount);
+    public int GetCycleCount() => (int) HandleDefaults(BinaryData.FromString(CycleCount.ToString()));
     public int GetBatchSize() => (int) HandleDefaults(BatchSize);
     public float GetLearningRateMultiplier() => HandleDefaults(LearningRateMultiplier);
 }

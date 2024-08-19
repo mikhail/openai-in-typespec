@@ -3,9 +3,12 @@ using System.ComponentModel;
 
 namespace OpenAI.FineTuning;
 
-[CodeGenModel("CreateFineTuningJobRequestHyperparametersBatchSizeChoiceEnum")]
-public readonly partial struct HyperparameterBatchSize: IEquatable<int>, IEquatable<string>
+[CodeGenModel("FineTuningHyperparameterBatchSize")]
+public partial class HyperparameterBatchSize: IEquatable<int>, IEquatable<string>
 {
+    [CodeGenMember("Value")]
+    private string _value { get; set; }
+
     internal HyperparameterBatchSize(string predefinedLabel)
     {
         _value = $@"""{predefinedLabel}""";
@@ -20,6 +23,6 @@ public readonly partial struct HyperparameterBatchSize: IEquatable<int>, IEquata
 
     public bool Equals(int other) => this == new HyperparameterBatchSize(other);
     public bool Equals(string other) => this == new HyperparameterBatchSize(other);
-    public override bool Equals(object other) => other is HyperparameterBatchSize bs && bs == this;
+    //public override bool Equals(object other) => other is HyperparameterBatchSize bs && bs == this;
 
 }

@@ -4,9 +4,12 @@ using System.Runtime.CompilerServices;
 
 namespace OpenAI.FineTuning;
 
-[CodeGenModel("CreateFineTuningJobRequestHyperparametersLearningRateMultiplierChoiceEnum")]
-public readonly partial struct HyperparameterLearningRate: IEquatable<float>, IEquatable<double>, IEquatable<string>
+[CodeGenModel("FineTuningHyperparameterLearningRateMultiplier")]
+public partial class HyperparameterLearningRate: IEquatable<float>, IEquatable<double>, IEquatable<string>
 {
+    [CodeGenMember("Value")]
+    private string _value { get; set; }
+
     internal HyperparameterLearningRate(string predefinedLabel)
     {
         _value = $@"""{predefinedLabel}""";
@@ -26,8 +29,6 @@ public readonly partial struct HyperparameterLearningRate: IEquatable<float>, IE
     public bool Equals(float other) => this == new HyperparameterLearningRate(other);
     public bool Equals(double other) => this == new HyperparameterLearningRate(other);
     public bool Equals(string other) => this == new HyperparameterLearningRate(other);
-    public override bool Equals(object other)
-        => other is HyperparameterLearningRate lr && lr == this
-        || other is int i && this == new HyperparameterLearningRate(i);
+    
 
 }

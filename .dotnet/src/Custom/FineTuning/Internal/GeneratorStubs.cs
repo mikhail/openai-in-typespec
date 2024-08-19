@@ -2,11 +2,6 @@ namespace OpenAI.FineTuning;
 
 // CUSTOM: Made internal.
 
-
-
-
-
-
 [CodeGenModel("FineTuneChatCompletionRequestAssistantMessage")]
 internal partial class InternalFineTuneChatCompletionRequestAssistantMessage { }
 

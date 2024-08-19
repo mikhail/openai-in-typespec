@@ -3,24 +3,22 @@
 #nullable disable
 
 using System;
-using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace OpenAI.FineTuning
 {
-    public readonly partial struct HyperparameterCycleCount : IEquatable<HyperparameterCycleCount>
+    public partial class HyperparameterCycleCount
     {
-        private readonly string _value;
+        internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
 
-        private const string AutoValue = "auto";
+        internal HyperparameterCycleCount(string value, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        {
+            _value = value;
+            SerializedAdditionalRawData = serializedAdditionalRawData;
+        }
 
-        public static HyperparameterCycleCount Auto { get; } = new HyperparameterCycleCount(AutoValue);
-        public static bool operator ==(HyperparameterCycleCount left, HyperparameterCycleCount right) => left.Equals(right);
-        public static bool operator !=(HyperparameterCycleCount left, HyperparameterCycleCount right) => !left.Equals(right);
-        public static implicit operator HyperparameterCycleCount(string value) => new HyperparameterCycleCount(value);
-        public bool Equals(HyperparameterCycleCount other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
-        public override string ToString() => _value;
+        internal HyperparameterCycleCount()
+        {
+        }
     }
 }

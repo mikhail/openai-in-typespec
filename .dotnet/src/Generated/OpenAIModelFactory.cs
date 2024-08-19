@@ -85,7 +85,7 @@ namespace OpenAI
             return new EmbeddingTokenUsage(inputTokens, totalTokens, serializedAdditionalRawData: null);
         }
 
-        public static HyperparameterOptions HyperparameterOptions(HyperparameterCycleCount cycleCount = default, HyperparameterBatchSize batchSize = default, HyperparameterLearningRate learningRate = default)
+        public static HyperparameterOptions HyperparameterOptions(HyperparameterCycleCount cycleCount = null, HyperparameterBatchSize batchSize = null, HyperparameterLearningRate learningRate = null)
         {
             return new HyperparameterOptions(cycleCount, batchSize, learningRate, serializedAdditionalRawData: null);
         }

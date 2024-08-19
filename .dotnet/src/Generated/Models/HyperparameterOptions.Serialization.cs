@@ -21,20 +21,20 @@ namespace OpenAI.FineTuning
             }
 
             writer.WriteStartObject();
-            if (SerializedAdditionalRawData?.ContainsKey("n_epochs") != true)
+            if (SerializedAdditionalRawData?.ContainsKey("n_epochs") != true && Optional.IsDefined(CycleCount))
             {
                 writer.WritePropertyName("n_epochs"u8);
-                writer.WriteStringValue(CycleCount.ToString());
+                writer.WriteObjectValue<HyperparameterCycleCount>(CycleCount, options);
             }
-            if (SerializedAdditionalRawData?.ContainsKey("batch_size") != true)
+            if (SerializedAdditionalRawData?.ContainsKey("batch_size") != true && Optional.IsDefined(BatchSize))
             {
                 writer.WritePropertyName("batch_size"u8);
-                writer.WriteStringValue(BatchSize.ToString());
+                writer.WriteObjectValue<HyperparameterBatchSize>(BatchSize, options);
             }
-            if (SerializedAdditionalRawData?.ContainsKey("learning_rate_multiplier") != true)
+            if (SerializedAdditionalRawData?.ContainsKey("learning_rate_multiplier") != true && Optional.IsDefined(LearningRate))
             {
                 writer.WritePropertyName("learning_rate_multiplier"u8);
-                writer.WriteStringValue(LearningRate.ToString());
+                writer.WriteObjectValue<HyperparameterLearningRate>(LearningRate, options);
             }
             if (SerializedAdditionalRawData != null)
             {
@@ -91,7 +91,7 @@ namespace OpenAI.FineTuning
                     {
                         continue;
                     }
-                    nEpochs = new HyperparameterCycleCount(property.Value.GetString());
+                    nEpochs = HyperparameterCycleCount.DeserializeHyperparameterCycleCount(property.Value, options);
                     continue;
                 }
                 if (property.NameEquals("batch_size"u8))
@@ -100,7 +100,7 @@ namespace OpenAI.FineTuning
                     {
                         continue;
                     }
-                    batchSize = new HyperparameterBatchSize(property.Value.GetString());
+                    batchSize = HyperparameterBatchSize.DeserializeHyperparameterBatchSize(property.Value, options);
                     continue;
                 }
                 if (property.NameEquals("learning_rate_multiplier"u8))
@@ -109,7 +109,7 @@ namespace OpenAI.FineTuning
                     {
                         continue;
                     }
-                    learningRateMultiplier = new HyperparameterLearningRate(property.Value.GetString());
+                    learningRateMultiplier = HyperparameterLearningRate.DeserializeHyperparameterLearningRate(property.Value, options);
                     continue;
                 }
                 if (options.Format != "W")
