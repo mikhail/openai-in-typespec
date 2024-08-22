@@ -50,22 +50,9 @@ public partial class FineTuningClient
         Argument.AssertNotNull(credential, nameof(credential));
         options ??= new OpenAIClientOptions();
 
-    /// <summary>
-    /// Initializes a new instance of <see cref="FineTuningClient"/> that will use an API key from the OPENAI_API_KEY
-    /// environment variable when authenticating.
-    /// </summary>
-    /// <remarks>
-    /// To provide an explicit credential instead of using the environment variable, use an alternate constructor like
-    /// <see cref="FineTuningClient(ApiKeyCredential,OpenAIClientOptions)"/>.
-    /// </remarks>
-    /// <param name="options"> Additional options to customize the client. </param>
-    /// <exception cref="InvalidOperationException"> The OPENAI_API_KEY environment variable was not found. </exception>
-    public FineTuningClient(OpenAIClientOptions options = null)
-        : this(
-              OpenAIClient.CreatePipeline(OpenAIClient.GetApiKey(), options),
-              OpenAIClient.GetEndpoint(options),
-              options)
-    { }
+        _pipeline = OpenAIClient.CreatePipeline(credential, options);
+        _endpoint = OpenAIClient.GetEndpoint(options);
+    }
 
     // CUSTOM:
     // - Used a custom pipeline.

@@ -6,23 +6,31 @@ using System.ClientModel;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using static OpenAI.Tests.TestHelpers;
 
 namespace OpenAI.Tests.FineTuning
 {
     [TestFixture]
     public class FineTuningClientTests
     {
+
         FineTuningClient client;
         FileClient fileClient;
-        OpenAIFileInfo sampleFile, validationFile;
+
+        string samplePath;
+        string validationPath;
+
+        OpenAIFileInfo sampleFile;
+        OpenAIFileInfo validationFile;
 
         [OneTimeSetUp]
         public void Setup()
         {
-            client = new FineTuningClient();
-            fileClient = new FileClient();
-            string samplePath = Path.Combine("Assets", "fine_tuning_sample.jsonl");
-            string validationPath = Path.Combine("Assets", "fine_tuning_sample_validation.jsonl");
+            client = GetTestClient();
+            fileClient = GetTestClient<FileClient>(TestScenario.Files);
+
+            samplePath = Path.Combine("Assets", "fine_tuning_sample.jsonl");
+            validationPath = Path.Combine("Assets", "fine_tuning_sample_validation.jsonl");
 
             sampleFile = fileClient.UploadFile(samplePath, FileUploadPurpose.FineTune);
             validationFile = fileClient.UploadFile(validationPath, FileUploadPurpose.FineTune);
@@ -42,7 +50,7 @@ namespace OpenAI.Tests.FineTuning
         [Parallelizable]
         public void MinimalRequiredParams()
         {
-            
+
             FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
 
             Assert.True(job.Status.InProgress());
@@ -226,5 +234,7 @@ namespace OpenAI.Tests.FineTuning
                     );
             });
         }
+        private static FineTuningClient GetTestClient() => GetTestClient<FineTuningClient>(TestScenario.FineTuning);
+
     }
 }
