@@ -10,10 +10,11 @@ public readonly partial struct FineTuningJobHyperparameters
     private static readonly BinaryData Auto = new("\"auto\"");
 
     [CodeGenMember("NEpochs")]
-    internal BinaryData CycleCount { get; }    
-    internal BinaryData BatchSize { get; }
-
-    internal BinaryData LearningRateMultiplier { get; }
+    internal BinaryData _CycleCount { get; }
+    [CodeGenMember("BatchSize")]
+    internal BinaryData _BatchSize { get; }
+    [CodeGenMember("LearningRateMultiplier")]
+    internal BinaryData _LearningRateMultiplier { get; }
 
     public IDictionary<string, BinaryData> SerializedAdditionalRawData { get; }
 
@@ -39,7 +40,7 @@ public readonly partial struct FineTuningJobHyperparameters
         }
     }
 
-    public int GetCycleCount() => (int) HandleDefaults(CycleCount);
-    public int GetBatchSize() => (int) HandleDefaults(BatchSize);
-    public float GetLearningRateMultiplier() => HandleDefaults(LearningRateMultiplier);
+    public int CycleCount => (int) HandleDefaults(_CycleCount);
+    public int BatchSize => (int) HandleDefaults(_BatchSize);
+    public float LearningRateMultiplier => HandleDefaults(_LearningRateMultiplier);
 }

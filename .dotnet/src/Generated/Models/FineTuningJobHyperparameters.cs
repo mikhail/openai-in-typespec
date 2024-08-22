@@ -15,16 +15,16 @@ namespace OpenAI.FineTuning
             Argument.AssertNotNull(batchSize, nameof(batchSize));
             Argument.AssertNotNull(learningRateMultiplier, nameof(learningRateMultiplier));
 
-            CycleCount = cycleCount;
-            BatchSize = batchSize;
-            LearningRateMultiplier = learningRateMultiplier;
+            _CycleCount = cycleCount;
+            _BatchSize = batchSize;
+            _LearningRateMultiplier = learningRateMultiplier;
         }
 
         internal FineTuningJobHyperparameters(BinaryData cycleCount, BinaryData batchSize, BinaryData learningRateMultiplier, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
-            CycleCount = cycleCount;
-            BatchSize = batchSize;
-            LearningRateMultiplier = learningRateMultiplier;
+            _CycleCount = cycleCount;
+            _BatchSize = batchSize;
+            _LearningRateMultiplier = learningRateMultiplier;
             SerializedAdditionalRawData = serializedAdditionalRawData;
         }
 
