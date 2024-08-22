@@ -20,7 +20,8 @@ function Run-ModelsSubnamespaceCheck {
         "OpenAIModelInfo.cs",
         "OpenAIModelInfo.Serialization.cs",
         "OpenAIModelInfoCollection.cs",
-        "OpenAIModelInfoCollection.Serialization.cs"
+        "OpenAIModelInfoCollection.Serialization.cs",
+        "OpenAIModelsModelFactory.cs"
     )
 
     $failures = @()
@@ -90,6 +91,7 @@ function Run-TopLevelNamespaceCheck {
         "Utf8JsonBinaryContent.cs",
 
         # Utilities
+        "AppContextSwitchHelper.cs",
         "CodeGenClientAttribute.cs",
         "CodeGenMemberAttribute.cs",
         "CodeGenModelAttribute.cs",
