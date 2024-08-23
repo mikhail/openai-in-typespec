@@ -142,7 +142,7 @@ public partial class FineTuningClient
 
     public virtual async Task<FineTuningJob> WaitUntilCompleted(FineTuningJob job)
     {
-        while (job.Status.InProgress())
+        while (job.Status.InProgress)
         {
             var estimate = job.EstimatedFinishAt;
 

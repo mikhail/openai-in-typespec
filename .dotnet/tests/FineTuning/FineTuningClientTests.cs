@@ -58,13 +58,13 @@ public class FineTuningClientTests
 
         FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
 
-        Assert.True(job.Status.InProgress());
+        Assert.True(job.Status.InProgress);
         Assert.AreEqual(0, job.Hyperparameters.CycleCount);
 
         job = client.CancelJob(job.Id);
 
         Assert.AreEqual(FineTuningJobStatus.Cancelled, job.Status);
-        Assert.False(job.Status.InProgress());
+        Assert.False(job.Status.InProgress);
     }
 
     // minimal but async
@@ -75,13 +75,13 @@ public class FineTuningClientTests
 
         FineTuningJob job = await client.CreateJobAsync("gpt-3.5-turbo", sampleFile.Id);
 
-        Assert.True(job.Status.InProgress());
+        Assert.True(job.Status.InProgress);
         Assert.AreEqual(0, job.Hyperparameters.CycleCount);
 
         job = await client.CancelJobAsync(job.Id);
 
         Assert.AreEqual(FineTuningJobStatus.Cancelled, job.Status);
-        Assert.False(job.Status.InProgress());
+        Assert.False(job.Status.InProgress);
     }
 
     [Test]

@@ -22,7 +22,20 @@ internal class FineTuningJobTests
         Assert.AreEqual(expected, uri.ToString());
     }
 
-    private static FineTuningJob JobStub()
+    // Test that inProgress changes when the status changes.
+    [Test]
+    [Parallelizable]
+    public void TestInProgress()
+    {
+        FineTuningJob job;
+        job = JobStub(status: FineTuningJobStatus.Queued);
+        Assert.IsTrue(job.Status.InProgress);
+
+        job = JobStub(status: FineTuningJobStatus.Succeeded);
+        Assert.IsFalse(job.Status.InProgress);
+    }
+
+    private static FineTuningJob JobStub(FineTuningJobStatus? status = null)
     {
         return ModelReaderWriter.Read<FineTuningJob>(BinaryData.FromString($$"""
         {
@@ -36,7 +49,7 @@ internal class FineTuningJobTests
           "model": "gpt-3.5-turbo-0125",
           "organization_id": "org-unitTest",
           "result_files": ["file-unitTest"],
-          "status": "succeeded",
+          "status": "{{status ?? FineTuningJobStatus.Succeeded}}",
           "trained_tokens": 0,
           "training_file": "file-unitTest",
           "validation_file": "file-unitTest",
