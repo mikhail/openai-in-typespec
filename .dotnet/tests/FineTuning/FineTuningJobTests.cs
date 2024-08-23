@@ -17,8 +17,9 @@ internal class FineTuningJobTests
     public void PlaygroundURL()
     {
         var job = JobStub();
-        var url = job.GetPlaygroundURL();
-        Assert.AreEqual("https://platform.openai.com/playground/chat?models=gpt-3.5-turbo-0125&models=ft:gpt-3.5-turbo-0125:personal::unitTest", url);
+        var uri = job.PlaygroundUri;
+        var expected = "https://platform.openai.com/playground/chat?models=gpt-3.5-turbo-0125&models=ft:gpt-3.5-turbo-0125:personal::unitTest";
+        Assert.AreEqual(expected, uri.ToString());
     }
 
     private static FineTuningJob JobStub()

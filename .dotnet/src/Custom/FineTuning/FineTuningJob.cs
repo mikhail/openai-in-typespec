@@ -39,7 +39,6 @@ public partial class FineTuningJob
     [CodeGenMember("Integrations")]
     public IReadOnlyList<FineTuningIntegration> Integrations { get; }
 
-    public string GetPlaygroundURL() {
-        return $"https://platform.openai.com/playground/chat?models={BaseModel}&models={FineTunedModel}";
-    }
+    public Uri PlaygroundUri => new Uri($"https://platform.openai.com/playground/chat?models={BaseModel}&models={FineTunedModel}");
+
 }
