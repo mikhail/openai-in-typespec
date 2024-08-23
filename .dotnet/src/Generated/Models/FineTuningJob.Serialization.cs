@@ -116,10 +116,10 @@ namespace OpenAI.FineTuning
             }
             if (SerializedAdditionalRawData?.ContainsKey("trained_tokens") != true)
             {
-                if (TrainedTokens != null)
+                if (BillableTrainedTokens != null)
                 {
                     writer.WritePropertyName("trained_tokens"u8);
-                    writer.WriteNumberValue(TrainedTokens.Value);
+                    writer.WriteNumberValue(BillableTrainedTokens.Value);
                 }
                 else
                 {
