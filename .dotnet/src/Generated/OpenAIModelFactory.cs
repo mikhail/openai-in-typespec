@@ -90,9 +90,9 @@ namespace OpenAI
             return new HyperparameterOptions(cycleCount, batchSize, learningRate, serializedAdditionalRawData: null);
         }
 
-        public static FineTuningJobError FineTuningJobError(string code = null, string message = null, string param = null)
+        public static FineTuningJobError FineTuningJobError(string code = null, string message = null, string invalidParameter = null)
         {
-            return new FineTuningJobError(code, message, param, serializedAdditionalRawData: null);
+            return new FineTuningJobError(code, message, invalidParameter, serializedAdditionalRawData: null);
         }
 
         public static GeneratedImageCollection GeneratedImageCollection(DateTimeOffset created = default, IEnumerable<GeneratedImage> data = null)

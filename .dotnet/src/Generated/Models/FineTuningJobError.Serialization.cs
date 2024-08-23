@@ -33,10 +33,10 @@ namespace OpenAI.FineTuning
             }
             if (SerializedAdditionalRawData?.ContainsKey("param") != true)
             {
-                if (Param != null)
+                if (InvalidParameter != null)
                 {
                     writer.WritePropertyName("param"u8);
-                    writer.WriteStringValue(Param);
+                    writer.WriteStringValue(InvalidParameter);
                 }
                 else
                 {
