@@ -197,7 +197,7 @@ public class FineTuningClientTests
     public void ExceptionThrownOnInvalidFileName()
     {
         Assert.Throws<ClientResultException>(() =>
-            client.CreateJob(model: "gpt-3.5-turbo", trainingFileId: "Invalid File Name")
+            client.CreateJob(baseModel: "gpt-3.5-turbo", trainingFileId: "Invalid File Name")
         );
     }
 
@@ -206,7 +206,7 @@ public class FineTuningClientTests
     public void ExceptionThrownOnInvalidModelName()
     {
         Assert.Throws<ClientResultException>(() =>
-            client.CreateJob(model: "gpt-nonexistent", trainingFileId: sampleFile.Id)
+            client.CreateJob(baseModel: "gpt-nonexistent", trainingFileId: sampleFile.Id)
         );
     }
 

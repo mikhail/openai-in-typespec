@@ -87,7 +87,7 @@ namespace OpenAI.FineTuning
             if (SerializedAdditionalRawData?.ContainsKey("model") != true)
             {
                 writer.WritePropertyName("model"u8);
-                writer.WriteStringValue(Model);
+                writer.WriteStringValue(BaseModel);
             }
             if (SerializedAdditionalRawData?.ContainsKey("object") != true)
             {

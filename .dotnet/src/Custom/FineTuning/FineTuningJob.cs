@@ -11,6 +11,10 @@ namespace OpenAI.FineTuning;
 [CodeGenModel("FineTuningJob")]
 public partial class FineTuningJob
 {
+
+    [CodeGenMember("Model")]
+    public string BaseModel { get; }
+
     [CodeGenMember("EstimatedFinish")]
     public DateTimeOffset? EstimatedFinishAt { get; }
 
@@ -36,6 +40,6 @@ public partial class FineTuningJob
     public IReadOnlyList<FineTuningIntegration> Integrations { get; }
 
     public string GetPlaygroundURL() {
-        return $"https://platform.openai.com/playground/chat?models={Model}&models={FineTunedModel}";
+        return $"https://platform.openai.com/playground/chat?models={BaseModel}&models={FineTunedModel}";
     }
 }

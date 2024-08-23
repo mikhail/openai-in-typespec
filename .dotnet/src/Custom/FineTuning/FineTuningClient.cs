@@ -71,33 +71,33 @@ public partial class FineTuningClient
         _endpoint = OpenAIClient.GetEndpoint(options);
     }
 
-    /// <summary> Creates a job with a training file and model. </summary>
-    /// <param name="model"> The model name to fine-tune. String such as "gpt-3.5-turbo" </param>
+    /// <summary> Creates a job with a training file and base model. </summary>
+    /// <param name="baseModel"> The original model to use as a starting base to fine-tune. String such as "gpt-3.5-turbo" </param>
     /// <param name="trainingFileId"> The training file name that is already uploaded. String should match pattern '^file-[a-zA-Z0-9]{24}$'. </param>
     /// <param name="options"> Additional options (<see cref="FineTuningOptions"/>) to customize the request. </param>
     /// <returns>A <see cref="ClientResult{FineTuningJob}"/> containing the newly started fine-tuning job.</returns>
     public virtual ClientResult<FineTuningJob> CreateJob(
-        string model,
+        string baseModel,
         string trainingFileId,
         FineTuningOptions options = default,
         CancellationToken cancellationToken = default
         )
     {
         options ??= new FineTuningOptions();
-        options.Model = model;
+        options.Model = baseModel;
         options.TrainingFile = trainingFileId;
 
         ClientResult result = CreateJob(options.ToBinaryContent(), cancellationToken.ToRequestOptions());
         return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
     }
 
-    /// <summary> Async Creates a job with a training file and model. </summary>
-    /// <param name="model"> The model name to fine-tune. String such as "gpt-3.5-turbo" </param>
+    /// <summary> Async Creates a job with a training file and base model. </summary>
+    /// <param name="baseModel"> The original model to use as a starting base to fine-tune. String such as "gpt-3.5-turbo" </param>
     /// <param name="trainingFileId"> The training file Id that is already uploaded. String should match pattern '^file-[a-zA-Z0-9]{24}$'. </param>
     /// <param name="options"> Additional options (<see cref="FineTuningOptions"/>) to customize the request. </param>
     /// <returns>A <see cref="Task"/> of a <see cref="ClientResult{FineTuningJob}"/> containing the newly started fine-tuning job.</returns>
     public virtual async Task<ClientResult<FineTuningJob>> CreateJobAsync(
-        string model,
+        string baseModel,
         string trainingFileId,
         FineTuningOptions options = default,
         CancellationToken cancellationToken = default
@@ -105,7 +105,7 @@ public partial class FineTuningClient
     {
        
         options ??= new FineTuningOptions();
-        options.Model = model;
+        options.Model = baseModel;
         options.TrainingFile = trainingFileId;
 
         ClientResult result = await CreateJobAsync(options.ToBinaryContent(), cancellationToken.ToRequestOptions()).ConfigureAwait(false);
