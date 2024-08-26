@@ -39,7 +39,7 @@ namespace OpenAI.FineTuning
             request.Method = "POST";
             var uri = new ClientUriBuilder();
             uri.Reset(_endpoint);
-            uri.AppendPath("/fine_tuning/jobs", false);
+            uri.AppendPath("/v1/fine_tuning/jobs", false);
             request.Uri = uri.ToUri();
             request.Headers.Set("Accept", "application/json");
             request.Headers.Set("Content-Type", "application/json");
@@ -56,7 +56,7 @@ namespace OpenAI.FineTuning
             request.Method = "GET";
             var uri = new ClientUriBuilder();
             uri.Reset(_endpoint);
-            uri.AppendPath("/fine_tuning/jobs", false);
+            uri.AppendPath("/v1/fine_tuning/jobs", false);
             if (after != null)
             {
                 uri.AppendQuery("after", after, true);
@@ -79,7 +79,7 @@ namespace OpenAI.FineTuning
             request.Method = "GET";
             var uri = new ClientUriBuilder();
             uri.Reset(_endpoint);
-            uri.AppendPath("/fine_tuning/jobs/", false);
+            uri.AppendPath("/v1/fine_tuning/jobs/", false);
             uri.AppendPath(fineTuningJobId, true);
             request.Uri = uri.ToUri();
             request.Headers.Set("Accept", "application/json");
@@ -95,7 +95,7 @@ namespace OpenAI.FineTuning
             request.Method = "POST";
             var uri = new ClientUriBuilder();
             uri.Reset(_endpoint);
-            uri.AppendPath("/fine_tuning/jobs/", false);
+            uri.AppendPath("/v1/fine_tuning/jobs/", false);
             uri.AppendPath(fineTuningJobId, true);
             uri.AppendPath("/cancel", false);
             request.Uri = uri.ToUri();
@@ -112,7 +112,7 @@ namespace OpenAI.FineTuning
             request.Method = "GET";
             var uri = new ClientUriBuilder();
             uri.Reset(_endpoint);
-            uri.AppendPath("/fine_tuning/jobs/", false);
+            uri.AppendPath("/v1/fine_tuning/jobs/", false);
             uri.AppendPath(fineTuningJobId, true);
             uri.AppendPath("/checkpoints", false);
             if (after != null)
@@ -137,7 +137,7 @@ namespace OpenAI.FineTuning
             request.Method = "GET";
             var uri = new ClientUriBuilder();
             uri.Reset(_endpoint);
-            uri.AppendPath("/fine_tuning/jobs/", false);
+            uri.AppendPath("/v1/fine_tuning/jobs/", false);
             uri.AppendPath(fineTuningJobId, true);
             uri.AppendPath("/events", false);
             if (after != null)

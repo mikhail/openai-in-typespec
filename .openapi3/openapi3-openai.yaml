@@ -18,181 +18,6 @@ tags:
   - name: Vector Stores
   - name: Uploads
 paths:
-  /fine_tuning/jobs:
-    post:
-      tags:
-        - Fine-tuning
-      operationId: createFineTuningJob
-      summary: |-
-        Creates a fine-tuning job which begins the process of creating a new model from a given dataset.
-
-        Response includes details of the enqueued job including job status and the name of the fine-tuned models once complete.
-
-        [Learn more about fine-tuning](/docs/guides/fine-tuning)
-      parameters: []
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                anyOf:
-                  - $ref: '#/components/schemas/FineTuningJob'
-                  - $ref: '#/components/schemas/ErrorResponse'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateFineTuningJobRequest'
-    get:
-      tags:
-        - Fine-tuning
-      operationId: listPaginatedFineTuningJobs
-      summary: List your organization's fine-tuning jobs
-      parameters:
-        - name: after
-          in: query
-          required: false
-          description: Identifier for the last job from the previous pagination request.
-          schema:
-            type: string
-        - name: limit
-          in: query
-          required: false
-          description: Number of fine-tuning jobs to retrieve.
-          schema:
-            type: integer
-            format: int32
-            default: 20
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                anyOf:
-                  - $ref: '#/components/schemas/ListPaginatedFineTuningJobsResponse'
-                  - $ref: '#/components/schemas/ErrorResponse'
-  /fine_tuning/jobs/{fine_tuning_job_id}:
-    get:
-      tags:
-        - Fine-tuning
-      operationId: retrieveFineTuningJob
-      summary: |-
-        Get info about a fine-tuning job.
-
-        [Learn more about fine-tuning](/docs/guides/fine-tuning)
-      parameters:
-        - name: fine_tuning_job_id
-          in: path
-          required: true
-          description: The ID of the fine-tuning job.
-          schema:
-            type: string
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                anyOf:
-                  - $ref: '#/components/schemas/FineTuningJob'
-                  - $ref: '#/components/schemas/ErrorResponse'
-  /fine_tuning/jobs/{fine_tuning_job_id}/cancel:
-    post:
-      tags:
-        - Fine-tuning
-      operationId: cancelFineTuningJob
-      summary: Immediately cancel a fine-tune job.
-      parameters:
-        - name: fine_tuning_job_id
-          in: path
-          required: true
-          description: The ID of the fine-tuning job to cancel.
-          schema:
-            type: string
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                anyOf:
-                  - $ref: '#/components/schemas/FineTuningJob'
-                  - $ref: '#/components/schemas/ErrorResponse'
-  /fine_tuning/jobs/{fine_tuning_job_id}/checkpoints:
-    get:
-      tags:
-        - Fine-tuning
-      operationId: listFineTuningJobCheckpoints
-      summary: List the checkpoints for a fine-tuning job.
-      parameters:
-        - name: fine_tuning_job_id
-          in: path
-          required: true
-          description: The ID of the fine-tuning job to get checkpoints for.
-          schema:
-            type: string
-        - name: after
-          in: query
-          required: false
-          description: Identifier for the last checkpoint ID from the previous pagination request.
-          schema:
-            type: string
-        - name: limit
-          in: query
-          required: false
-          description: Number of checkpoints to retrieve.
-          schema:
-            type: integer
-            format: int32
-            default: 10
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                anyOf:
-                  - $ref: '#/components/schemas/ListFineTuningJobCheckpointsResponse'
-                  - $ref: '#/components/schemas/ErrorResponse'
-  /fine_tuning/jobs/{fine_tuning_job_id}/events:
-    get:
-      tags:
-        - Fine-tuning
-      operationId: listFineTuningEvents
-      summary: Get status updates for a fine-tuning job.
-      parameters:
-        - name: fine_tuning_job_id
-          in: path
-          required: true
-          description: The ID of the fine-tuning job to get events for.
-          schema:
-            type: string
-        - name: after
-          in: query
-          required: false
-          description: Identifier for the last event from the previous pagination request.
-          schema:
-            type: string
-        - name: limit
-          in: query
-          required: false
-          description: Number of events to retrieve.
-          schema:
-            type: integer
-            format: int32
-            default: 20
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                anyOf:
-                  - $ref: '#/components/schemas/ListFineTuningJobEventsResponse'
-                  - $ref: '#/components/schemas/ErrorResponse'
   /v1/assistants:
     post:
       tags:
@@ -723,6 +548,181 @@ paths:
                 anyOf:
                   - type: string
                     format: byte
+                  - $ref: '#/components/schemas/ErrorResponse'
+  /v1/fine_tuning/jobs:
+    post:
+      tags:
+        - Fine-tuning
+      operationId: createFineTuningJob
+      summary: |-
+        Creates a fine-tuning job which begins the process of creating a new model from a given dataset.
+
+        Response includes details of the enqueued job including job status and the name of the fine-tuned models once complete.
+
+        [Learn more about fine-tuning](/docs/guides/fine-tuning)
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/FineTuningJob'
+                  - $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFineTuningJobRequest'
+    get:
+      tags:
+        - Fine-tuning
+      operationId: listPaginatedFineTuningJobs
+      summary: List your organization's fine-tuning jobs
+      parameters:
+        - name: after
+          in: query
+          required: false
+          description: Identifier for the last job from the previous pagination request.
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: Number of fine-tuning jobs to retrieve.
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/ListPaginatedFineTuningJobsResponse'
+                  - $ref: '#/components/schemas/ErrorResponse'
+  /v1/fine_tuning/jobs/{fine_tuning_job_id}:
+    get:
+      tags:
+        - Fine-tuning
+      operationId: retrieveFineTuningJob
+      summary: |-
+        Get info about a fine-tuning job.
+
+        [Learn more about fine-tuning](/docs/guides/fine-tuning)
+      parameters:
+        - name: fine_tuning_job_id
+          in: path
+          required: true
+          description: The ID of the fine-tuning job.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/FineTuningJob'
+                  - $ref: '#/components/schemas/ErrorResponse'
+  /v1/fine_tuning/jobs/{fine_tuning_job_id}/cancel:
+    post:
+      tags:
+        - Fine-tuning
+      operationId: cancelFineTuningJob
+      summary: Immediately cancel a fine-tune job.
+      parameters:
+        - name: fine_tuning_job_id
+          in: path
+          required: true
+          description: The ID of the fine-tuning job to cancel.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/FineTuningJob'
+                  - $ref: '#/components/schemas/ErrorResponse'
+  /v1/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints:
+    get:
+      tags:
+        - Fine-tuning
+      operationId: listFineTuningJobCheckpoints
+      summary: List the checkpoints for a fine-tuning job.
+      parameters:
+        - name: fine_tuning_job_id
+          in: path
+          required: true
+          description: The ID of the fine-tuning job to get checkpoints for.
+          schema:
+            type: string
+        - name: after
+          in: query
+          required: false
+          description: Identifier for the last checkpoint ID from the previous pagination request.
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: Number of checkpoints to retrieve.
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/ListFineTuningJobCheckpointsResponse'
+                  - $ref: '#/components/schemas/ErrorResponse'
+  /v1/fine_tuning/jobs/{fine_tuning_job_id}/events:
+    get:
+      tags:
+        - Fine-tuning
+      operationId: listFineTuningEvents
+      summary: Get status updates for a fine-tuning job.
+      parameters:
+        - name: fine_tuning_job_id
+          in: path
+          required: true
+          description: The ID of the fine-tuning job to get events for.
+          schema:
+            type: string
+        - name: after
+          in: query
+          required: false
+          description: Identifier for the last event from the previous pagination request.
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: Number of events to retrieve.
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/ListFineTuningJobEventsResponse'
                   - $ref: '#/components/schemas/ErrorResponse'
   /v1/images/edits:
     post:
