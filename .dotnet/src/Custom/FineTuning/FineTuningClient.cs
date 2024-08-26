@@ -161,4 +161,10 @@ public partial class FineTuningClient
         }
         return job;
     }
+
+    public virtual async Task<ClientResult<FineTuningJobEventsList>> GetEventsAsync(string jobId)
+    {
+        ClientResult result = await GetJobEventsAsync(jobId, null, null, null).ConfigureAwait(false);
+        return ClientResult.FromValue(FineTuningJobEventsList.FromResponse(result.GetRawResponse()), result.GetRawResponse());
+    }
 }

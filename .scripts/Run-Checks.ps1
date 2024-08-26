@@ -8,6 +8,10 @@ function Run-ModelsSubnamespaceCheck {
 
     $exclusions = @(
         "FineTuningJobObject.cs",
+        "FineTuningJobEventLevel.cs",
+        "FineTuningJobEventLevel.Serialization.cs",
+        "FineTuningJobEventObject.cs",
+        "ListFineTuningJobEventsResponseObject.cs",
         "CreateFineTuningJobRequestModel.cs",
         "GeneratorStubs.cs",
         "InternalDeleteModelResponse.cs",

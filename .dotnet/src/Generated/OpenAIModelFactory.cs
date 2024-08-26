@@ -11,6 +11,7 @@ using OpenAI.Chat;
 using OpenAI.Embeddings;
 using OpenAI.FineTuning;
 using OpenAI.Images;
+using OpenAI.Models;
 using OpenAI.Moderations;
 using OpenAI.VectorStores;
 
@@ -93,6 +94,17 @@ namespace OpenAI
         public static FineTuningJobError FineTuningJobError(string code = null, string message = null, string invalidParameter = null)
         {
             return new FineTuningJobError(code, message, invalidParameter, serializedAdditionalRawData: null);
+        }
+
+        public static FineTuningJobEvent FineTuningJobEvent(string id = null, DateTimeOffset createdAt = default, FineTuningJobEventLevel level = default, string message = null, FineTuningJobEventObject @object = default)
+        {
+            return new FineTuningJobEvent(
+                id,
+                createdAt,
+                level,
+                message,
+                @object,
+                serializedAdditionalRawData: null);
         }
 
         public static GeneratedImageCollection GeneratedImageCollection(DateTimeOffset created = default, IEnumerable<GeneratedImage> data = null)

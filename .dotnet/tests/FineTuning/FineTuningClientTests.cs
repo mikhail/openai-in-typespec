@@ -2,9 +2,11 @@ using NUnit.Framework;
 using NUnit.Framework.Internal;
 using OpenAI.Files;
 using OpenAI.FineTuning;
+using OpenAI.Models;
 using System.ClientModel;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using static OpenAI.Tests.TestHelpers;
 
@@ -239,6 +241,21 @@ public class FineTuningClientTests
                 );
         });
     }
+
+    [Test]
+    [Parallelizable]
+    public async Task TestEvents()
+    {
+        FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
+
+        FineTuningJobEventsList events = await client.GetEventsAsync(job.Id);
+
+        client.CancelJob(job.Id);
+
+        Assert.True(events.Data.First().Id.StartsWith("ftevent"));
+
+    }
+
     private static FineTuningClient GetTestClient() => GetTestClient<FineTuningClient>(TestScenario.FineTuning);
 
 }
