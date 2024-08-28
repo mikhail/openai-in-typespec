@@ -282,19 +282,28 @@ namespace OpenAI.Assistants {
         public float? Temperature { get; set; }
         public ToolResources ToolResources { get; set; }
     }
-    public class AssistantResponseFormat {
-        protected AssistantResponseFormat();
+    public abstract class AssistantResponseFormat : IEquatable<AssistantResponseFormat>, IEquatable<string> {
         public static AssistantResponseFormat Auto { get; }
         public static AssistantResponseFormat JsonObject { get; }
         public static AssistantResponseFormat Text { get; }
-        public bool Equals(AssistantResponseFormat other);
+        public static AssistantResponseFormat CreateAutoFormat();
+        public static AssistantResponseFormat CreateJsonObjectFormat();
+        public static AssistantResponseFormat CreateJsonSchemaFormat(string name, BinaryData jsonSchema, string description = null, bool? strictSchemaEnabled = null);
+        public static AssistantResponseFormat CreateTextFormat();
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object obj);
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode();
-        public static bool operator ==(AssistantResponseFormat left, AssistantResponseFormat right);
-        public static implicit operator AssistantResponseFormat(string value);
-        public static bool operator !=(AssistantResponseFormat left, AssistantResponseFormat right);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static bool operator ==(AssistantResponseFormat first, AssistantResponseFormat second);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static implicit operator AssistantResponseFormat(string plainTextFormat);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static bool operator !=(AssistantResponseFormat first, AssistantResponseFormat second);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        bool IEquatable<AssistantResponseFormat>.Equals(AssistantResponseFormat other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        bool IEquatable<string>.Equals(string other);
         public override string ToString();
     }
     public class AssistantThread {
@@ -319,10 +328,11 @@ namespace OpenAI.Assistants {
     }
     public class FunctionToolDefinition : ToolDefinition {
         public FunctionToolDefinition();
-        public FunctionToolDefinition(string name, string description = null, BinaryData parameters = null);
+        public FunctionToolDefinition(string name);
         public string Description { get; set; }
         public required string FunctionName { get; set; }
         public BinaryData Parameters { get; set; }
+        public bool? StrictParameterSchemaEnabled { get; set; }
         protected override void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
     public class MessageCollectionOptions {
@@ -335,6 +345,7 @@ namespace OpenAI.Assistants {
         public MessageImageDetail? ImageDetail { get; }
         public string ImageFileId { get; }
         public Uri ImageUrl { get; }
+        public string Refusal { get; }
         public string Text { get; }
         public IReadOnlyList<TextAnnotation> TextAnnotations { get; }
         public static MessageContent FromImageFileId(string imageFileId, MessageImageDetail? detail = null);
@@ -348,6 +359,7 @@ namespace OpenAI.Assistants {
         public string ImageFileId { get; }
         public string MessageId { get; }
         public int MessageIndex { get; }
+        public string RefusalUpdate { get; }
         public MessageRole? Role { get; }
         public string Text { get; }
         public TextAnnotationUpdate TextAnnotation { get; }
@@ -773,7 +785,7 @@ namespace OpenAI.Assistants {
         protected ToolDefinition(string type);
         public static CodeInterpreterToolDefinition CreateCodeInterpreter();
         public static FileSearchToolDefinition CreateFileSearch(int? maxResults = null);
-        public static FunctionToolDefinition CreateFunction(string name, string description = null, BinaryData parameters = null);
+        public static FunctionToolDefinition CreateFunction(string name, string description = null, BinaryData parameters = null, bool? strictParameterSchemaEnabled = null);
         protected abstract void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
     public class ToolOutput {
@@ -790,6 +802,7 @@ namespace OpenAI.Assistants {
         public VectorStoreCreationHelper();
         public VectorStoreCreationHelper(IEnumerable<OpenAIFileInfo> files, IDictionary<string, string> metadata = null);
         public VectorStoreCreationHelper(IEnumerable<string> fileIds, IDictionary<string, string> metadata = null);
+        public FileChunkingStrategy ChunkingStrategy { get; set; }
         public IList<string> FileIds { get; }
         public IDictionary<string, string> Metadata { get; }
     }
@@ -802,11 +815,11 @@ namespace OpenAI.Audio {
         public AudioClient(string model, ApiKeyCredential credential);
         public virtual ClientPipeline Pipeline { get; }
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public virtual ClientResult GenerateSpeechFromText(BinaryContent content, RequestOptions options = null);
-        public virtual ClientResult<BinaryData> GenerateSpeechFromText(string text, GeneratedSpeechVoice voice, SpeechGenerationOptions options = null, CancellationToken cancellationToken = default);
+        public virtual ClientResult GenerateSpeech(BinaryContent content, RequestOptions options = null);
+        public virtual ClientResult<BinaryData> GenerateSpeech(string text, GeneratedSpeechVoice voice, SpeechGenerationOptions options = null, CancellationToken cancellationToken = default);
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public virtual Task<ClientResult> GenerateSpeechFromTextAsync(BinaryContent content, RequestOptions options = null);
-        public virtual Task<ClientResult<BinaryData>> GenerateSpeechFromTextAsync(string text, GeneratedSpeechVoice voice, SpeechGenerationOptions options = null, CancellationToken cancellationToken = default);
+        public virtual Task<ClientResult> GenerateSpeechAsync(BinaryContent content, RequestOptions options = null);
+        public virtual Task<ClientResult<BinaryData>> GenerateSpeechAsync(string text, GeneratedSpeechVoice voice, SpeechGenerationOptions options = null, CancellationToken cancellationToken = default);
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual ClientResult TranscribeAudio(BinaryContent content, string contentType, RequestOptions options = null);
         public virtual ClientResult<AudioTranscription> TranscribeAudio(Stream audio, string audioFilename, AudioTranscriptionOptions options = null, CancellationToken cancellationToken = default);
@@ -928,18 +941,21 @@ namespace OpenAI.Batch {
         public virtual Task<ClientResult> CreateBatchAsync(BinaryContent content, RequestOptions options = null);
         public virtual ClientResult GetBatch(string batchId, RequestOptions options);
         public virtual Task<ClientResult> GetBatchAsync(string batchId, RequestOptions options);
-        public virtual ClientResult GetBatches(string after, int? limit, RequestOptions options);
-        public virtual Task<ClientResult> GetBatchesAsync(string after, int? limit, RequestOptions options);
+        public virtual IEnumerable<ClientResult> GetBatches(string after, int? limit, RequestOptions options);
+        public virtual IAsyncEnumerable<ClientResult> GetBatchesAsync(string after, int? limit, RequestOptions options);
     }
 }
 namespace OpenAI.Chat {
     public class AssistantChatMessage : ChatMessage {
         public AssistantChatMessage(ChatCompletion chatCompletion);
         public AssistantChatMessage(ChatFunctionCall functionCall, string content = null);
+        public AssistantChatMessage(params ChatMessageContentPart[] contentParts);
+        public AssistantChatMessage(IEnumerable<ChatMessageContentPart> contentParts);
         public AssistantChatMessage(IEnumerable<ChatToolCall> toolCalls, string content = null);
         public AssistantChatMessage(string content);
         public ChatFunctionCall FunctionCall { get; set; }
         public string ParticipantName { get; set; }
+        public string Refusal { get; set; }
         public IList<ChatToolCall> ToolCalls { get; }
         protected override void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
@@ -970,6 +986,8 @@ namespace OpenAI.Chat {
         public ChatFunctionCall FunctionCall { get; }
         public string Id { get; }
         public string Model { get; }
+        public string Refusal { get; }
+        public IReadOnlyList<ChatTokenLogProbabilityInfo> RefusalTokenLogProbabilities { get; }
         public ChatMessageRole Role { get; }
         public string SystemFingerprint { get; }
         public IReadOnlyList<ChatToolCall> ToolCalls { get; }
@@ -1020,13 +1038,22 @@ namespace OpenAI.Chat {
         public static ChatFunctionChoice None { get; }
     }
     public abstract class ChatMessage {
-        public IList<ChatMessageContentPart> Content { get; protected set; }
+        protected ChatMessage();
+        protected internal ChatMessage(ChatMessageRole role, IEnumerable<ChatMessageContentPart> contentParts);
+        protected internal ChatMessage(ChatMessageRole role, string content);
+        public IList<ChatMessageContentPart> Content { get; }
         public static AssistantChatMessage CreateAssistantMessage(ChatCompletion chatCompletion);
         public static AssistantChatMessage CreateAssistantMessage(ChatFunctionCall functionCall, string content = null);
+        public static AssistantChatMessage CreateAssistantMessage(params ChatMessageContentPart[] contentParts);
+        public static AssistantChatMessage CreateAssistantMessage(IEnumerable<ChatMessageContentPart> contentParts);
         public static AssistantChatMessage CreateAssistantMessage(IEnumerable<ChatToolCall> toolCalls, string content = null);
         public static AssistantChatMessage CreateAssistantMessage(string content);
         public static FunctionChatMessage CreateFunctionMessage(string functionName, string content);
+        public static SystemChatMessage CreateSystemMessage(params ChatMessageContentPart[] contentParts);
+        public static SystemChatMessage CreateSystemMessage(IEnumerable<ChatMessageContentPart> contentParts);
         public static SystemChatMessage CreateSystemMessage(string content);
+        public static ToolChatMessage CreateToolChatMessage(string toolCallId, params ChatMessageContentPart[] contentParts);
+        public static ToolChatMessage CreateToolChatMessage(string toolCallId, IEnumerable<ChatMessageContentPart> contentParts);
         public static ToolChatMessage CreateToolChatMessage(string toolCallId, string content);
         public static UserChatMessage CreateUserMessage(params ChatMessageContentPart[] contentParts);
         public static UserChatMessage CreateUserMessage(IEnumerable<ChatMessageContentPart> contentParts);
@@ -1040,9 +1067,11 @@ namespace OpenAI.Chat {
         public ImageChatMessageContentPartDetail? ImageDetail { get; }
         public Uri ImageUri { get; }
         public ChatMessageContentPartKind Kind { get; }
+        public string Refusal { get; }
         public string Text { get; }
         public static ChatMessageContentPart CreateImageMessageContentPart(BinaryData imageBytes, string imageBytesMediaType, ImageChatMessageContentPartDetail? imageDetail = null);
         public static ChatMessageContentPart CreateImageMessageContentPart(Uri imageUri, ImageChatMessageContentPartDetail? imageDetail = null);
+        public static ChatMessageContentPart CreateRefusalMessageContentPart(string refusal);
         public static ChatMessageContentPart CreateTextMessageContentPart(string text);
         public static implicit operator ChatMessageContentPart(string content);
         public override string ToString();
@@ -1052,6 +1081,7 @@ namespace OpenAI.Chat {
         private readonly int _dummyPrimitive;
         public ChatMessageContentPartKind(string value);
         public static ChatMessageContentPartKind Image { get; }
+        public static ChatMessageContentPartKind Refusal { get; }
         public static ChatMessageContentPartKind Text { get; }
         public readonly bool Equals(ChatMessageContentPartKind other);
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -1070,9 +1100,23 @@ namespace OpenAI.Chat {
         Tool = 3,
         Function = 4
     }
-    public class ChatResponseFormat {
+    public abstract class ChatResponseFormat : IEquatable<ChatResponseFormat> {
         public static ChatResponseFormat JsonObject { get; }
         public static ChatResponseFormat Text { get; }
+        public static ChatResponseFormat CreateJsonObjectFormat();
+        public static ChatResponseFormat CreateJsonSchemaFormat(string name, BinaryData jsonSchema, string description = null, bool? strictSchemaEnabled = null);
+        public static ChatResponseFormat CreateTextFormat();
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode();
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static bool operator ==(ChatResponseFormat first, ChatResponseFormat second);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static bool operator !=(ChatResponseFormat first, ChatResponseFormat second);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        bool IEquatable<ChatResponseFormat>.Equals(ChatResponseFormat other);
+        public override string ToString();
     }
     public class ChatTokenLogProbabilityInfo {
         public float LogProbability { get; }
@@ -1095,7 +1139,8 @@ namespace OpenAI.Chat {
         public string FunctionName { get; }
         public BinaryData FunctionParameters { get; }
         public ChatToolKind Kind { get; }
-        public static ChatTool CreateFunctionTool(string functionName, string functionDescription = null, BinaryData functionParameters = null);
+        public bool? StrictParameterSchemaEnabled { get; }
+        public static ChatTool CreateFunctionTool(string functionName, string functionDescription = null, BinaryData functionParameters = null, bool? strictParameterSchemaEnabled = null);
     }
     public class ChatToolCall {
         public string FunctionArguments { get; }
@@ -1171,6 +1216,8 @@ namespace OpenAI.Chat {
         public StreamingChatFunctionCallUpdate FunctionCallUpdate { get; }
         public string Id { get; }
         public string Model { get; }
+        public IReadOnlyList<ChatTokenLogProbabilityInfo> RefusalTokenLogProbabilities { get; }
+        public string RefusalUpdate { get; }
         public ChatMessageRole? Role { get; }
         public string SystemFingerprint { get; }
         public IReadOnlyList<StreamingChatToolCallUpdate> ToolCallUpdates { get; }
@@ -1188,11 +1235,15 @@ namespace OpenAI.Chat {
         public ChatToolCallKind Kind { get; }
     }
     public class SystemChatMessage : ChatMessage {
+        public SystemChatMessage(params ChatMessageContentPart[] contentParts);
+        public SystemChatMessage(IEnumerable<ChatMessageContentPart> contentParts);
         public SystemChatMessage(string content);
         public string ParticipantName { get; set; }
         protected override void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
     public class ToolChatMessage : ChatMessage {
+        public ToolChatMessage(string toolCallId, params ChatMessageContentPart[] contentParts);
+        public ToolChatMessage(string toolCallId, IEnumerable<ChatMessageContentPart> contentParts);
         public ToolChatMessage(string toolCallId, string content);
         public string ToolCallId { get; }
         protected override void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
@@ -1310,7 +1361,7 @@ namespace OpenAI.Files {
         public string Filename { get; }
         public string Id { get; }
         public OpenAIFilePurpose Purpose { get; }
-        public long? SizeInBytes { get; }
+        public int? SizeInBytes { get; }
         public OpenAIFileStatus Status { get; }
         public string StatusDetails { get; }
     }
@@ -1338,7 +1389,7 @@ namespace OpenAI.Files {
         public override readonly string ToString();
     }
     public static class OpenAIFilesModelFactory {
-        public static OpenAIFileInfo OpenAIFileInfo(string id = null, long? sizeInBytes = null, DateTimeOffset createdAt = default, string filename = null, OpenAIFilePurpose purpose = default, OpenAIFileStatus status = default, string statusDetails = null);
+        public static OpenAIFileInfo OpenAIFileInfo(string id = null, int? sizeInBytes = null, DateTimeOffset createdAt = default, string filename = null, OpenAIFilePurpose purpose = default, OpenAIFileStatus status = default, string statusDetails = null);
         public static OpenAIFileInfoCollection OpenAIFileInfoCollection(IEnumerable<OpenAIFileInfo> items = null);
     }
     public readonly partial struct OpenAIFileStatus : IEquatable<OpenAIFileStatus> {
@@ -1371,24 +1422,29 @@ namespace OpenAI.FineTuning {
         public virtual Task<ClientResult> CancelJobAsync(string jobId, RequestOptions options);
         public virtual Task<ClientResult<FineTuningJob>> CancelJobAsync(string jobId, CancellationToken cancellationToken = default);
         public virtual ClientResult CreateJob(BinaryContent content, RequestOptions options = null);
-        public virtual ClientResult<FineTuningJob> CreateJob(string model, string trainingFileId, FineTuningOptions options = null, CancellationToken cancellationToken = default);
+        public virtual ClientResult<FineTuningJob> CreateJob(string baseModel, string trainingFileId, FineTuningOptions options = null, CancellationToken cancellationToken = default);
         public virtual Task<ClientResult> CreateJobAsync(BinaryContent content, RequestOptions options = null);
-        public virtual Task<ClientResult<FineTuningJob>> CreateJobAsync(string model, string trainingFileId, FineTuningOptions options = null, CancellationToken cancellationToken = default);
+        public virtual Task<ClientResult<FineTuningJob>> CreateJobAsync(string baseModel, string trainingFileId, FineTuningOptions options = null, CancellationToken cancellationToken = default);
+        public virtual IAsyncEnumerable<FineTuningJobEvent> GetEventsAutoPaginateAsync(string jobId, string after = null, int? limit = null, RequestOptions options = null);
+        public virtual AsyncPageCollection<FineTuningJobEvent> GetEventsPaginatedAsync(string jobId);
         public virtual ClientResult GetJob(string jobId, RequestOptions options);
         public virtual Task<ClientResult> GetJobAsync(string jobId, RequestOptions options);
         public virtual Task<ClientResult<FineTuningJob>> GetJobAsync(string jobId);
-        public virtual ClientResult GetJobCheckpoints(string fineTuningJobId, string after, int? limit, RequestOptions options);
-        public virtual Task<ClientResult> GetJobCheckpointsAsync(string fineTuningJobId, string after, int? limit, RequestOptions options);
-        public virtual ClientResult GetJobEvents(string jobId, string after, int? limit, RequestOptions options);
-        public virtual Task<ClientResult> GetJobEventsAsync(string jobId, string after, int? limit, RequestOptions options);
-        public virtual ClientResult GetJobs(string after, int? limit, RequestOptions options);
-        public virtual Task<ClientResult> GetJobsAsync(string after, int? limit, RequestOptions options);
+        public virtual IEnumerable<ClientResult> GetJobCheckpoints(string jobId, string after, int? limit, RequestOptions options);
+        public virtual IAsyncEnumerable<ClientResult> GetJobCheckpointsAsync(string jobId, string after, int? limit, RequestOptions options);
+        public virtual IEnumerable<ClientResult> GetJobEvents(string jobId, string after, int? limit, RequestOptions options);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public virtual IAsyncEnumerable<ClientResult> GetJobEventsAsync(string jobId, string after, int? limit, RequestOptions options);
+        public virtual IEnumerable<ClientResult> GetJobs(string after, int? limit, RequestOptions options);
+        public virtual IAsyncEnumerable<ClientResult> GetJobsAsync(string after, int? limit, RequestOptions options);
         public virtual Task<FineTuningJob> WaitUntilCompleted(FineTuningJob job);
     }
     public abstract class FineTuningIntegration {
         public static FineTuningIntegration CreateWeightsAndBiasesIntegration(string projectName, string displayName = null, string entityName = null, IEnumerable<string> tags = null);
     }
     public class FineTuningJob {
+        public string BaseModel { get; }
+        public int? BillableTrainedTokens { get; }
         public DateTimeOffset CreatedAt { get; }
         public FineTuningJobError Error { get; }
         public DateTimeOffset? EstimatedFinishAt { get; }
@@ -1397,29 +1453,35 @@ namespace OpenAI.FineTuning {
         public FineTuningJobHyperparameters Hyperparameters { get; set; }
         public string Id { get; }
         public IReadOnlyList<FineTuningIntegration> Integrations { get; }
-        public string Model { get; }
         public string OrganizationId { get; }
+        public Uri PlaygroundUri { get; }
         public IReadOnlyList<string> ResultFileIds { get; }
         public int Seed { get; }
         public FineTuningJobStatus Status { get; }
-        public int? TrainedTokens { get; }
         public string TrainingFileId { get; }
         public string UserProvidedSuffix { get; }
         public string ValidationFileId { get; }
-        public string GetPlaygroundURL();
     }
     public class FineTuningJobError {
         public string Code { get; }
+        public string InvalidParameter { get; }
         public string Message { get; }
-        public string Param { get; }
+    }
+    public class FineTuningJobEvent {
+        public string InternalFineTuningJobEventLevel;
+        public DateTimeOffset CreatedAt { get; }
+        public string Id { get; }
+        public FineTuningJobEventLevel Level { get; }
+        public string Message { get; }
+        public FineTuningJobEventObject Object { get; }
     }
     public readonly partial struct FineTuningJobHyperparameters {
         private readonly object _dummy;
         private readonly int _dummyPrimitive;
+        public int BatchSize { get; }
+        public int CycleCount { get; }
+        public float LearningRateMultiplier { get; }
         public IDictionary<string, BinaryData> SerializedAdditionalRawData { get; }
-        public readonly int GetBatchSize();
-        public readonly int GetCycleCount();
-        public readonly float GetLearningRateMultiplier();
     }
     public readonly partial struct FineTuningJobStatus : IEquatable<FineTuningJobStatus> {
         private readonly object _dummy;
@@ -1427,6 +1489,7 @@ namespace OpenAI.FineTuning {
         public FineTuningJobStatus(string value);
         public static FineTuningJobStatus Cancelled { get; }
         public static FineTuningJobStatus Failed { get; }
+        public bool InProgress { get; }
         public static FineTuningJobStatus Queued { get; }
         public static FineTuningJobStatus Running { get; }
         public static FineTuningJobStatus Succeeded { get; }
@@ -1436,7 +1499,6 @@ namespace OpenAI.FineTuning {
         public override readonly bool Equals(object obj);
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override readonly int GetHashCode();
-        public readonly bool InProgress();
         public static bool operator ==(FineTuningJobStatus left, FineTuningJobStatus right);
         public static implicit operator FineTuningJobStatus(string value);
         public static bool operator !=(FineTuningJobStatus left, FineTuningJobStatus right);
@@ -1645,6 +1707,41 @@ namespace OpenAI.Models {
         public static bool operator ==(CreateFineTuningJobRequestModel left, CreateFineTuningJobRequestModel right);
         public static implicit operator CreateFineTuningJobRequestModel(string value);
         public static bool operator !=(CreateFineTuningJobRequestModel left, CreateFineTuningJobRequestModel right);
+        public override readonly string ToString();
+    }
+    public enum FineTuningJobEventLevel {
+        Info = 0,
+        Warn = 1,
+        Error = 2
+    }
+    public readonly partial struct FineTuningJobEventObject : IEquatable<FineTuningJobEventObject> {
+        private readonly object _dummy;
+        private readonly int _dummyPrimitive;
+        public FineTuningJobEventObject(string value);
+        public static FineTuningJobEventObject FineTuningJobEvent { get; }
+        public readonly bool Equals(FineTuningJobEventObject other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(FineTuningJobEventObject left, FineTuningJobEventObject right);
+        public static implicit operator FineTuningJobEventObject(string value);
+        public static bool operator !=(FineTuningJobEventObject left, FineTuningJobEventObject right);
+        public override readonly string ToString();
+    }
+    public readonly partial struct ListFineTuningJobEventsResponseObject : IEquatable<ListFineTuningJobEventsResponseObject> {
+        private readonly object _dummy;
+        private readonly int _dummyPrimitive;
+        public ListFineTuningJobEventsResponseObject(string value);
+        public static ListFineTuningJobEventsResponseObject List { get; }
+        public readonly bool Equals(ListFineTuningJobEventsResponseObject other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(ListFineTuningJobEventsResponseObject left, ListFineTuningJobEventsResponseObject right);
+        public static implicit operator ListFineTuningJobEventsResponseObject(string value);
+        public static bool operator !=(ListFineTuningJobEventsResponseObject left, ListFineTuningJobEventsResponseObject right);
         public override readonly string ToString();
     }
     public class ModelClient {
@@ -1949,10 +2046,9 @@ namespace OpenAI.VectorStores {
         private readonly object _dummy;
         private readonly int _dummyPrimitive;
         public VectorStoreFileAssociationErrorCode(string value);
-        public static VectorStoreFileAssociationErrorCode FileNotFound { get; }
-        public static VectorStoreFileAssociationErrorCode InternalError { get; }
-        public static VectorStoreFileAssociationErrorCode ParsingError { get; }
-        public static VectorStoreFileAssociationErrorCode UnhandledMimeType { get; }
+        public static VectorStoreFileAssociationErrorCode InvalidFile { get; }
+        public static VectorStoreFileAssociationErrorCode ServerError { get; }
+        public static VectorStoreFileAssociationErrorCode UnsupportedFile { get; }
         public readonly bool Equals(VectorStoreFileAssociationErrorCode other);
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override readonly bool Equals(object obj);

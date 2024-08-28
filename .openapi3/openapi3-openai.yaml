@@ -6453,6 +6453,7 @@ components:
       required:
         - data
         - object
+        - has_more
       properties:
         data:
           type: array
@@ -6462,6 +6463,8 @@ components:
           type: string
           enum:
             - list
+        has_more:
+          type: boolean
     ListMessagesResponse:
       type: object
       required:

@@ -9,7 +9,7 @@ namespace OpenAI.FineTuning
 {
     internal partial class InternalFineTuningIntegrationWandb : InternalFineTuningIntegration
     {
-        internal InternalFineTuningIntegrationWandb(InternalFineTuningIntegrationWandbWandb wandb)
+        internal InternalFineTuningIntegrationWandb(FineTuningIntegrationWandbWandb wandb)
         {
             Argument.AssertNotNull(wandb, nameof(wandb));
 
@@ -17,7 +17,7 @@ namespace OpenAI.FineTuning
             Wandb = wandb;
         }
 
-        internal InternalFineTuningIntegrationWandb(string type, IDictionary<string, BinaryData> serializedAdditionalRawData, InternalFineTuningIntegrationWandbWandb wandb) : base(type, serializedAdditionalRawData)
+        internal InternalFineTuningIntegrationWandb(string type, IDictionary<string, BinaryData> serializedAdditionalRawData, FineTuningIntegrationWandbWandb wandb) : base(type, serializedAdditionalRawData)
         {
             Wandb = wandb;
         }
@@ -26,6 +26,6 @@ namespace OpenAI.FineTuning
         {
         }
 
-        public InternalFineTuningIntegrationWandbWandb Wandb { get; }
+        public FineTuningIntegrationWandbWandb Wandb { get; }
     }
 }

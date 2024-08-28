@@ -2,6 +2,7 @@ using System;
 using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace OpenAI.FineTuning;
@@ -199,11 +200,10 @@ public partial class FineTuningClient
     /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public virtual IAsyncEnumerable<ClientResult> GetJobEventsAsync(string jobId, string after, int? limit, RequestOptions options)
     {
-        Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
-
-        FineTuningJobEventsPageEnumerator enumerator = new FineTuningJobEventsPageEnumerator(_pipeline, _endpoint, jobId, after, limit, options);
+        FineTuningJobEventsPageEnumerator enumerator = new(_pipeline, _endpoint, jobId, after, limit, options);
         return PageCollectionHelpers.CreateAsync(enumerator);
     }
 

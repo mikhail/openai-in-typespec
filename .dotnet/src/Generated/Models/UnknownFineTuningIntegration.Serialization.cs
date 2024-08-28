@@ -10,7 +10,7 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning
 {
-    internal partial class InternalUnknownFineTuningIntegration : IJsonModel<InternalFineTuningIntegration>
+    internal partial class UnknownFineTuningIntegration : IJsonModel<InternalFineTuningIntegration>
     {
         void IJsonModel<InternalFineTuningIntegration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
@@ -60,7 +60,7 @@ namespace OpenAI.FineTuning
             return DeserializeInternalFineTuningIntegration(document.RootElement, options);
         }
 
-        internal static InternalUnknownFineTuningIntegration DeserializeInternalUnknownFineTuningIntegration(JsonElement element, ModelReaderWriterOptions options = null)
+        internal static UnknownFineTuningIntegration DeserializeUnknownFineTuningIntegration(JsonElement element, ModelReaderWriterOptions options = null)
         {
             options ??= ModelSerializationExtensions.WireOptions;
 
@@ -85,7 +85,7 @@ namespace OpenAI.FineTuning
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new InternalUnknownFineTuningIntegration(type, serializedAdditionalRawData);
+            return new UnknownFineTuningIntegration(type, serializedAdditionalRawData);
         }
 
         BinaryData IPersistableModel<InternalFineTuningIntegration>.Write(ModelReaderWriterOptions options)
@@ -119,10 +119,10 @@ namespace OpenAI.FineTuning
 
         string IPersistableModel<InternalFineTuningIntegration>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
 
-        internal static new InternalUnknownFineTuningIntegration FromResponse(PipelineResponse response)
+        internal static new UnknownFineTuningIntegration FromResponse(PipelineResponse response)
         {
             using var document = JsonDocument.Parse(response.Content);
-            return DeserializeInternalUnknownFineTuningIntegration(document.RootElement);
+            return DeserializeUnknownFineTuningIntegration(document.RootElement);
         }
 
         internal override BinaryContent ToBinaryContent()

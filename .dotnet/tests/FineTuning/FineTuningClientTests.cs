@@ -3,6 +3,7 @@ using NUnit.Framework.Internal;
 using OpenAI.Files;
 using OpenAI.FineTuning;
 using OpenAI.Models;
+using System;
 using System.ClientModel;
 using System.Collections.Generic;
 using System.IO;
@@ -235,7 +236,7 @@ public class FineTuningClientTests
         Assert.ThrowsAsync<ClientResultException>(async () =>
         {
             var job = await client.CreateJobAsync(
-                "gpt-3.5-turbo", 
+                "gpt-3.5-turbo",
                 sampleFile.Id,
                 new() { ValidationFile = "7" }
                 );
@@ -244,16 +245,47 @@ public class FineTuningClientTests
 
     [Test]
     [Parallelizable]
-    public async Task TestEvents()
+    public async Task GetEventsWithPagination()
     {
-        //FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
+        FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
 
-        //FineTuningJobEventsList events = await client.GetEventsAsync(job.Id);
+        AsyncPageCollection<FineTuningJobEvent> eventPages = client.GetEventsPaginatedAsync(job.Id);
 
-        //client.CancelJob(job.Id);
+        client.CancelJob(job.Id);
 
-        //Assert.True(events.Data.First().Id.StartsWith("ftevent"));
+        await foreach (var page in eventPages)
+        {
+            foreach (var @event in page.Values)
+            {
+                Assert.IsTrue(@event.Id.StartsWith("ftevent"));
+            }
+        }
 
+    }
+
+    /// Manual experiments show that there are always at least 2 events:
+    /// First one is that the job is created
+    /// Second one is "validating training file"
+    /// If this test starts failing because of the wrong count, please first check if the above is still true
+    [Test]
+    [Parallelizable]
+    public async Task AutoResolvePagination()
+    {
+        FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
+
+        var events = client.GetEventsAutoPaginateAsync(job.Id, limit: 1);
+
+        client.CancelJob(job.Id);
+
+
+        await foreach (var e in events)
+        {
+            Assert.IsTrue(e.Id.StartsWith("ftevent"));
+        }
+
+        Assert.GreaterOrEqual(events.ToBlockingEnumerable().Count(), 2);
+
+        
     }
 
     private static FineTuningClient GetTestClient() => GetTestClient<FineTuningClient>(TestScenario.FineTuning);

@@ -95,6 +95,7 @@ model ListPaginatedFineTuningJobsResponse {
 model ListFineTuningJobEventsResponse {
   data: FineTuningJobEvent[];
   object: "list";
+  has_more: boolean;
 }
 
 model ListFineTuningJobCheckpointsResponse {

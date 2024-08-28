@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ClientModel;
 using System.Diagnostics;
 using System.IO;
@@ -6,25 +6,20 @@ using System.Text.Json;
 
 #nullable enable
 
-namespace OpenAI.Assistants;
+namespace OpenAI.FineTuning;
 
-internal class AssistantsPageToken : ContinuationToken
+internal class FineTuningJobEventsPageToken : ContinuationToken
 {
-    protected AssistantsPageToken(int? limit, string? order, string? after, string? before)
+    protected FineTuningJobEventsPageToken(string jobId, string? after, int? limit)
     {
-        Limit = limit;
-        Order = order;
+        JobId = jobId;
         After = after;
-        Before = before;
+        Limit = limit;
     }
 
-    public int? Limit { get; }
-
-    public string? Order { get; }
-
+    public string JobId { get; }
     public string? After { get; }
-
-    public string? Before { get; }
+    public int? Limit { get; }
 
     public override BinaryData ToBytes()
     {
@@ -33,24 +28,16 @@ internal class AssistantsPageToken : ContinuationToken
 
         writer.WriteStartObject();
 
+        writer.WriteString("fine_tuning_job_id", JobId);
+
         if (Limit.HasValue)
         {
             writer.WriteNumber("limit", Limit.Value);
         }
 
-        if (Order is not null)
-        {
-            writer.WriteString("order", Order);
-        }
-
         if (After is not null)
         {
             writer.WriteString("after", After);
-        }
-
-        if (Before is not null)
-        {
-            writer.WriteString("before", Before);
         }
 
         writer.WriteEndObject();
@@ -61,19 +48,17 @@ internal class AssistantsPageToken : ContinuationToken
         return BinaryData.FromStream(stream);
     }
 
-    public AssistantsPageToken? GetNextPageToken(bool hasMore, string? lastId)
+    public FineTuningJobEventsPageToken? GetNextPageToken(bool hasMore)
     {
-        if (!hasMore || lastId is null)
-        {
-            return null;
-        }
+        return hasMore
+            ? new FineTuningJobEventsPageToken(JobId, After, Limit)
+            : null;
 
-        return new AssistantsPageToken(Limit, Order, After, Before);
     }
 
-    public static AssistantsPageToken FromToken(ContinuationToken token)
+    public static FineTuningJobEventsPageToken FromToken(ContinuationToken token)
     {
-        if (token is AssistantsPageToken pageToken)
+        if (token is FineTuningJobEventsPageToken pageToken)
         {
             return pageToken;
         }
@@ -82,15 +67,16 @@ internal class AssistantsPageToken : ContinuationToken
 
         if (data.ToMemory().Length == 0)
         {
-            throw new ArgumentException($"Failed to create {nameof(AssistantsPageToken)} from provided token.", nameof(token));
+            throw new ArgumentException(
+                $"Failed to create {nameof(FineTuningJobEventsPageToken)} from provided token.",
+                nameof(token));
         }
 
         Utf8JsonReader reader = new(data);
 
-        int? limit = null;
-        string? order = null;
+        string jobId = "";
         string? after = null;
-        string? before = null;
+        int? limit = null;
 
         reader.Read();
 
@@ -109,34 +95,29 @@ internal class AssistantsPageToken : ContinuationToken
 
             switch (propertyName)
             {
-                case "limit":
-                    reader.Read();
-                    Debug.Assert(reader.TokenType == JsonTokenType.Number);
-                    limit = reader.GetInt32();
-                    break;
-                case "order":
+                case "fine_tuning_job_id":
                     reader.Read();
                     Debug.Assert(reader.TokenType == JsonTokenType.String);
-                    order = reader.GetString();
+                    jobId = reader.GetString()!;
                     break;
                 case "after":
                     reader.Read();
                     Debug.Assert(reader.TokenType == JsonTokenType.String);
                     after = reader.GetString();
                     break;
-                case "before":
+                case "limit":
                     reader.Read();
-                    Debug.Assert(reader.TokenType == JsonTokenType.String);
-                    before = reader.GetString();
+                    Debug.Assert(reader.TokenType == JsonTokenType.Number);
+                    limit = reader.GetInt32();
                     break;
                 default:
                     throw new JsonException($"Unrecognized property '{propertyName}'.");
             }
         }
 
-        return new(limit, order, after, before);
+        return new(jobId, after, limit);
     }
 
-    public static AssistantsPageToken FromOptions(int? limit, string? order, string? after, string? before)
-        => new AssistantsPageToken(limit, order, after, before);
+    public static FineTuningJobEventsPageToken FromOptions(string jobId, string? after, int? limit)
+        => new FineTuningJobEventsPageToken(jobId, after, limit);
 }

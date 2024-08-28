@@ -45,8 +45,29 @@ internal partial class InternalListFineTuningJobCheckpointsResponse { }
 [CodeGenModel("ListFineTuningJobCheckpointsResponseObject")]
 internal readonly partial struct InternalListFineTuningJobCheckpointsResponseObject { }
 
+[CodeGenModel("ListFineTuningJobEventsResponse")]
+internal partial class InternalListFineTuningJobEventsResponse { }
+
 [CodeGenModel("ListPaginatedFineTuningJobsResponse")]
 internal partial class InternalListPaginatedFineTuningJobsResponse { }
 
 [CodeGenModel("ListPaginatedFineTuningJobsResponseObject")]
 internal readonly partial struct InternalListPaginatedFineTuningJobsResponseObject { }
+
+[CodeGenModel("FineTuningIntegrationWandbWandb")]
+internal partial class FineTuningIntegrationWandbWandb { }
+
+[CodeGenModel("FineTuningJobHyperparametersBatchSizeChoiceEnum")]
+internal readonly partial struct FineTuningJobHyperparametersBatchSizeChoiceEnum { }
+
+[CodeGenModel("FineTuningJobHyperparametersLearningRateMultiplierChoiceEnum")]
+internal readonly partial struct FineTuningJobHyperparametersLearningRateMultiplierChoiceEnum { }
+
+[CodeGenModel("FineTuningJobHyperparametersNEpochsChoiceEnum")]
+internal readonly partial struct FineTuningJobHyperparametersNEpochsChoiceEnum { }
+
+[CodeGenModel("UnknownCreateFineTuningJobRequestIntegration")]
+internal partial class UnknownCreateFineTuningJobRequestIntegration { }
+
+[CodeGenModel("UnknownFineTuningIntegration")]
+internal partial class UnknownFineTuningIntegration { }

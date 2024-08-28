@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning
 {
-    [PersistableModelProxy(typeof(InternalUnknownFineTuningIntegration))]
+    [PersistableModelProxy(typeof(UnknownFineTuningIntegration))]
     internal partial class InternalFineTuningIntegration : IJsonModel<InternalFineTuningIntegration>
     {
         void IJsonModel<InternalFineTuningIntegration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
@@ -75,7 +75,7 @@ namespace OpenAI.FineTuning
                     case "wandb": return InternalFineTuningIntegrationWandb.DeserializeInternalFineTuningIntegrationWandb(element, options);
                 }
             }
-            return InternalUnknownFineTuningIntegration.DeserializeInternalUnknownFineTuningIntegration(element, options);
+            return UnknownFineTuningIntegration.DeserializeUnknownFineTuningIntegration(element, options);
         }
 
         BinaryData IPersistableModel<InternalFineTuningIntegration>.Write(ModelReaderWriterOptions options)

@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning
 {
-    [PersistableModelProxy(typeof(InternalUnknownCreateFineTuningJobRequestIntegration))]
+    [PersistableModelProxy(typeof(UnknownCreateFineTuningJobRequestIntegration))]
     public partial class FineTuningIntegration : IJsonModel<FineTuningIntegration>
     {
         void IJsonModel<FineTuningIntegration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
@@ -75,7 +75,7 @@ namespace OpenAI.FineTuning
                     case "wandb": return WeightsAndBiasesIntegration.DeserializeWeightsAndBiasesIntegration(element, options);
                 }
             }
-            return InternalUnknownCreateFineTuningJobRequestIntegration.DeserializeInternalUnknownCreateFineTuningJobRequestIntegration(element, options);
+            return UnknownCreateFineTuningJobRequestIntegration.DeserializeUnknownCreateFineTuningJobRequestIntegration(element, options);
         }
 
         BinaryData IPersistableModel<FineTuningIntegration>.Write(ModelReaderWriterOptions options)

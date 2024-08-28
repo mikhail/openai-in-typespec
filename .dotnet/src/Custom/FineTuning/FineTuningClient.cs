@@ -2,6 +2,8 @@ using System;
 using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -162,9 +164,24 @@ public partial class FineTuningClient
         return job;
     }
 
-    //public virtual async Task<ClientResult<FineTuningJobEventsList>> GetEventsAsync(string jobId)
-    //{
-    //    ClientResult result = await GetJobEventsAsync(jobId, null, null, null).ConfigureAwait(false);
-    //    return ClientResult.FromValue(FineTuningJobEventsList.FromResponse(result.GetRawResponse()), result.GetRawResponse());
-    //}
+    public virtual AsyncPageCollection<FineTuningJobEvent> GetEventsPaginatedAsync(string jobId)
+    {
+        IAsyncEnumerable<ClientResult> result = GetJobEventsAsync(jobId, null, null, null);
+        AsyncPageCollection<FineTuningJobEvent> pagesOfEvents = (AsyncPageCollection<FineTuningJobEvent>)result;
+
+        return pagesOfEvents;
+    }
+    public virtual async IAsyncEnumerable<FineTuningJobEvent> GetEventsAutoPaginateAsync(string jobId, string after = null, int? limit = null, RequestOptions options = default)
+    {
+        IAsyncEnumerable<ClientResult> result = GetJobEventsAsync(jobId, after, limit, options);
+        AsyncPageCollection<FineTuningJobEvent> pagesOfEvents = (AsyncPageCollection<FineTuningJobEvent>)result;
+
+        await foreach (var page in pagesOfEvents)
+        {
+            foreach (var e in page.Values)
+            {
+                yield return e;
+            }
+        }
+    }
 }

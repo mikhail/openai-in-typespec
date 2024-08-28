@@ -10,7 +10,7 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning
 {
-    internal partial class InternalUnknownCreateFineTuningJobRequestIntegration : IJsonModel<FineTuningIntegration>
+    internal partial class UnknownCreateFineTuningJobRequestIntegration : IJsonModel<FineTuningIntegration>
     {
         void IJsonModel<FineTuningIntegration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
@@ -60,7 +60,7 @@ namespace OpenAI.FineTuning
             return DeserializeFineTuningIntegration(document.RootElement, options);
         }
 
-        internal static InternalUnknownCreateFineTuningJobRequestIntegration DeserializeInternalUnknownCreateFineTuningJobRequestIntegration(JsonElement element, ModelReaderWriterOptions options = null)
+        internal static UnknownCreateFineTuningJobRequestIntegration DeserializeUnknownCreateFineTuningJobRequestIntegration(JsonElement element, ModelReaderWriterOptions options = null)
         {
             options ??= ModelSerializationExtensions.WireOptions;
 
@@ -85,7 +85,7 @@ namespace OpenAI.FineTuning
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new InternalUnknownCreateFineTuningJobRequestIntegration(type, serializedAdditionalRawData);
+            return new UnknownCreateFineTuningJobRequestIntegration(type, serializedAdditionalRawData);
         }
 
         BinaryData IPersistableModel<FineTuningIntegration>.Write(ModelReaderWriterOptions options)
@@ -119,10 +119,10 @@ namespace OpenAI.FineTuning
 
         string IPersistableModel<FineTuningIntegration>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
 
-        internal static new InternalUnknownCreateFineTuningJobRequestIntegration FromResponse(PipelineResponse response)
+        internal static new UnknownCreateFineTuningJobRequestIntegration FromResponse(PipelineResponse response)
         {
             using var document = JsonDocument.Parse(response.Content);
-            return DeserializeInternalUnknownCreateFineTuningJobRequestIntegration(document.RootElement);
+            return DeserializeUnknownCreateFineTuningJobRequestIntegration(document.RootElement);
         }
 
         internal override BinaryContent ToBinaryContent()

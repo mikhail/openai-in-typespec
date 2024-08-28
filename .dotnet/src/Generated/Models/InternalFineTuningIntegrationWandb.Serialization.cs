@@ -73,7 +73,7 @@ namespace OpenAI.FineTuning
             {
                 return null;
             }
-            InternalFineTuningIntegrationWandbWandb wandb = default;
+            FineTuningIntegrationWandbWandb wandb = default;
             string type = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
@@ -81,7 +81,7 @@ namespace OpenAI.FineTuning
             {
                 if (property.NameEquals("wandb"u8))
                 {
-                    wandb = InternalFineTuningIntegrationWandbWandb.DeserializeInternalFineTuningIntegrationWandbWandb(property.Value, options);
+                    wandb = FineTuningIntegrationWandbWandb.DeserializeFineTuningIntegrationWandbWandb(property.Value, options);
                     continue;
                 }
                 if (property.NameEquals("type"u8))
