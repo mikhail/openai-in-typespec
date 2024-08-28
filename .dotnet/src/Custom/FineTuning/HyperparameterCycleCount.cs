@@ -4,7 +4,7 @@ using System.ComponentModel;
 namespace OpenAI.FineTuning;
 
 [CodeGenModel("CreateFineTuningJobRequestHyperparametersNEpochsChoiceEnum")]
-public readonly partial struct HyperparameterCycleCount: IEquatable<int>, IEquatable<string>
+public readonly partial struct HyperparameterCycleCount : IEquatable<int>, IEquatable<string>
 {
     internal HyperparameterCycleCount(string predefinedLabel)
     {

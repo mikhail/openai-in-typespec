@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace OpenAI.FineTuning;
 
 [CodeGenModel("CreateFineTuningJobRequestHyperparametersLearningRateMultiplierChoiceEnum")]
-public readonly partial struct HyperparameterLearningRate: IEquatable<float>, IEquatable<double>, IEquatable<string>
+public readonly partial struct HyperparameterLearningRate : IEquatable<float>, IEquatable<double>, IEquatable<string>
 {
     internal HyperparameterLearningRate(string predefinedLabel)
     {

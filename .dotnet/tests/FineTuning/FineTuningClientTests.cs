@@ -285,7 +285,7 @@ public class FineTuningClientTests
 
         Assert.GreaterOrEqual(events.ToBlockingEnumerable().Count(), 2);
 
-        
+
     }
 
     private static FineTuningClient GetTestClient() => GetTestClient<FineTuningClient>(TestScenario.FineTuning);

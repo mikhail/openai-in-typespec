@@ -4,7 +4,7 @@ using System.ComponentModel;
 namespace OpenAI.FineTuning;
 
 [CodeGenModel("CreateFineTuningJobRequestHyperparametersBatchSizeChoiceEnum")]
-public readonly partial struct HyperparameterBatchSize: IEquatable<int>, IEquatable<string>
+public readonly partial struct HyperparameterBatchSize : IEquatable<int>, IEquatable<string>
 {
     internal HyperparameterBatchSize(string predefinedLabel)
     {

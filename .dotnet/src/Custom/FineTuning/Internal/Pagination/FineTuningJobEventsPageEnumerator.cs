@@ -46,7 +46,7 @@ internal partial class FineTuningJobEventsPageEnumerator : PageEnumerator<FineTu
 
         using JsonDocument doc = JsonDocument.Parse(response.Content);
         var data = doc.RootElement.GetProperty("data"u8);
-        
+
         if (data.ValueKind == JsonValueKind.Array)
         {
             var last = data[data.GetArrayLength() - 1];

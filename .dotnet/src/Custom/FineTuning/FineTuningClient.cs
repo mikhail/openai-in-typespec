@@ -105,7 +105,7 @@ public partial class FineTuningClient
         CancellationToken cancellationToken = default
         )
     {
-       
+
         options ??= new FineTuningOptions();
         options.Model = baseModel;
         options.TrainingFile = trainingFileId;

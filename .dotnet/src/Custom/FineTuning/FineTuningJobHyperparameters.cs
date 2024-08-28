@@ -40,7 +40,7 @@ public readonly partial struct FineTuningJobHyperparameters
         }
     }
 
-    public int CycleCount => (int) HandleDefaults(_CycleCount);
-    public int BatchSize => (int) HandleDefaults(_BatchSize);
+    public int CycleCount => (int)HandleDefaults(_CycleCount);
+    public int BatchSize => (int)HandleDefaults(_BatchSize);
     public float LearningRateMultiplier => HandleDefaults(_LearningRateMultiplier);
 }
