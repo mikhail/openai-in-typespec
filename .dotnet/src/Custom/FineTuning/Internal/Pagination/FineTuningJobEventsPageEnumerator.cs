@@ -130,7 +130,7 @@ internal partial class FineTuningJobEventsPageEnumerator : PageEnumerator<FineTu
         request.Method = "GET";
         var uri = new ClientUriBuilder();
         uri.Reset(_endpoint);
-        uri.AppendPath("/v1/fine_tuning/jobs/", false);
+        uri.AppendPath("/fine_tuning/jobs/", false);
         uri.AppendPath(fineTuningJobId, true);
         uri.AppendPath("/events", false);
         if (after != null)
