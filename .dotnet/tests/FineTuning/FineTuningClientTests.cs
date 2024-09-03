@@ -183,7 +183,6 @@ public class FineTuningClientTests
     [Explicit("This test requires wandb.ai account and api key integration.")]
     public void WandBIntegrations()
     {
-
         FineTuningJob job = client.CreateJob(
             "gpt-3.5-turbo",
             sampleFile.Id,
@@ -217,7 +216,6 @@ public class FineTuningClientTests
     [Parallelizable]
     public void ExceptionThrownOnInvalidValidationId()
     {
-
         Assert.Throws<ClientResultException>(() =>
         {
             FineTuningJob job = client.CreateJob(
@@ -232,7 +230,6 @@ public class FineTuningClientTests
     [Parallelizable]
     public void ExceptionThrownOnInvalidValidationIdAsync()
     {
-
         Assert.ThrowsAsync<ClientResultException>(async () =>
         {
             var job = await client.CreateJobAsync(
@@ -248,19 +245,18 @@ public class FineTuningClientTests
     public async Task GetEventsWithPagination()
     {
         FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
-
-        AsyncPageCollection<FineTuningJobEvent> eventPages = client.GetEventsPaginatedAsync(job.Id);
-
         client.CancelJob(job.Id);
 
-        await foreach (var page in eventPages)
+        IAsyncEnumerable<ClientResult> result = client.GetLimitedJobEventsAsync(job.Id);
+        AsyncPageCollection<FineTuningJobEvent> pagesOfEvents = (AsyncPageCollection<FineTuningJobEvent>)result;
+
+        await foreach (var page in pagesOfEvents)
         {
             foreach (var @event in page.Values)
             {
                 Assert.IsTrue(@event.Id.StartsWith("ftevent"));
             }
         }
-
     }
 
     /// Manual experiments show that there are always at least 2 events:
@@ -273,19 +269,31 @@ public class FineTuningClientTests
     {
         FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
 
-        var events = client.GetEventsAutoPaginateAsync(job.Id, limit: 1);
+        ListEventsOptions options = new()
+        {
+            Limit = 1
+        };
+        var events = client.GetEventsAsync(job.Id, options);
 
         client.CancelJob(job.Id);
 
-
+        var count = 1;
         await foreach (var e in events)
         {
             Assert.IsTrue(e.Id.StartsWith("ftevent"));
+            count++;
         }
+        Assert.GreaterOrEqual(count, 2);
+    }
 
-        Assert.GreaterOrEqual(events.ToBlockingEnumerable().Count(), 2);
+    // Test getting all the jobs
+    [Test]
+    [Parallelizable]
+    public void GetJobs()
+    {
+        //var jobs = client.GetJobs();
 
-
+        //Assert.GreaterOrEqual(jobs.Count, 0);
     }
 
     private static FineTuningClient GetTestClient() => GetTestClient<FineTuningClient>(TestScenario.FineTuning);

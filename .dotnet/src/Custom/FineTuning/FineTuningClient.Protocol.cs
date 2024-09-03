@@ -193,17 +193,16 @@ public partial class FineTuningClient
     /// [Protocol Method] Get status updates for a fine-tuning job.
     /// </summary>
     /// <param name="jobId"> The ID of the fine-tuning job to get events for. </param>
-    /// <param name="after"> Identifier for the last event from the previous pagination request. </param>
-    /// <param name="limit"> Number of events to retrieve. </param>
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ArgumentNullException"> <paramref name="jobId"/> is null. </exception>
     /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public virtual IAsyncEnumerable<ClientResult> GetJobEventsAsync(string jobId, string after, int? limit, RequestOptions options)
+    public virtual IAsyncEnumerable<ClientResult> GetLimitedJobEventsAsync(string jobId, ListEventsOptions options = default, RequestOptions requestoptions = null)
     {
-        FineTuningJobEventsPageEnumerator enumerator = new(_pipeline, _endpoint, jobId, after, limit, options);
+
+        FineTuningJobEventsPageEnumerator enumerator = new(_pipeline, _endpoint, jobId, options.After, options.Limit, requestoptions);
         return PageCollectionHelpers.CreateAsync(enumerator);
     }
 
@@ -221,7 +220,7 @@ public partial class FineTuningClient
     /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual IEnumerable<ClientResult> GetJobEvents(string jobId, string after, int? limit, RequestOptions options)
+    public virtual IEnumerable<ClientResult> GetLimitedJobEvents(string jobId, string after, int? limit, RequestOptions options)
     {
         Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
 

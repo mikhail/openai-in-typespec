@@ -164,24 +164,22 @@ public partial class FineTuningClient
         return job;
     }
 
-    public virtual AsyncPageCollection<FineTuningJobEvent> GetEventsPaginatedAsync(string jobId)
+    /// <summary>
+    /// This will auto resolve pagination and re-fetching.
+    /// </summary>
+    /// <param name="jobId"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public virtual async IAsyncEnumerable<FineTuningJobEvent> GetEventsAsync(string jobId, ListEventsOptions options = default)
     {
-        IAsyncEnumerable<ClientResult> result = GetJobEventsAsync(jobId, null, null, null);
+        options ??= new ListEventsOptions();
+
+        IAsyncEnumerable<ClientResult> result = GetLimitedJobEventsAsync(jobId, options);
         AsyncPageCollection<FineTuningJobEvent> pagesOfEvents = (AsyncPageCollection<FineTuningJobEvent>)result;
 
-        return pagesOfEvents;
-    }
-    public virtual async IAsyncEnumerable<FineTuningJobEvent> GetEventsAutoPaginateAsync(string jobId, string after = null, int? limit = null, RequestOptions options = default)
-    {
-        IAsyncEnumerable<ClientResult> result = GetJobEventsAsync(jobId, after, limit, options);
-        AsyncPageCollection<FineTuningJobEvent> pagesOfEvents = (AsyncPageCollection<FineTuningJobEvent>)result;
-
-        await foreach (var page in pagesOfEvents)
+        await foreach (var value in pagesOfEvents.GetAllValuesAsync())
         {
-            foreach (var e in page.Values)
-            {
-                yield return e;
-            }
+            yield return value;
         }
     }
 }
