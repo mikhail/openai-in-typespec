@@ -14,17 +14,6 @@ internal class FineTuningJobTests
 {
     [Test]
     [Parallelizable]
-    public void PlaygroundURL()
-    {
-        var job = JobStub();
-        var uri = job.PlaygroundUri;
-        var expected = "https://platform.openai.com/playground/chat?models=gpt-3.5-turbo-0125&models=ft:gpt-3.5-turbo-0125:personal::unitTest";
-        Assert.AreEqual(expected, uri.ToString());
-    }
-
-    // Test that inProgress changes when the status changes.
-    [Test]
-    [Parallelizable]
     public void TestInProgress()
     {
         FineTuningJob job;

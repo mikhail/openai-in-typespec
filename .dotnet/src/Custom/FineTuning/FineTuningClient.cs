@@ -160,7 +160,7 @@ public partial class FineTuningClient
                 await Task.Delay(30 * 1000).ConfigureAwait(false);
             }
 
-            job = await GetJobAsync(job.Id).ConfigureAwait(false);
+            job = await GetJobAsync(job.JobId).ConfigureAwait(false);
         }
         return job;
     }
@@ -171,16 +171,13 @@ public partial class FineTuningClient
     /// <param name="jobId"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public virtual async IAsyncEnumerable<FineTuningJobEvent> GetEventsAsync(string jobId, ListEventsOptions options = default)
+    public virtual async IAsyncEnumerable<FineTuningJobEvent> GetJobEventsAsync(string jobId, ListEventsOptions options = default)
     {
         options ??= new ListEventsOptions();
 
         IAsyncEnumerable<ClientResult> result = GetLimitedJobEventsAsync(jobId, options);
         AsyncPageCollection<FineTuningJobEvent> pagesOfEvents = (AsyncPageCollection<FineTuningJobEvent>)result;
 
-        await foreach (var value in pagesOfEvents.GetAllValuesAsync())
-        {
-            yield return value;
-        }
+        await foreach (var value in pagesOfEvents.GetAllValuesAsync()) yield return value;
     }
 }

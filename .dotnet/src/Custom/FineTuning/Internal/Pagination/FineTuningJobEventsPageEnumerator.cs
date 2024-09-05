@@ -123,7 +123,7 @@ internal partial class FineTuningJobEventsPageEnumerator : PageEnumerator<FineTu
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
-    internal PipelineMessage CreateGetFineTuningEventsRequest(string fineTuningJobId, string after, int? limit, RequestOptions options)
+    internal PipelineMessage CreateGetFineTuningEventsRequest(string jobId, string after, int? limit, RequestOptions options)
     {
         var message = _pipeline.CreateMessage();
         message.ResponseClassifier = PipelineMessageClassifier200;
@@ -132,7 +132,7 @@ internal partial class FineTuningJobEventsPageEnumerator : PageEnumerator<FineTu
         var uri = new ClientUriBuilder();
         uri.Reset(_endpoint);
         uri.AppendPath("/fine_tuning/jobs/", false);
-        uri.AppendPath(fineTuningJobId, true);
+        uri.AppendPath(jobId, true);
         uri.AppendPath("/events", false);
         if (after != null)
         {

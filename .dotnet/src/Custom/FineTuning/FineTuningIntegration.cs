@@ -5,25 +5,10 @@ using System.Text;
 
 namespace OpenAI.FineTuning;
 
+
+/// <summary>
+/// Parent class for all fine-tuning integrations.
+/// Use <see cref="WeightsAndBiasesIntegration" /> to create a Weights & Biases integration.
+/// </summary>
 [CodeGenModel("CreateFineTuningJobRequestIntegration")]
-public partial class FineTuningIntegration
-{
-    public static FineTuningIntegration CreateWeightsAndBiasesIntegration(
-        string projectName,
-        string displayName = null,
-        string entityName = null,
-        IEnumerable<string> tags = null)
-    {
-        WeightsAndBiasesIntegration result = new()
-        {
-            ProjectName = projectName,
-            DisplayName = displayName,
-            EntityName = entityName,
-        };
-        foreach (string tag in tags ?? [])
-        {
-            result.Tags.Add(tag);
-        }
-        return result;
-    }
-}
+public partial class FineTuningIntegration { }

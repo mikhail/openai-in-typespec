@@ -64,7 +64,7 @@ public class FineTuningClientTests
         Assert.True(job.Status.InProgress);
         Assert.AreEqual(0, job.Hyperparameters.CycleCount);
 
-        job = client.CancelJob(job.Id);
+        job = client.CancelJob(job.JobId);
 
         Assert.AreEqual(FineTuningJobStatus.Cancelled, job.Status);
         Assert.False(job.Status.InProgress);
@@ -81,7 +81,7 @@ public class FineTuningClientTests
         Assert.True(job.Status.InProgress);
         Assert.AreEqual(0, job.Hyperparameters.CycleCount);
 
-        job = await client.CancelJobAsync(job.Id);
+        job = await client.CancelJobAsync(job.JobId);
 
         Assert.AreEqual(FineTuningJobStatus.Cancelled, job.Status);
         Assert.False(job.Status.InProgress);
@@ -114,7 +114,7 @@ public class FineTuningClientTests
         Assert.AreEqual(1234567, job.Seed);
         Assert.AreEqual(validationFile.Id, job.ValidationFileId);
 
-        job = client.CancelJob(job.Id);
+        job = client.CancelJob(job.JobId);
     }
 
     [Test]
@@ -145,7 +145,7 @@ public class FineTuningClientTests
         Assert.AreEqual(1234567, job.Seed);
         Assert.AreEqual(validationFile.Id, job.ValidationFileId);
 
-        job = await client.CancelJobAsync(job.Id);
+        job = await client.CancelJobAsync(job.JobId);
     }
 
 
@@ -191,7 +191,7 @@ public class FineTuningClientTests
                 Integrations = { new WeightsAndBiasesIntegration("ft-tests") },
             }
         );
-        client.CancelJob(job.Id);
+        client.CancelJob(job.JobId);
     }
 
     [Test]
@@ -245,9 +245,9 @@ public class FineTuningClientTests
     public async Task GetEventsWithPagination()
     {
         FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
-        client.CancelJob(job.Id);
+        client.CancelJob(job.JobId);
 
-        IAsyncEnumerable<ClientResult> result = client.GetLimitedJobEventsAsync(job.Id);
+        IAsyncEnumerable<ClientResult> result = client.GetLimitedJobEventsAsync(job.JobId);
         AsyncPageCollection<FineTuningJobEvent> pagesOfEvents = (AsyncPageCollection<FineTuningJobEvent>)result;
 
         await foreach (var page in pagesOfEvents)
@@ -273,9 +273,9 @@ public class FineTuningClientTests
         {
             Limit = 1
         };
-        var events = client.GetEventsAsync(job.Id, options);
+        var events = client.GetJobEventsAsync(job.JobId, options);
 
-        client.CancelJob(job.Id);
+        client.CancelJob(job.JobId);
 
         var count = 1;
         await foreach (var e in events)

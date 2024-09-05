@@ -11,6 +11,9 @@ namespace OpenAI.FineTuning;
 [CodeGenModel("FineTuningJob")]
 public partial class FineTuningJob
 {
+    [CodeGenMember("Id")]
+    public string JobId { get; }
+
 
     [CodeGenMember("Model")]
     public string BaseModel { get; }
@@ -34,14 +37,11 @@ public partial class FineTuningJob
     private string _object { get; }
 
     [CodeGenMember("Hyperparameters")]
-    public FineTuningJobHyperparameters Hyperparameters { get; set; } = default;
+    public FineTuningJobHyperparameters Hyperparameters { get; } = default;
 
     [CodeGenMember("Integrations")]
     public IReadOnlyList<FineTuningIntegration> Integrations { get; }
 
     [CodeGenMember("TrainedTokens")]
     public int? BillableTrainedTokens { get; }
-
-    public Uri PlaygroundUri => new Uri($"https://platform.openai.com/playground/chat?models={BaseModel}&models={FineTunedModel}");
-
 }
