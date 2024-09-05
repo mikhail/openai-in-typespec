@@ -7,20 +7,11 @@ namespace OpenAI.FineTuning;
 public partial class HyperparameterOptions
 {
     [CodeGenMember("NEpochs")]
-    public HyperparameterCycleCount CycleCount { get; }
+    public HyperparameterCycleCount CycleCount { get; set; }
 
     [CodeGenMember("BatchSize")]
-    public HyperparameterBatchSize BatchSize { get; }
+    public HyperparameterBatchSize BatchSize { get; set; }
 
     [CodeGenMember("LearningRateMultiplier")]
-    public HyperparameterLearningRate LearningRate { get; }
-
-    public HyperparameterOptions(HyperparameterCycleCount cycleCount = default, HyperparameterBatchSize batchSize = default, HyperparameterLearningRate learningRate = default, IDictionary<string, BinaryData> serializedAdditionalRawData = null)
-    {
-        CycleCount = cycleCount;
-        BatchSize = batchSize;
-        LearningRate = learningRate;
-        SerializedAdditionalRawData = serializedAdditionalRawData;
-    }
-
+    public HyperparameterLearningRate LearningRate { get; set; }
 }

@@ -95,7 +95,11 @@ public class FineTuningClientTests
 
         var options = new FineTuningOptions()
         {
-            Hyperparameters = new(cycleCount: 1, batchSize: 2, learningRate: 3),
+            Hyperparameters = new() {
+                CycleCount = 1,
+                BatchSize = 2,
+                LearningRate = 3
+            },
             Suffix = "TestFTJob",
             ValidationFile = validationFile.Id,
             Seed = 1234567
@@ -125,7 +129,12 @@ public class FineTuningClientTests
 
         var options = new FineTuningOptions()
         {
-            Hyperparameters = new(cycleCount: 1, batchSize: 2, learningRate: 3),
+            Hyperparameters = new()
+            {
+                CycleCount = 1,
+                BatchSize = 2,
+                LearningRate = 3
+            },
             Suffix = "TestFTJob",
             ValidationFile = validationFile.Id,
             Seed = 1234567
@@ -156,7 +165,11 @@ public class FineTuningClientTests
     public async Task TestWaitForSuccess()
     {
         // Keep number of iterations low to avoid high costs
-        var hp = new HyperparameterOptions(cycleCount: 1, batchSize: 10);
+        var hp = new HyperparameterOptions()
+        {
+            CycleCount = 1,
+            BatchSize = 10,
+        };
 
         FineTuningJob job = client.CreateJob(
             "gpt-3.5-turbo",

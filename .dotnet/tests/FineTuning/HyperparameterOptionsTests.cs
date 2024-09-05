@@ -38,7 +38,12 @@ class HyperparameterOptionsTests
     [Parallelizable]
     public void OptionsCanEasilySet()
     {
-        HyperparameterOptions options = new(1, 2, "auto");
+        HyperparameterOptions options = new()
+        {
+            CycleCount = 1,
+            BatchSize = 2,
+            LearningRate = "auto"
+        };
         Assert.AreEqual(options.CycleCount, 1);
         Assert.AreEqual(options.BatchSize, 2);
         Assert.AreEqual(options.LearningRate, "auto");
