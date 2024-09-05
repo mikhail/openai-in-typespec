@@ -313,14 +313,12 @@ namespace OpenAI.Assistants {
         public ToolResources ToolResources { get; }
     }
     public class CodeInterpreterToolDefinition : ToolDefinition {
-        protected override void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
     public class CodeInterpreterToolResources {
         public IList<string> FileIds { get; set; }
     }
     public class FileSearchToolDefinition : ToolDefinition {
         public int? MaxResults { get; set; }
-        protected override void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
     public class FileSearchToolResources {
         public IList<VectorStoreCreationHelper> NewVectorStores { get; }
@@ -333,7 +331,6 @@ namespace OpenAI.Assistants {
         public required string FunctionName { get; set; }
         public BinaryData Parameters { get; set; }
         public bool? StrictParameterSchemaEnabled { get; set; }
-        protected override void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
     public class MessageCollectionOptions {
         public string AfterId { get; set; }
@@ -352,7 +349,6 @@ namespace OpenAI.Assistants {
         public static MessageContent FromImageUrl(Uri imageUri, MessageImageDetail? detail = null);
         public static MessageContent FromText(string text);
         public static implicit operator MessageContent(string value);
-        protected abstract void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
     public class MessageContentUpdate : StreamingUpdate {
         public MessageImageDetail? ImageDetail { get; }
@@ -786,7 +782,6 @@ namespace OpenAI.Assistants {
         public static CodeInterpreterToolDefinition CreateCodeInterpreter();
         public static FileSearchToolDefinition CreateFileSearch(int? maxResults = null);
         public static FunctionToolDefinition CreateFunction(string name, string description = null, BinaryData parameters = null, bool? strictParameterSchemaEnabled = null);
-        protected abstract void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
     public class ToolOutput {
         public ToolOutput();
@@ -880,13 +875,25 @@ namespace OpenAI.Audio {
         public AudioTranslationFormat? ResponseFormat { get; set; }
         public float? Temperature { get; set; }
     }
-    public enum GeneratedSpeechFormat {
-        Mp3 = 0,
-        Opus = 1,
-        Aac = 2,
-        Flac = 3,
-        Wav = 4,
-        Pcm = 5
+    public readonly partial struct GeneratedSpeechFormat : IEquatable<GeneratedSpeechFormat> {
+        private readonly object _dummy;
+        private readonly int _dummyPrimitive;
+        public GeneratedSpeechFormat(string value);
+        public static GeneratedSpeechFormat Aac { get; }
+        public static GeneratedSpeechFormat Flac { get; }
+        public static GeneratedSpeechFormat Mp3 { get; }
+        public static GeneratedSpeechFormat Opus { get; }
+        public static GeneratedSpeechFormat Pcm { get; }
+        public static GeneratedSpeechFormat Wav { get; }
+        public readonly bool Equals(GeneratedSpeechFormat other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(GeneratedSpeechFormat left, GeneratedSpeechFormat right);
+        public static implicit operator GeneratedSpeechFormat(string value);
+        public static bool operator !=(GeneratedSpeechFormat left, GeneratedSpeechFormat right);
+        public override readonly string ToString();
     }
     public readonly partial struct GeneratedSpeechVoice : IEquatable<GeneratedSpeechVoice> {
         private readonly object _dummy;
@@ -916,7 +923,7 @@ namespace OpenAI.Audio {
     }
     public class SpeechGenerationOptions {
         public GeneratedSpeechFormat? ResponseFormat { get; set; }
-        public float? Speed { get; set; }
+        public float? SpeedRatio { get; set; }
     }
     public readonly partial struct TranscribedSegment {
         private readonly object _dummy;
@@ -969,7 +976,6 @@ namespace OpenAI.Chat {
         public string ParticipantName { get; set; }
         public string Refusal { get; set; }
         public IList<ChatToolCall> ToolCalls { get; }
-        protected override void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
     public class ChatClient {
         protected ChatClient();
@@ -1049,6 +1055,23 @@ namespace OpenAI.Chat {
         public static ChatFunctionChoice Auto { get; }
         public static ChatFunctionChoice None { get; }
     }
+    public readonly partial struct ChatImageDetailLevel : IEquatable<ChatImageDetailLevel> {
+        private readonly object _dummy;
+        private readonly int _dummyPrimitive;
+        public ChatImageDetailLevel(string value);
+        public static ChatImageDetailLevel Auto { get; }
+        public static ChatImageDetailLevel High { get; }
+        public static ChatImageDetailLevel Low { get; }
+        public readonly bool Equals(ChatImageDetailLevel other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(ChatImageDetailLevel left, ChatImageDetailLevel right);
+        public static implicit operator ChatImageDetailLevel(string value);
+        public static bool operator !=(ChatImageDetailLevel left, ChatImageDetailLevel right);
+        public override readonly string ToString();
+    }
     public abstract class ChatMessage {
         protected ChatMessage();
         protected internal ChatMessage(ChatMessageRole role, IEnumerable<ChatMessageContentPart> contentParts);
@@ -1071,22 +1094,20 @@ namespace OpenAI.Chat {
         public static UserChatMessage CreateUserMessage(IEnumerable<ChatMessageContentPart> contentParts);
         public static UserChatMessage CreateUserMessage(string content);
         public static implicit operator ChatMessage(string userMessage);
-        protected abstract void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
     public class ChatMessageContentPart {
         public BinaryData ImageBytes { get; }
         public string ImageBytesMediaType { get; }
-        public ImageChatMessageContentPartDetail? ImageDetail { get; }
+        public ChatImageDetailLevel? ImageDetailLevel { get; }
         public Uri ImageUri { get; }
         public ChatMessageContentPartKind Kind { get; }
         public string Refusal { get; }
         public string Text { get; }
-        public static ChatMessageContentPart CreateImageMessageContentPart(BinaryData imageBytes, string imageBytesMediaType, ImageChatMessageContentPartDetail? imageDetail = null);
-        public static ChatMessageContentPart CreateImageMessageContentPart(Uri imageUri, ImageChatMessageContentPartDetail? imageDetail = null);
-        public static ChatMessageContentPart CreateRefusalMessageContentPart(string refusal);
-        public static ChatMessageContentPart CreateTextMessageContentPart(string text);
-        public static implicit operator ChatMessageContentPart(string content);
-        public override string ToString();
+        public static ChatMessageContentPart CreateImagePart(BinaryData imageBytes, string imageBytesMediaType, ChatImageDetailLevel? imageDetailLevel = null);
+        public static ChatMessageContentPart CreateImagePart(Uri imageUri, ChatImageDetailLevel? imageDetailLevel = null);
+        public static ChatMessageContentPart CreateRefusalPart(string refusal);
+        public static ChatMessageContentPart CreateTextPart(string text);
+        public static implicit operator ChatMessageContentPart(string text);
     }
     public readonly partial struct ChatMessageContentPartKind : IEquatable<ChatMessageContentPartKind> {
         private readonly object _dummy;
@@ -1201,24 +1222,15 @@ namespace OpenAI.Chat {
     public class FunctionChatMessage : ChatMessage {
         public FunctionChatMessage(string functionName, string content = null);
         public string FunctionName { get; }
-        protected override void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
-    public readonly partial struct ImageChatMessageContentPartDetail : IEquatable<ImageChatMessageContentPartDetail> {
-        private readonly object _dummy;
-        private readonly int _dummyPrimitive;
-        public ImageChatMessageContentPartDetail(string value);
-        public static ImageChatMessageContentPartDetail Auto { get; }
-        public static ImageChatMessageContentPartDetail High { get; }
-        public static ImageChatMessageContentPartDetail Low { get; }
-        public readonly bool Equals(ImageChatMessageContentPartDetail other);
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override readonly bool Equals(object obj);
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override readonly int GetHashCode();
-        public static bool operator ==(ImageChatMessageContentPartDetail left, ImageChatMessageContentPartDetail right);
-        public static implicit operator ImageChatMessageContentPartDetail(string value);
-        public static bool operator !=(ImageChatMessageContentPartDetail left, ImageChatMessageContentPartDetail right);
-        public override readonly string ToString();
+    public static class OpenAIChatModelFactory {
+        public static ChatCompletion ChatCompletion(string id = null, ChatFinishReason finishReason = ChatFinishReason.Stop, IEnumerable<ChatMessageContentPart> content = null, string refusal = null, IEnumerable<ChatToolCall> toolCalls = null, ChatMessageRole role = ChatMessageRole.System, ChatFunctionCall functionCall = null, IEnumerable<ChatTokenLogProbabilityInfo> contentTokenLogProbabilities = null, IEnumerable<ChatTokenLogProbabilityInfo> refusalTokenLogProbabilities = null, DateTimeOffset createdAt = default, string model = null, string systemFingerprint = null, ChatTokenUsage usage = null);
+        public static ChatTokenLogProbabilityInfo ChatTokenLogProbabilityInfo(string token = null, float logProbability = 0, IEnumerable<int> utf8ByteValues = null, IEnumerable<ChatTokenTopLogProbabilityInfo> topLogProbabilities = null);
+        public static ChatTokenTopLogProbabilityInfo ChatTokenTopLogProbabilityInfo(string token = null, float logProbability = 0, IEnumerable<int> utf8ByteValues = null);
+        public static ChatTokenUsage ChatTokenUsage(int outputTokens = 0, int inputTokens = 0, int totalTokens = 0);
+        public static StreamingChatCompletionUpdate StreamingChatCompletionUpdate(string id = null, IEnumerable<ChatMessageContentPart> contentUpdate = null, StreamingChatFunctionCallUpdate functionCallUpdate = null, IEnumerable<StreamingChatToolCallUpdate> toolCallUpdates = null, ChatMessageRole? role = null, string refusalUpdate = null, IEnumerable<ChatTokenLogProbabilityInfo> contentTokenLogProbabilities = null, IEnumerable<ChatTokenLogProbabilityInfo> refusalTokenLogProbabilities = null, ChatFinishReason? finishReason = null, DateTimeOffset createdAt = default, string model = null, string systemFingerprint = null, ChatTokenUsage usage = null);
+        public static StreamingChatFunctionCallUpdate StreamingChatFunctionCallUpdate(string functionArgumentsUpdate = null, string functionName = null);
+        public static StreamingChatToolCallUpdate StreamingChatToolCallUpdate(int index = 0, string id = null, ChatToolCallKind kind = default, string functionName = null, string functionArgumentsUpdate = null);
     }
     public class StreamingChatCompletionUpdate {
         public IReadOnlyList<ChatTokenLogProbabilityInfo> ContentTokenLogProbabilities { get; }
@@ -1251,21 +1263,18 @@ namespace OpenAI.Chat {
         public SystemChatMessage(IEnumerable<ChatMessageContentPart> contentParts);
         public SystemChatMessage(string content);
         public string ParticipantName { get; set; }
-        protected override void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
     public class ToolChatMessage : ChatMessage {
         public ToolChatMessage(string toolCallId, params ChatMessageContentPart[] contentParts);
         public ToolChatMessage(string toolCallId, IEnumerable<ChatMessageContentPart> contentParts);
         public ToolChatMessage(string toolCallId, string content);
         public string ToolCallId { get; }
-        protected override void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
     public class UserChatMessage : ChatMessage {
         public UserChatMessage(params ChatMessageContentPart[] content);
         public UserChatMessage(IEnumerable<ChatMessageContentPart> content);
         public UserChatMessage(string content);
         public string ParticipantName { get; set; }
-        protected override void WriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
     }
 }
 namespace OpenAI.Embeddings {
@@ -1437,18 +1446,17 @@ namespace OpenAI.FineTuning {
         public virtual ClientResult<FineTuningJob> CreateJob(string baseModel, string trainingFileId, FineTuningOptions options = null, CancellationToken cancellationToken = default);
         public virtual Task<ClientResult> CreateJobAsync(BinaryContent content, RequestOptions options = null);
         public virtual Task<ClientResult<FineTuningJob>> CreateJobAsync(string baseModel, string trainingFileId, FineTuningOptions options = null, CancellationToken cancellationToken = default);
-        public virtual IAsyncEnumerable<FineTuningJobEvent> GetEventsAutoPaginateAsync(string jobId, string after = null, int? limit = null, RequestOptions options = null);
-        public virtual AsyncPageCollection<FineTuningJobEvent> GetEventsPaginatedAsync(string jobId);
+        public virtual IAsyncEnumerable<FineTuningJobEvent> GetEventsAsync(string jobId, ListEventsOptions options = null);
         public virtual ClientResult GetJob(string jobId, RequestOptions options);
         public virtual Task<ClientResult> GetJobAsync(string jobId, RequestOptions options);
         public virtual Task<ClientResult<FineTuningJob>> GetJobAsync(string jobId);
         public virtual IEnumerable<ClientResult> GetJobCheckpoints(string jobId, string after, int? limit, RequestOptions options);
         public virtual IAsyncEnumerable<ClientResult> GetJobCheckpointsAsync(string jobId, string after, int? limit, RequestOptions options);
-        public virtual IEnumerable<ClientResult> GetJobEvents(string jobId, string after, int? limit, RequestOptions options);
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public virtual IAsyncEnumerable<ClientResult> GetJobEventsAsync(string jobId, string after, int? limit, RequestOptions options);
         public virtual IEnumerable<ClientResult> GetJobs(string after, int? limit, RequestOptions options);
         public virtual IAsyncEnumerable<ClientResult> GetJobsAsync(string after, int? limit, RequestOptions options);
+        public virtual IEnumerable<ClientResult> GetLimitedJobEvents(string jobId, string after, int? limit, RequestOptions options);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public virtual IAsyncEnumerable<ClientResult> GetLimitedJobEventsAsync(string jobId, ListEventsOptions options = null, RequestOptions requestoptions = null);
         public virtual Task<FineTuningJob> WaitUntilCompleted(FineTuningJob job);
     }
     public abstract class FineTuningIntegration {
@@ -1583,6 +1591,10 @@ namespace OpenAI.FineTuning {
         public HyperparameterBatchSize BatchSize { get; }
         public HyperparameterCycleCount CycleCount { get; }
         public HyperparameterLearningRate LearningRate { get; }
+    }
+    public class ListEventsOptions {
+        public string After { get; set; }
+        public int? Limit { get; set; }
     }
     public class WeightsAndBiasesIntegration : FineTuningIntegration {
         public WeightsAndBiasesIntegration();

@@ -66,8 +66,9 @@ public abstract partial class ChatMessage
     }
 
     protected internal ChatMessage(ChatMessageRole role, string content)
-        : this(role, content is null ? null : [ChatMessageContentPart.CreateTextMessageContentPart(content)])
-    { }
+        : this(role, content is null ? null : [ChatMessageContentPart.CreateTextPart(content)])
+    {
+    }
 
     /// <summary>
     /// The content associated with the message. The interpretation of this content will vary depending on the message type.

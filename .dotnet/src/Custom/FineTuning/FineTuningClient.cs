@@ -14,6 +14,7 @@ namespace OpenAI.FineTuning;
 // - Suppressed constructor that takes endpoint parameter; endpoint is now a property in the options class.
 // - Suppressed convenience methods for now.
 /// <summary> The service client for OpenAI fine-tuning operations. </summary>
+[Experimental("OPENAI001")]
 [CodeGenClient("FineTuning")]
 [CodeGenSuppress("CreateFineTuningJobAsync", typeof(FineTuningOptions))]
 [CodeGenSuppress("CreateFineTuningJob", typeof(FineTuningOptions))]
