@@ -1,7 +1,7 @@
 namespace OpenAI.FineTuning;
 
 [CodeGenModel("FineTuningJobError")]
-public partial class FineTuningJobError
+public partial class JobError
 {
 
     [CodeGenMember("Param")]

@@ -201,6 +201,7 @@ public partial class FineTuningClient
     [EditorBrowsable(EditorBrowsableState.Never)]
     public virtual IAsyncEnumerable<ClientResult> GetLimitedJobEventsAsync(string jobId, ListEventsOptions options = default, RequestOptions requestoptions = null)
     {
+        options ??= new ListEventsOptions();
 
         FineTuningJobEventsPageEnumerator enumerator = new(_pipeline, _endpoint, jobId, options.After, options.Limit, requestoptions);
         return PageCollectionHelpers.CreateAsync(enumerator);

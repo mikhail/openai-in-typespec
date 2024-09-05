@@ -91,9 +91,9 @@ namespace OpenAI
             return new HyperparameterOptions(cycleCount, batchSize, learningRate, serializedAdditionalRawData: null);
         }
 
-        public static FineTuningJobError FineTuningJobError(string code = null, string message = null, string invalidParameter = null)
+        public static JobError JobError(string code = null, string message = null, string invalidParameter = null)
         {
-            return new FineTuningJobError(code, message, invalidParameter, serializedAdditionalRawData: null);
+            return new JobError(code, message, invalidParameter, serializedAdditionalRawData: null);
         }
 
         public static FineTuningJobEvent FineTuningJobEvent(string id = null, DateTimeOffset createdAt = default, FineTuningJobEventLevel level = default, string message = null, FineTuningJobEventObject @object = default)

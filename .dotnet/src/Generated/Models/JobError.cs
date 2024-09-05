@@ -7,10 +7,10 @@ using System.Collections.Generic;
 
 namespace OpenAI.FineTuning
 {
-    public partial class FineTuningJobError
+    public partial class JobError
     {
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
-        internal FineTuningJobError(string code, string message, string invalidParameter)
+        internal JobError(string code, string message, string invalidParameter)
         {
             Argument.AssertNotNull(code, nameof(code));
             Argument.AssertNotNull(message, nameof(message));
@@ -20,7 +20,7 @@ namespace OpenAI.FineTuning
             InvalidParameter = invalidParameter;
         }
 
-        internal FineTuningJobError(string code, string message, string invalidParameter, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal JobError(string code, string message, string invalidParameter, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Code = code;
             Message = message;
@@ -28,7 +28,7 @@ namespace OpenAI.FineTuning
             SerializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        internal FineTuningJobError()
+        internal JobError()
         {
         }
 

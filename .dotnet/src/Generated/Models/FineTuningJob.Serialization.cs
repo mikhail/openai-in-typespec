@@ -222,7 +222,7 @@ namespace OpenAI.FineTuning
             string userProvidedSuffix = default;
             string id = default;
             DateTimeOffset createdAt = default;
-            FineTuningJobError error = default;
+            JobError error = default;
             string fineTunedModel = default;
             DateTimeOffset? finishedAt = default;
             FineTuningJobHyperparameters hyperparameters = default;
@@ -268,7 +268,7 @@ namespace OpenAI.FineTuning
                         error = null;
                         continue;
                     }
-                    error = FineTuningJobError.DeserializeFineTuningJobError(property.Value, options);
+                    error = JobError.DeserializeJobError(property.Value, options);
                     continue;
                 }
                 if (property.NameEquals("fine_tuned_model"u8))
