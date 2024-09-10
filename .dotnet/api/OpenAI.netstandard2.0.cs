@@ -1,20 +1,4 @@
 namespace OpenAI {
-    public readonly partial struct ListOrder : IEquatable<ListOrder> {
-        private readonly object _dummy;
-        private readonly int _dummyPrimitive;
-        public ListOrder(string value);
-        public static ListOrder NewestFirst { get; }
-        public static ListOrder OldestFirst { get; }
-        public readonly bool Equals(ListOrder other);
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override readonly bool Equals(object obj);
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override readonly int GetHashCode();
-        public static bool operator ==(ListOrder left, ListOrder right);
-        public static implicit operator ListOrder(string value);
-        public static bool operator !=(ListOrder left, ListOrder right);
-        public override readonly string ToString();
-    }
     public class OpenAIClient {
         protected OpenAIClient();
         public OpenAIClient(ApiKeyCredential credential, OpenAIClientOptions options);
@@ -256,8 +240,24 @@ namespace OpenAI.Assistants {
     public class AssistantCollectionOptions {
         public string AfterId { get; set; }
         public string BeforeId { get; set; }
-        public ListOrder? Order { get; set; }
-        public int? PageSize { get; set; }
+        public AssistantCollectionOrder? Order { get; set; }
+        public int? PageSizeLimit { get; set; }
+    }
+    public readonly partial struct AssistantCollectionOrder : IEquatable<AssistantCollectionOrder> {
+        private readonly object _dummy;
+        private readonly int _dummyPrimitive;
+        public AssistantCollectionOrder(string value);
+        public static AssistantCollectionOrder Ascending { get; }
+        public static AssistantCollectionOrder Descending { get; }
+        public readonly bool Equals(AssistantCollectionOrder other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(AssistantCollectionOrder left, AssistantCollectionOrder right);
+        public static implicit operator AssistantCollectionOrder(string value);
+        public static bool operator !=(AssistantCollectionOrder left, AssistantCollectionOrder right);
+        public override readonly string ToString();
     }
     public class AssistantCreationOptions {
         public string Description { get; set; }
@@ -335,8 +335,24 @@ namespace OpenAI.Assistants {
     public class MessageCollectionOptions {
         public string AfterId { get; set; }
         public string BeforeId { get; set; }
-        public ListOrder? Order { get; set; }
-        public int? PageSize { get; set; }
+        public MessageCollectionOrder? Order { get; set; }
+        public int? PageSizeLimit { get; set; }
+    }
+    public readonly partial struct MessageCollectionOrder : IEquatable<MessageCollectionOrder> {
+        private readonly object _dummy;
+        private readonly int _dummyPrimitive;
+        public MessageCollectionOrder(string value);
+        public static MessageCollectionOrder Ascending { get; }
+        public static MessageCollectionOrder Descending { get; }
+        public readonly bool Equals(MessageCollectionOrder other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(MessageCollectionOrder left, MessageCollectionOrder right);
+        public static implicit operator MessageCollectionOrder(string value);
+        public static bool operator !=(MessageCollectionOrder left, MessageCollectionOrder right);
+        public override readonly string ToString();
     }
     public abstract class MessageContent {
         public MessageImageDetail? ImageDetail { get; }
@@ -436,8 +452,24 @@ namespace OpenAI.Assistants {
     public class RunCollectionOptions {
         public string AfterId { get; set; }
         public string BeforeId { get; set; }
-        public ListOrder? Order { get; set; }
-        public int? PageSize { get; set; }
+        public RunCollectionOrder? Order { get; set; }
+        public int? PageSizeLimit { get; set; }
+    }
+    public readonly partial struct RunCollectionOrder : IEquatable<RunCollectionOrder> {
+        private readonly object _dummy;
+        private readonly int _dummyPrimitive;
+        public RunCollectionOrder(string value);
+        public static RunCollectionOrder Ascending { get; }
+        public static RunCollectionOrder Descending { get; }
+        public readonly bool Equals(RunCollectionOrder other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(RunCollectionOrder left, RunCollectionOrder right);
+        public static implicit operator RunCollectionOrder(string value);
+        public static bool operator !=(RunCollectionOrder left, RunCollectionOrder right);
+        public override readonly string ToString();
     }
     public class RunCreationOptions {
         public string AdditionalInstructions { get; set; }
@@ -546,8 +578,24 @@ namespace OpenAI.Assistants {
     public class RunStepCollectionOptions {
         public string AfterId { get; set; }
         public string BeforeId { get; set; }
-        public ListOrder? Order { get; set; }
-        public int? PageSize { get; set; }
+        public RunStepCollectionOrder? Order { get; set; }
+        public int? PageSizeLimit { get; set; }
+    }
+    public readonly partial struct RunStepCollectionOrder : IEquatable<RunStepCollectionOrder> {
+        private readonly object _dummy;
+        private readonly int _dummyPrimitive;
+        public RunStepCollectionOrder(string value);
+        public static RunStepCollectionOrder Ascending { get; }
+        public static RunStepCollectionOrder Descending { get; }
+        public readonly bool Equals(RunStepCollectionOrder other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(RunStepCollectionOrder left, RunStepCollectionOrder right);
+        public static implicit operator RunStepCollectionOrder(string value);
+        public static bool operator !=(RunStepCollectionOrder left, RunStepCollectionOrder right);
+        public override readonly string ToString();
     }
     public abstract class RunStepDetails {
         public string CreatedMessageId { get; }
@@ -1073,9 +1121,6 @@ namespace OpenAI.Chat {
         public override readonly string ToString();
     }
     public abstract class ChatMessage {
-        protected ChatMessage();
-        protected internal ChatMessage(ChatMessageRole role, IEnumerable<ChatMessageContentPart> contentParts);
-        protected internal ChatMessage(ChatMessageRole role, string content);
         public IList<ChatMessageContentPart> Content { get; }
         public static AssistantChatMessage CreateAssistantMessage(ChatCompletion chatCompletion);
         public static AssistantChatMessage CreateAssistantMessage(ChatFunctionCall functionCall, string content = null);
@@ -1083,6 +1128,7 @@ namespace OpenAI.Chat {
         public static AssistantChatMessage CreateAssistantMessage(IEnumerable<ChatMessageContentPart> contentParts);
         public static AssistantChatMessage CreateAssistantMessage(IEnumerable<ChatToolCall> toolCalls, string content = null);
         public static AssistantChatMessage CreateAssistantMessage(string content);
+        [Obsolete("This field is marked as deprecated.")]
         public static FunctionChatMessage CreateFunctionMessage(string functionName, string content);
         public static SystemChatMessage CreateSystemMessage(params ChatMessageContentPart[] contentParts);
         public static SystemChatMessage CreateSystemMessage(IEnumerable<ChatMessageContentPart> contentParts);
@@ -1133,23 +1179,10 @@ namespace OpenAI.Chat {
         Tool = 3,
         Function = 4
     }
-    public abstract class ChatResponseFormat : IEquatable<ChatResponseFormat> {
-        public static ChatResponseFormat JsonObject { get; }
-        public static ChatResponseFormat Text { get; }
+    public abstract class ChatResponseFormat {
         public static ChatResponseFormat CreateJsonObjectFormat();
-        public static ChatResponseFormat CreateJsonSchemaFormat(string name, BinaryData jsonSchema, string description = null, bool? strictSchemaEnabled = null);
+        public static ChatResponseFormat CreateJsonSchemaFormat(string jsonSchemaFormatName, BinaryData jsonSchema, string jsonSchemaFormatDescription = null, bool? jsonSchemaIsStrict = null);
         public static ChatResponseFormat CreateTextFormat();
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object obj);
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode();
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static bool operator ==(ChatResponseFormat first, ChatResponseFormat second);
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static bool operator !=(ChatResponseFormat first, ChatResponseFormat second);
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        bool IEquatable<ChatResponseFormat>.Equals(ChatResponseFormat other);
-        public override string ToString();
     }
     public class ChatTokenLogProbabilityInfo {
         public float LogProbability { get; }
@@ -1171,9 +1204,9 @@ namespace OpenAI.Chat {
         public string FunctionDescription { get; }
         public string FunctionName { get; }
         public BinaryData FunctionParameters { get; }
+        public bool? FunctionSchemaIsStrict { get; }
         public ChatToolKind Kind { get; }
-        public bool? StrictParameterSchemaEnabled { get; }
-        public static ChatTool CreateFunctionTool(string functionName, string functionDescription = null, BinaryData functionParameters = null, bool? strictParameterSchemaEnabled = null);
+        public static ChatTool CreateFunctionTool(string functionName, string functionDescription = null, BinaryData functionParameters = null, bool? functionSchemaIsStrict = null);
     }
     public class ChatToolCall {
         public string FunctionArguments { get; }
@@ -1198,10 +1231,10 @@ namespace OpenAI.Chat {
         public override readonly string ToString();
     }
     public class ChatToolChoice {
-        public ChatToolChoice(ChatTool tool);
-        public static ChatToolChoice Auto { get; }
-        public static ChatToolChoice None { get; }
-        public static ChatToolChoice Required { get; }
+        public static ChatToolChoice CreateAutoChoice();
+        public static ChatToolChoice CreateFunctionChoice(string functionName);
+        public static ChatToolChoice CreateNoneChoice();
+        public static ChatToolChoice CreateRequiredChoice();
     }
     public readonly partial struct ChatToolKind : IEquatable<ChatToolKind> {
         private readonly object _dummy;
@@ -2022,8 +2055,24 @@ namespace OpenAI.VectorStores {
     public class VectorStoreCollectionOptions {
         public string AfterId { get; set; }
         public string BeforeId { get; set; }
-        public ListOrder? Order { get; set; }
-        public int? PageSize { get; set; }
+        public VectorStoreCollectionOrder? Order { get; set; }
+        public int? PageSizeLimit { get; set; }
+    }
+    public readonly partial struct VectorStoreCollectionOrder : IEquatable<VectorStoreCollectionOrder> {
+        private readonly object _dummy;
+        private readonly int _dummyPrimitive;
+        public VectorStoreCollectionOrder(string value);
+        public static VectorStoreCollectionOrder Ascending { get; }
+        public static VectorStoreCollectionOrder Descending { get; }
+        public readonly bool Equals(VectorStoreCollectionOrder other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(VectorStoreCollectionOrder left, VectorStoreCollectionOrder right);
+        public static implicit operator VectorStoreCollectionOrder(string value);
+        public static bool operator !=(VectorStoreCollectionOrder left, VectorStoreCollectionOrder right);
+        public override readonly string ToString();
     }
     public class VectorStoreCreationOptions {
         public FileChunkingStrategy ChunkingStrategy { get; set; }
@@ -2055,8 +2104,24 @@ namespace OpenAI.VectorStores {
         public string AfterId { get; set; }
         public string BeforeId { get; set; }
         public VectorStoreFileStatusFilter? Filter { get; set; }
-        public ListOrder? Order { get; set; }
-        public int? PageSize { get; set; }
+        public VectorStoreFileAssociationCollectionOrder? Order { get; set; }
+        public int? PageSizeLimit { get; set; }
+    }
+    public readonly partial struct VectorStoreFileAssociationCollectionOrder : IEquatable<VectorStoreFileAssociationCollectionOrder> {
+        private readonly object _dummy;
+        private readonly int _dummyPrimitive;
+        public VectorStoreFileAssociationCollectionOrder(string value);
+        public static VectorStoreFileAssociationCollectionOrder Ascending { get; }
+        public static VectorStoreFileAssociationCollectionOrder Descending { get; }
+        public readonly bool Equals(VectorStoreFileAssociationCollectionOrder other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(VectorStoreFileAssociationCollectionOrder left, VectorStoreFileAssociationCollectionOrder right);
+        public static implicit operator VectorStoreFileAssociationCollectionOrder(string value);
+        public static bool operator !=(VectorStoreFileAssociationCollectionOrder left, VectorStoreFileAssociationCollectionOrder right);
+        public override readonly string ToString();
     }
     public class VectorStoreFileAssociationError {
         public VectorStoreFileAssociationErrorCode Code { get; }
