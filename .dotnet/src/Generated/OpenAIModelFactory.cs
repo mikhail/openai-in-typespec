@@ -86,11 +86,6 @@ namespace OpenAI
             return new EmbeddingTokenUsage(inputTokens, totalTokens, serializedAdditionalRawData: null);
         }
 
-        public static HyperparameterOptions HyperparameterOptions(HyperparameterCycleCount cycleCount = default, HyperparameterBatchSize batchSize = default, HyperparameterLearningRate learningRate = default)
-        {
-            return new HyperparameterOptions(cycleCount, batchSize, learningRate, serializedAdditionalRawData: null);
-        }
-
         public static JobError JobError(string code = null, string message = null, string invalidParameter = null)
         {
             return new JobError(code, message, invalidParameter, serializedAdditionalRawData: null);

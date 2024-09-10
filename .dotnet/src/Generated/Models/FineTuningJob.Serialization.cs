@@ -293,6 +293,10 @@ namespace OpenAI.FineTuning
                 }
                 if (property.NameEquals("hyperparameters"u8))
                 {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
                     hyperparameters = FineTuningJobHyperparameters.DeserializeFineTuningJobHyperparameters(property.Value, options);
                     continue;
                 }

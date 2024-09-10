@@ -11,7 +11,7 @@ namespace OpenAI.FineTuning
     public partial class FineTuningJob
     {
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
-        internal FineTuningJob(string jobId, DateTimeOffset createdAt, JobError error, string fineTunedModel, DateTimeOffset? finishedAt, FineTuningJobHyperparameters hyperparameters, string baseModel, string organizationId, IEnumerable<string> resultFileIds, FineTuningJobStatus status, int? billableTrainedTokens, string trainingFileId, string validationFileId, int seed)
+        internal FineTuningJob(string jobId, DateTimeOffset createdAt, JobError error, string fineTunedModel, DateTimeOffset? finishedAt, string baseModel, string organizationId, IEnumerable<string> resultFileIds, FineTuningJobStatus status, int? billableTrainedTokens, string trainingFileId, string validationFileId, int seed)
         {
             Argument.AssertNotNull(jobId, nameof(jobId));
             Argument.AssertNotNull(baseModel, nameof(baseModel));
@@ -24,7 +24,6 @@ namespace OpenAI.FineTuning
             Error = error;
             FineTunedModel = fineTunedModel;
             FinishedAt = finishedAt;
-            Hyperparameters = hyperparameters;
             BaseModel = baseModel;
             OrganizationId = organizationId;
             ResultFileIds = resultFileIds.ToList();

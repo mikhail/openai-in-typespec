@@ -60,7 +60,7 @@ public partial class BatchTests : SyncAsyncTestBase
     public async Task ListBatchesProtocolAsync()
     {
         BatchClient client = GetTestClient();
-        IAsyncEnumerable<ClientResult> pageResults = client.GetBatchesAsync(after: null, limit: null, options: null);
+        IAsyncEnumerable<ClientResult> pageResults = client.GetBatchesAsync(after: null, limit: 1, options: null);
 
         int pageCount = 0;
         await foreach (ClientResult pageResult in pageResults)
@@ -87,7 +87,7 @@ public partial class BatchTests : SyncAsyncTestBase
             //Assert.That(dynamicResult.data[0].createdAt, Is.GreaterThan(new DateTimeOffset(2024, 01, 01, 0, 0, 0, TimeSpan.Zero)));
         }
 
-        Assert.GreaterOrEqual(pageCount, 1);
+        Assert.GreaterOrEqual(pageCount, 10);
     }
 
     [Test]

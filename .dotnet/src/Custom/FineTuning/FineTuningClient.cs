@@ -3,6 +3,7 @@ using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -175,9 +176,16 @@ public partial class FineTuningClient
     {
         options ??= new ListEventsOptions();
 
-        IAsyncEnumerable<ClientResult> result = GetLimitedJobEventsAsync(jobId, options);
+        IAsyncEnumerable<ClientResult> result = GetPaginatedJobEventsAsync(jobId, options);
         AsyncPageCollection<FineTuningJobEvent> pagesOfEvents = (AsyncPageCollection<FineTuningJobEvent>)result;
 
         await foreach (var value in pagesOfEvents.GetAllValuesAsync()) yield return value;
     }
+
+    //public virtual async IAsyncEnumerable<FineTuningJob> GetLimitedJobsAsync(int limit, RequestOptions options = null)
+    //{
+    //    var results = (IAsyncEnumerable<FineTuningJob>) GetJobsAsync(null, limit, options);
+        
+    //    await foreach (var job in results) yield return job;
+    //}
 }

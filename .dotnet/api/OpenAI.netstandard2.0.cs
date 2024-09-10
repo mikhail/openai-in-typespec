@@ -1446,46 +1446,39 @@ namespace OpenAI.FineTuning {
         public virtual ClientResult<FineTuningJob> CreateJob(string baseModel, string trainingFileId, FineTuningOptions options = null, CancellationToken cancellationToken = default);
         public virtual Task<ClientResult> CreateJobAsync(BinaryContent content, RequestOptions options = null);
         public virtual Task<ClientResult<FineTuningJob>> CreateJobAsync(string baseModel, string trainingFileId, FineTuningOptions options = null, CancellationToken cancellationToken = default);
-        public virtual IAsyncEnumerable<FineTuningJobEvent> GetEventsAsync(string jobId, ListEventsOptions options = null);
         public virtual ClientResult GetJob(string jobId, RequestOptions options);
         public virtual Task<ClientResult> GetJobAsync(string jobId, RequestOptions options);
         public virtual Task<ClientResult<FineTuningJob>> GetJobAsync(string jobId);
         public virtual IEnumerable<ClientResult> GetJobCheckpoints(string jobId, string after, int? limit, RequestOptions options);
         public virtual IAsyncEnumerable<ClientResult> GetJobCheckpointsAsync(string jobId, string after, int? limit, RequestOptions options);
+        public virtual IAsyncEnumerable<FineTuningJobEvent> GetJobEventsAsync(string jobId, ListEventsOptions options = null);
         public virtual IEnumerable<ClientResult> GetJobs(string after, int? limit, RequestOptions options);
         public virtual IAsyncEnumerable<ClientResult> GetJobsAsync(string after, int? limit, RequestOptions options);
         public virtual IEnumerable<ClientResult> GetLimitedJobEvents(string jobId, string after, int? limit, RequestOptions options);
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public virtual IAsyncEnumerable<ClientResult> GetLimitedJobEventsAsync(string jobId, ListEventsOptions options = null, RequestOptions requestoptions = null);
+        public virtual IAsyncEnumerable<ClientResult> GetPaginatedJobEventsAsync(string jobId, ListEventsOptions options = null, CancellationToken cancellationToken = default);
         public virtual Task<FineTuningJob> WaitUntilCompleted(FineTuningJob job);
     }
     public abstract class FineTuningIntegration {
-        public static FineTuningIntegration CreateWeightsAndBiasesIntegration(string projectName, string displayName = null, string entityName = null, IEnumerable<string> tags = null);
     }
     public class FineTuningJob {
         public string BaseModel { get; }
         public int? BillableTrainedTokens { get; }
         public DateTimeOffset CreatedAt { get; }
-        public FineTuningJobError Error { get; }
+        public JobError Error { get; }
         public DateTimeOffset? EstimatedFinishAt { get; }
         public string FineTunedModel { get; }
         public DateTimeOffset? FinishedAt { get; }
-        public FineTuningJobHyperparameters Hyperparameters { get; set; }
-        public string Id { get; }
+        public FineTuningJobHyperparameters Hyperparameters { get; }
         public IReadOnlyList<FineTuningIntegration> Integrations { get; }
+        public string JobId { get; }
         public string OrganizationId { get; }
-        public Uri PlaygroundUri { get; }
         public IReadOnlyList<string> ResultFileIds { get; }
         public int Seed { get; }
         public FineTuningJobStatus Status { get; }
         public string TrainingFileId { get; }
         public string UserProvidedSuffix { get; }
         public string ValidationFileId { get; }
-    }
-    public class FineTuningJobError {
-        public string Code { get; }
-        public string InvalidParameter { get; }
-        public string Message { get; }
     }
     public class FineTuningJobEvent {
         public string InternalFineTuningJobEventLevel;
@@ -1586,15 +1579,18 @@ namespace OpenAI.FineTuning {
         public override readonly string ToString();
     }
     public class HyperparameterOptions {
-        public HyperparameterOptions();
-        public HyperparameterOptions(HyperparameterCycleCount cycleCount = default, HyperparameterBatchSize batchSize = default, HyperparameterLearningRate learningRate = default, IDictionary<string, BinaryData> serializedAdditionalRawData = null);
-        public HyperparameterBatchSize BatchSize { get; }
-        public HyperparameterCycleCount CycleCount { get; }
-        public HyperparameterLearningRate LearningRate { get; }
+        public HyperparameterBatchSize BatchSize { get; set; }
+        public HyperparameterCycleCount CycleCount { get; set; }
+        public HyperparameterLearningRate LearningRate { get; set; }
+    }
+    public class JobError {
+        public string Code { get; }
+        public string InvalidParameter { get; }
+        public string Message { get; }
     }
     public class ListEventsOptions {
         public string After { get; set; }
-        public int? Limit { get; set; }
+        public int? PageSize { get; set; }
     }
     public class WeightsAndBiasesIntegration : FineTuningIntegration {
         public WeightsAndBiasesIntegration();

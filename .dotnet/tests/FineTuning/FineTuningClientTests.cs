@@ -6,8 +6,11 @@ using OpenAI.Models;
 using System;
 using System.ClientModel;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static OpenAI.Tests.TestHelpers;
 
@@ -95,7 +98,8 @@ public class FineTuningClientTests
 
         var options = new FineTuningOptions()
         {
-            Hyperparameters = new() {
+            Hyperparameters = new()
+            {
                 CycleCount = 1,
                 BatchSize = 2,
                 LearningRate = 3
@@ -260,7 +264,7 @@ public class FineTuningClientTests
         FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
         client.CancelJob(job.JobId);
 
-        IAsyncEnumerable<ClientResult> result = client.GetLimitedJobEventsAsync(job.JobId);
+        IAsyncEnumerable<ClientResult> result = client.GetPaginatedJobEventsAsync(job.JobId);
         AsyncPageCollection<FineTuningJobEvent> pagesOfEvents = (AsyncPageCollection<FineTuningJobEvent>)result;
 
         await foreach (var page in pagesOfEvents)
@@ -284,7 +288,7 @@ public class FineTuningClientTests
 
         ListEventsOptions options = new()
         {
-            Limit = 1
+            PageSize = 1
         };
         var events = client.GetJobEventsAsync(job.JobId, options);
 
@@ -302,11 +306,24 @@ public class FineTuningClientTests
     // Test getting all the jobs
     [Test]
     [Parallelizable]
-    public void GetJobs()
+    public async Task GetJobs()
     {
-        //var jobs = client.GetJobs();
+        var jobs = client.GetJobsAsync(null, limit: 10, null);
 
-        //Assert.GreaterOrEqual(jobs.Count, 0);
+        AsyncPageCollection<FineTuningJob> pages = (AsyncPageCollection<FineTuningJob>) jobs;
+
+        var counter = 0;
+        await foreach (var pageResult in pages)
+        {
+            foreach (var job in pageResult.Values)
+            {
+                Assert.IsTrue(job.JobId.StartsWith("ftjob"));
+                counter++;
+            }
+            break; // pages will auto resolve forever, so break early for test purposes.
+        }
+
+        Assert.GreaterOrEqual(counter, 1);
     }
 
     private static FineTuningClient GetTestClient() => GetTestClient<FineTuningClient>(TestScenario.FineTuning);

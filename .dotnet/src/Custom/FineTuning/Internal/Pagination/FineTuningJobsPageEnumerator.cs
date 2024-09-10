@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OpenAI.FineTuning;
 
-internal partial class FineTuningJobsPageEnumerator : PageResultEnumerator
+internal partial class FineTuningJobsPageEnumerator : PageEnumerator<FineTuningJob>
 {
     private readonly ClientPipeline _pipeline;
     private readonly Uri _endpoint;
@@ -77,6 +77,19 @@ internal partial class FineTuningJobsPageEnumerator : PageResultEnumerator
         bool hasMore = doc.RootElement.GetProperty("has_more"u8).GetBoolean();
 
         return hasMore;
+    }
+
+    // override GetPageFromResult
+    public override PageResult<FineTuningJob> GetPageFromResult(ClientResult result)
+    {
+        PipelineResponse response = result.GetRawResponse();
+
+        InternalListPaginatedFineTuningJobsResponse events = ModelReaderWriter.Read<InternalListPaginatedFineTuningJobsResponse>(response.Content)!;
+
+        InternalFineTuningJobsPageToken pageToken = InternalFineTuningJobsPageToken.FromResponse(response);
+        InternalFineTuningJobsPageToken? nextPageToken = pageToken.GetNextPageToken(events.HasMore, events.Data.Last().JobId);
+
+        return PageResult<FineTuningJob>.Create(events.Data, pageToken, nextPageToken, response);
     }
 
     internal virtual async Task<ClientResult> GetJobsAsync(string after, int? limit, RequestOptions options)

@@ -5900,7 +5900,6 @@ components:
         - error
         - fine_tuned_model
         - finished_at
-        - hyperparameters
         - model
         - object
         - organization_id
@@ -6146,6 +6145,14 @@ components:
         $ref: '#/components/schemas/FineTuningIntegration'
       maxItems: 5
       x-oaiExpandable: true
+    FineTuningJobsPageToken:
+      type: object
+      properties:
+        limit:
+          type: integer
+          format: int32
+        after:
+          type: string
     FinetuneChatRequestInput:
       type: object
       properties:

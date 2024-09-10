@@ -14,5 +14,5 @@ public class ListEventsOptions
     public string After { get; set; }
 
     [CodeGenMember("Limit")]
-    public int? Limit { get; set; }
+    public int? PageSize { get; set; }
 }

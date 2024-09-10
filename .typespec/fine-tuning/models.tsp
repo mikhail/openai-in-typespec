@@ -148,7 +148,7 @@ model FineTuningJob {
 
   // Tool customization: reflect observed wire truth (learning_rate_multiplier, n_epochs) for hyperparameters in ft responses
   /** The hyperparameters used for the fine-tuning job. See the [fine-tuning guide](/docs/guides/fine-tuning) for more details. */
-  hyperparameters: FineTuningJobHyperparameters;
+  hyperparameters?: FineTuningJobHyperparameters;
 
   /** The base model that is being fine-tuned. */
   `model`: string;

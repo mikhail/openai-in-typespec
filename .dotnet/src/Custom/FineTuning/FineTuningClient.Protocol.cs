@@ -3,6 +3,7 @@ using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OpenAI.FineTuning;
@@ -84,6 +85,7 @@ public partial class FineTuningClient
         FineTuningJobsPageEnumerator enumerator = new FineTuningJobsPageEnumerator(_pipeline, _endpoint, after, limit, options);
         return PageCollectionHelpers.CreateAsync(enumerator);
     }
+
 
     // CUSTOM:
     // - Renamed.
@@ -199,11 +201,12 @@ public partial class FineTuningClient
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public virtual IAsyncEnumerable<ClientResult> GetLimitedJobEventsAsync(string jobId, ListEventsOptions options = default, RequestOptions requestoptions = null)
+    
+    public virtual IAsyncEnumerable<ClientResult> GetPaginatedJobEventsAsync(string jobId, ListEventsOptions options = default, CancellationToken cancellationToken = default)
     {
         options ??= new ListEventsOptions();
 
-        FineTuningJobEventsPageEnumerator enumerator = new(_pipeline, _endpoint, jobId, options.After, options.Limit, requestoptions);
+        FineTuningJobEventsPageEnumerator enumerator = new(_pipeline, _endpoint, jobId, options.After, options.PageSize, cancellationToken.ToRequestOptions());
         return PageCollectionHelpers.CreateAsync(enumerator);
     }
 
