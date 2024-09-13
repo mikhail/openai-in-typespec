@@ -10,8 +10,9 @@ namespace OpenAI.FineTuning;
 public partial class FineTuningOptions
 {
 
-    [CodeGenMember("Model")]
+    [CodeGenMember("CreateFineTuningJobRequestModel")]
     internal CreateFineTuningJobRequestModel Model { get; set; }
+
     [CodeGenMember("TrainingFile")]
     internal string TrainingFile { get; set; }
 

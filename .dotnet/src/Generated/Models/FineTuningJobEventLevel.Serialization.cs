@@ -4,7 +4,7 @@
 
 using System;
 
-namespace OpenAI.Models
+namespace OpenAI.FineTuning
 {
     internal static partial class FineTuningJobEventLevelExtensions
     {

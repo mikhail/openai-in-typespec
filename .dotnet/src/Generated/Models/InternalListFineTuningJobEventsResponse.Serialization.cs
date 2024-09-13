@@ -7,7 +7,6 @@ using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using OpenAI.Models;
 
 namespace OpenAI.FineTuning
 {
@@ -85,7 +84,7 @@ namespace OpenAI.FineTuning
                 return null;
             }
             IReadOnlyList<FineTuningJobEvent> data = default;
-            ListFineTuningJobEventsResponseObject @object = default;
+            InternalListFineTuningJobEventsResponseObject @object = default;
             bool hasMore = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
@@ -103,7 +102,7 @@ namespace OpenAI.FineTuning
                 }
                 if (property.NameEquals("object"u8))
                 {
-                    @object = new ListFineTuningJobEventsResponseObject(property.Value.GetString());
+                    @object = new InternalListFineTuningJobEventsResponseObject(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("has_more"u8))

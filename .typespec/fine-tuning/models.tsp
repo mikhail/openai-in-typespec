@@ -92,6 +92,7 @@ model ListPaginatedFineTuningJobsResponse {
   object: "list";
 }
 
+// Tool customization: Include spec-omitted 'has_more' property
 model ListFineTuningJobEventsResponse {
   data: FineTuningJobEvent[];
   object: "list";

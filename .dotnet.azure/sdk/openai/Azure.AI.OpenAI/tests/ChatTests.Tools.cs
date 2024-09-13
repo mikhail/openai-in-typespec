@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Azure.AI.OpenAI.Chat;
+using Azure.AI.OpenAI.Images;
 using OpenAI.Chat;
 using OpenAI.TestFramework;
 
@@ -20,9 +22,8 @@ namespace Azure.AI.OpenAI.Tests
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
 
-        private const string TOOL_TEMPERATURE_NAME = "get_future_temperature";
         private static readonly ChatTool TOOL_TEMPERATURE = ChatTool.CreateFunctionTool(
-            TOOL_TEMPERATURE_NAME,
+            "get_future_temperature",
             "requests the anticipated future temperature at a provided location to help inform advice about topics like choice of attire",
             BinaryData.FromString(
             """
@@ -75,7 +76,7 @@ namespace Azure.AI.OpenAI.Tests
                 {
                     ToolChoiceTestType.None => ChatToolChoice.CreateNoneChoice(),
                     ToolChoiceTestType.Auto => ChatToolChoice.CreateAutoChoice(),
-                    ToolChoiceTestType.Tool => ChatToolChoice.CreateFunctionChoice(TOOL_TEMPERATURE_NAME),
+                    ToolChoiceTestType.Tool => ChatToolChoice.CreateFunctionChoice(TOOL_TEMPERATURE.FunctionName),
                     ToolChoiceTestType.Required => ChatToolChoice.CreateRequiredChoice(),
                     _ => throw new NotImplementedException(),
                 },
@@ -90,7 +91,7 @@ namespace Azure.AI.OpenAI.Tests
             Assert.IsNotNull(completion);
             Assert.That(completion.Id, Is.Not.Null.Or.Empty);
 
-            ContentFilterResultForPrompt filter = completion.GetContentFilterResultForPrompt();
+            RequestContentFilterResult filter = completion.GetRequestContentFilterResult();
             Assert.IsNotNull(filter);
             Assert.That(filter.SelfHarm, Is.Not.Null);
             Assert.That(filter.SelfHarm.Filtered, Is.False);
@@ -130,7 +131,7 @@ namespace Azure.AI.OpenAI.Tests
             ChatToolCall toolCall = completion.ToolCalls[0];
             Assert.That(toolCall.Id, Is.Not.Null.Or.Empty);
             Assert.That(toolCall.Kind, Is.EqualTo(ChatToolCallKind.Function));
-            Assert.That(toolCall.FunctionName, Is.EqualTo(TOOL_TEMPERATURE_NAME));
+            Assert.That(toolCall.FunctionName, Is.EqualTo(TOOL_TEMPERATURE.FunctionName));
             Assert.That(toolCall.FunctionArguments, Is.Not.Null);
             var parsedArgs = JsonSerializer.Deserialize<TemperatureFunctionRequestArguments>(toolCall.FunctionArguments, SERIALIZER_OPTIONS)!;
             Assert.That(parsedArgs, Is.Not.Null);
@@ -155,13 +156,13 @@ namespace Azure.AI.OpenAI.Tests
             Assert.That(completion, Is.Not.Null);
             Assert.That(completion.FinishReason, Is.EqualTo(ChatFinishReason.Stop));
 
-            ContentFilterResultForPrompt promptFilter = completion.GetContentFilterResultForPrompt();
+            RequestContentFilterResult promptFilter = completion.GetRequestContentFilterResult();
             Assert.That(promptFilter, Is.Not.Null);
             Assert.That(promptFilter.Hate, Is.Not.Null);
             Assert.That(promptFilter.Hate.Severity, Is.EqualTo(ContentFilterSeverity.Safe));
             Assert.That(promptFilter.Hate.Filtered, Is.False);
 
-            ContentFilterResultForResponse responseFilter = completion.GetContentFilterResultForResponse();
+            ResponseContentFilterResult responseFilter = completion.GetResponseContentFilterResult();
             Assert.That(responseFilter, Is.Not.Null);
             Assert.That(responseFilter.Hate, Is.Not.Null);
             Assert.That(responseFilter.Hate.Severity, Is.EqualTo(ContentFilterSeverity.Safe));
@@ -177,7 +178,7 @@ namespace Azure.AI.OpenAI.Tests
         [TestCase(ToolChoiceTestType.None)]
         [TestCase(ToolChoiceTestType.Auto)]
         [TestCase(ToolChoiceTestType.Tool)]
-        [TestCase(ToolChoiceTestType.Required, Ignore = "This seems to be considered invalid")]
+        [TestCase(ToolChoiceTestType.Required)]
         public async Task SimpleToolWorksStreaming(ToolChoiceTestType toolChoice)
         {
             StringBuilder content = new();
@@ -200,7 +201,7 @@ namespace Azure.AI.OpenAI.Tests
                 {
                     ToolChoiceTestType.None => ChatToolChoice.CreateNoneChoice(),
                     ToolChoiceTestType.Auto => ChatToolChoice.CreateAutoChoice(),
-                    ToolChoiceTestType.Tool => ChatToolChoice.CreateFunctionChoice(TOOL_TEMPERATURE_NAME),
+                    ToolChoiceTestType.Tool => ChatToolChoice.CreateFunctionChoice(TOOL_TEMPERATURE.FunctionName),
                     ToolChoiceTestType.Required => ChatToolChoice.CreateRequiredChoice(),
                     _ => throw new NotImplementedException(),
                 },
@@ -223,7 +224,7 @@ namespace Azure.AI.OpenAI.Tests
                     Assert.That(toolUpdate.Index, Is.EqualTo(0));
                     Assert.That(toolUpdate.Id, Is.Null.Or.Not.Empty);
                     toolId ??= toolUpdate.Id;
-                    Assert.That(toolUpdate.FunctionName, Is.Null.Or.EqualTo(TOOL_TEMPERATURE_NAME));
+                    Assert.That(toolUpdate.FunctionName, Is.Null.Or.EqualTo(TOOL_TEMPERATURE.FunctionName));
                     toolName ??= toolUpdate.FunctionName;
 
                     Assert.That(toolUpdate.FunctionArgumentsUpdate, Is.Not.Null);
@@ -238,7 +239,7 @@ namespace Azure.AI.OpenAI.Tests
                     content.Append(part.Text);
                 }
 
-                var promptFilter = update.GetContentFilterResultForPrompt();
+                var promptFilter = update.GetRequestContentFilterResult();
                 if (!foundPromptFilter && promptFilter?.Hate != null)
                 {
                     Assert.That(promptFilter.Hate.Filtered, Is.False);
@@ -246,7 +247,7 @@ namespace Azure.AI.OpenAI.Tests
                     foundPromptFilter = true;
                 }
 
-                var responseFilter = update.GetContentFilterResultForResponse();
+                var responseFilter = update.GetResponseContentFilterResult();
                 if (!foundResponseFilter && responseFilter?.Hate != null)
                 {
                     Assert.That(responseFilter.Hate.Filtered, Is.False);

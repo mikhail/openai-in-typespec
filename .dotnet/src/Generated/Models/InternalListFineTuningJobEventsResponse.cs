@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OpenAI.Models;
 
 namespace OpenAI.FineTuning
 {
@@ -20,7 +19,7 @@ namespace OpenAI.FineTuning
             HasMore = hasMore;
         }
 
-        internal InternalListFineTuningJobEventsResponse(IReadOnlyList<FineTuningJobEvent> data, ListFineTuningJobEventsResponseObject @object, bool hasMore, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal InternalListFineTuningJobEventsResponse(IReadOnlyList<FineTuningJobEvent> data, InternalListFineTuningJobEventsResponseObject @object, bool hasMore, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Data = data;
             Object = @object;
@@ -33,7 +32,7 @@ namespace OpenAI.FineTuning
         }
 
         public IReadOnlyList<FineTuningJobEvent> Data { get; }
-        public ListFineTuningJobEventsResponseObject Object { get; } = ListFineTuningJobEventsResponseObject.List;
+        public InternalListFineTuningJobEventsResponseObject Object { get; } = InternalListFineTuningJobEventsResponseObject.List;
 
         public bool HasMore { get; }
     }
