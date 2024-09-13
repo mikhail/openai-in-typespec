@@ -8,7 +8,7 @@ namespace OpenAI.FineTuning;
 public partial class FineTuningJobEvent
 {
     [CodeGenMember("FineTuningJobEventLevel")]
-    public string InternalFineTuningJobEventLevel;
+    public string Level;
 
     [CodeGenMember("FineTuningJobEventObject")]
     private string _object;

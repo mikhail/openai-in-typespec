@@ -75,18 +75,5 @@ internal partial class UnknownCreateFineTuningJobRequestIntegration { }
 [CodeGenModel("UnknownFineTuningIntegration")]
 internal partial class UnknownFineTuningIntegration { }
 
-[CodeGenModel("FineTuningJobEventObject")]
-internal readonly partial struct InternalFineTuningJobEventObject { }
-
 [CodeGenModel("ListFineTuningJobEventsResponseObject")]
 internal readonly partial struct InternalListFineTuningJobEventsResponseObject { }
-
-// Future public types follow
-
-[CodeGenModel("FineTuningJobEventLevel")]
-internal enum FineTuningJobEventLevel
-{
-    Info,
-    Warn,
-    Error
-}

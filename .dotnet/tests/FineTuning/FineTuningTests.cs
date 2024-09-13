@@ -123,8 +123,8 @@ internal class FineTuningTests : SyncAsyncTestBase
         AssertAsyncOnly();
 
         FineTuningClient client = GetTestClient<FineTuningClient>(TestScenario.FineTuning);
-        IAsyncEnumerable<ClientResult> enumerable = client.GetJobEventsAsync("fakeJobId", after: null, limit: null, options: null);
-        IAsyncEnumerator<ClientResult> enumerator = enumerable.GetAsyncEnumerator();
+        IAsyncEnumerable<FineTuningJobEvent> enumerable = client.GetJobEventsAsync("fakeJobId");
+        var enumerator = enumerable.GetAsyncEnumerator();
 
         ClientResultException ex = Assert.ThrowsAsync<ClientResultException>(async () => await enumerator.MoveNextAsync());
 
@@ -137,8 +137,8 @@ internal class FineTuningTests : SyncAsyncTestBase
         AssertSyncOnly();
 
         FineTuningClient client = GetTestClient<FineTuningClient>(TestScenario.FineTuning);
-        IEnumerable<ClientResult> enumerable = client.GetJobEvents("fakeJobId", after: null, limit: null, options: null);
-        IEnumerator<ClientResult> enumerator = enumerable.GetEnumerator();
+        var enumerable = client.GetJobEvents("fakeJobId");
+        var enumerator = enumerable.GetEnumerator();
 
         ClientResultException ex = Assert.Throws<ClientResultException>(() => enumerator.MoveNext());
 
