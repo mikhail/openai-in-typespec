@@ -271,7 +271,7 @@ namespace OpenAI.Assistants {
         public IList<ToolDefinition> Tools { get; }
     }
     public class AssistantModificationOptions {
-        public IList<ToolDefinition> DefaultTools { get; set; }
+        public IList<ToolDefinition> DefaultTools { get; }
         public string Description { get; set; }
         public string Instructions { get; set; }
         public IDictionary<string, string> Metadata { get; set; }
@@ -315,14 +315,14 @@ namespace OpenAI.Assistants {
     public class CodeInterpreterToolDefinition : ToolDefinition {
     }
     public class CodeInterpreterToolResources {
-        public IList<string> FileIds { get; set; }
+        public IList<string> FileIds { get; }
     }
     public class FileSearchToolDefinition : ToolDefinition {
         public int? MaxResults { get; set; }
     }
     public class FileSearchToolResources {
         public IList<VectorStoreCreationHelper> NewVectorStores { get; }
-        public IList<string> VectorStoreIds { get; set; }
+        public IList<string> VectorStoreIds { get; }
     }
     public class FunctionToolDefinition : ToolDefinition {
         public FunctionToolDefinition();
@@ -1484,6 +1484,7 @@ namespace OpenAI.FineTuning {
         public virtual Task<ClientResult<FineTuningJob>> GetJobAsync(string jobId);
         public virtual IEnumerable<ClientResult> GetJobCheckpoints(string jobId, string after, int? limit, RequestOptions options);
         public virtual IAsyncEnumerable<ClientResult> GetJobCheckpointsAsync(string jobId, string after, int? limit, RequestOptions options);
+        public virtual IEnumerable<FineTuningJobEvent> GetJobEvents(string jobId, ListEventsOptions options = null);
         public virtual IAsyncEnumerable<FineTuningJobEvent> GetJobEventsAsync(string jobId, ListEventsOptions options = null);
         public virtual IEnumerable<ClientResult> GetJobs(string after, int? limit, RequestOptions options);
         public virtual IAsyncEnumerable<ClientResult> GetJobsAsync(string after, int? limit, RequestOptions options);
@@ -1514,10 +1515,9 @@ namespace OpenAI.FineTuning {
         public string ValidationFileId { get; }
     }
     public class FineTuningJobEvent {
-        public string InternalFineTuningJobEventLevel;
+        public string Level;
         public DateTimeOffset CreatedAt { get; }
         public string Id { get; }
-        public FineTuningJobEventLevel Level { get; }
         public string Message { get; }
         public FineTuningJobEventObject Object { get; }
     }
@@ -1780,21 +1780,6 @@ namespace OpenAI.Models {
         public static bool operator ==(FineTuningJobEventObject left, FineTuningJobEventObject right);
         public static implicit operator FineTuningJobEventObject(string value);
         public static bool operator !=(FineTuningJobEventObject left, FineTuningJobEventObject right);
-        public override readonly string ToString();
-    }
-    public readonly partial struct ListFineTuningJobEventsResponseObject : IEquatable<ListFineTuningJobEventsResponseObject> {
-        private readonly object _dummy;
-        private readonly int _dummyPrimitive;
-        public ListFineTuningJobEventsResponseObject(string value);
-        public static ListFineTuningJobEventsResponseObject List { get; }
-        public readonly bool Equals(ListFineTuningJobEventsResponseObject other);
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override readonly bool Equals(object obj);
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override readonly int GetHashCode();
-        public static bool operator ==(ListFineTuningJobEventsResponseObject left, ListFineTuningJobEventsResponseObject right);
-        public static implicit operator ListFineTuningJobEventsResponseObject(string value);
-        public static bool operator !=(ListFineTuningJobEventsResponseObject left, ListFineTuningJobEventsResponseObject right);
         public override readonly string ToString();
     }
     public class ModelClient {
@@ -2077,7 +2062,7 @@ namespace OpenAI.VectorStores {
     public class VectorStoreCreationOptions {
         public FileChunkingStrategy ChunkingStrategy { get; set; }
         public VectorStoreExpirationPolicy ExpirationPolicy { get; set; }
-        public IList<string> FileIds { get; set; }
+        public IList<string> FileIds { get; }
         public IDictionary<string, string> Metadata { get; set; }
         public string Name { get; set; }
     }

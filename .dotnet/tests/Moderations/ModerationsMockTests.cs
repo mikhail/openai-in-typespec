@@ -1,19 +1,20 @@
-﻿using System;
+﻿using NUnit.Framework;
+using OpenAI.Moderations;
+using OpenAI.Tests.Utility;
+using System;
 using System.ClientModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using NUnit.Framework;
-using OpenAI.Moderations;
-using OpenAI.Tests.Utility;
 
 namespace OpenAI.Tests.Moderations;
 
 [TestFixture(true)]
 [TestFixture(false)]
 [Parallelizable(ParallelScope.All)]
+[Category("Moderations")]
 [Category("Smoke")]
-public partial class ModerationsMockTests : SyncAsyncTestBase
+public class ModerationsMockTests : SyncAsyncTestBase
 {
     private static readonly ApiKeyCredential s_fakeCredential = new ApiKeyCredential("key");
 
@@ -42,8 +43,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationResult moderation = IsAsync
-            ? await client.ClassifyTextInputAsync("input")
-            : client.ClassifyTextInput("input");
+            ? await client.ClassifyTextAsync("input")
+            : client.ClassifyText("input");
 
         AssertModerationCategories(moderation, hate: (true, 0.895f));
     }
@@ -68,8 +69,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationResult moderation = IsAsync
-            ? await client.ClassifyTextInputAsync("input")
-            : client.ClassifyTextInput("input");
+            ? await client.ClassifyTextAsync("input")
+            : client.ClassifyText("input");
 
         AssertModerationCategories(moderation, hateThreatening: (true, 0.895f));
     }
@@ -94,8 +95,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationResult moderation = IsAsync
-            ? await client.ClassifyTextInputAsync("input")
-            : client.ClassifyTextInput("input");
+            ? await client.ClassifyTextAsync("input")
+            : client.ClassifyText("input");
 
         AssertModerationCategories(moderation, harassment: (true, 0.895f));
     }
@@ -120,8 +121,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationResult moderation = IsAsync
-            ? await client.ClassifyTextInputAsync("input")
-            : client.ClassifyTextInput("input");
+            ? await client.ClassifyTextAsync("input")
+            : client.ClassifyText("input");
 
         AssertModerationCategories(moderation, harassmentThreatening: (true, 0.895f));
     }
@@ -146,8 +147,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationResult moderation = IsAsync
-            ? await client.ClassifyTextInputAsync("input")
-            : client.ClassifyTextInput("input");
+            ? await client.ClassifyTextAsync("input")
+            : client.ClassifyText("input");
 
         AssertModerationCategories(moderation, selfHarm: (true, 0.895f));
     }
@@ -172,8 +173,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationResult moderation = IsAsync
-            ? await client.ClassifyTextInputAsync("input")
-            : client.ClassifyTextInput("input");
+            ? await client.ClassifyTextAsync("input")
+            : client.ClassifyText("input");
 
         AssertModerationCategories(moderation, selfHarmIntent: (true, 0.895f));
     }
@@ -198,8 +199,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationResult moderation = IsAsync
-            ? await client.ClassifyTextInputAsync("input")
-            : client.ClassifyTextInput("input");
+            ? await client.ClassifyTextAsync("input")
+            : client.ClassifyText("input");
 
         AssertModerationCategories(moderation, selfHarmInstructions: (true, 0.895f));
     }
@@ -224,8 +225,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationResult moderation = IsAsync
-            ? await client.ClassifyTextInputAsync("input")
-            : client.ClassifyTextInput("input");
+            ? await client.ClassifyTextAsync("input")
+            : client.ClassifyText("input");
 
         AssertModerationCategories(moderation, sexual: (true, 0.895f));
     }
@@ -250,8 +251,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationResult moderation = IsAsync
-            ? await client.ClassifyTextInputAsync("input")
-            : client.ClassifyTextInput("input");
+            ? await client.ClassifyTextAsync("input")
+            : client.ClassifyText("input");
 
         AssertModerationCategories(moderation, sexualMinors: (true, 0.895f));
     }
@@ -276,8 +277,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationResult moderation = IsAsync
-            ? await client.ClassifyTextInputAsync("input")
-            : client.ClassifyTextInput("input");
+            ? await client.ClassifyTextAsync("input")
+            : client.ClassifyText("input");
 
         AssertModerationCategories(moderation, violence: (true, 0.895f));
     }
@@ -302,8 +303,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationResult moderation = IsAsync
-            ? await client.ClassifyTextInputAsync("input")
-            : client.ClassifyTextInput("input");
+            ? await client.ClassifyTextAsync("input")
+            : client.ClassifyText("input");
 
         AssertModerationCategories(moderation, violenceGraphic: (true, 0.895f));
     }
@@ -317,12 +318,12 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
 
         if (IsAsync)
         {
-            Assert.That(async () => await client.ClassifyTextInputAsync("input", cancellationSource.Token),
+            Assert.That(async () => await client.ClassifyTextAsync("input", cancellationSource.Token),
                 Throws.InstanceOf<OperationCanceledException>());
         }
         else
         {
-            Assert.That(() => client.ClassifyTextInput("input", cancellationSource.Token),
+            Assert.That(() => client.ClassifyText("input", cancellationSource.Token),
                 Throws.InstanceOf<OperationCanceledException>());
         }
     }
@@ -347,8 +348,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationCollection resultCollection = IsAsync
-            ? await client.ClassifyTextInputsAsync(["input"])
-            : client.ClassifyTextInputs(["input"]);
+            ? await client.ClassifyTextAsync(["input"])
+            : client.ClassifyText(["input"]);
         ModerationResult moderation = resultCollection.Single();
 
         AssertModerationCategories(moderation, hate: (true, 0.895f));
@@ -374,8 +375,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationCollection resultCollection = IsAsync
-            ? await client.ClassifyTextInputsAsync(["input"])
-            : client.ClassifyTextInputs(["input"]);
+            ? await client.ClassifyTextAsync(["input"])
+            : client.ClassifyText(["input"]);
         ModerationResult moderation = resultCollection.Single();
 
         AssertModerationCategories(moderation, hateThreatening: (true, 0.895f));
@@ -401,8 +402,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationCollection resultCollection = IsAsync
-            ? await client.ClassifyTextInputsAsync(["input"])
-            : client.ClassifyTextInputs(["input"]);
+            ? await client.ClassifyTextAsync(["input"])
+            : client.ClassifyText(["input"]);
         ModerationResult moderation = resultCollection.Single();
 
         AssertModerationCategories(moderation, harassment: (true, 0.895f));
@@ -428,8 +429,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationCollection resultCollection = IsAsync
-            ? await client.ClassifyTextInputsAsync(["input"])
-            : client.ClassifyTextInputs(["input"]);
+            ? await client.ClassifyTextAsync(["input"])
+            : client.ClassifyText(["input"]);
         ModerationResult moderation = resultCollection.Single();
 
         AssertModerationCategories(moderation, harassmentThreatening: (true, 0.895f));
@@ -455,8 +456,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationCollection resultCollection = IsAsync
-            ? await client.ClassifyTextInputsAsync(["input"])
-            : client.ClassifyTextInputs(["input"]);
+            ? await client.ClassifyTextAsync(["input"])
+            : client.ClassifyText(["input"]);
         ModerationResult moderation = resultCollection.Single();
 
         AssertModerationCategories(moderation, selfHarm: (true, 0.895f));
@@ -482,8 +483,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationCollection resultCollection = IsAsync
-            ? await client.ClassifyTextInputsAsync(["input"])
-            : client.ClassifyTextInputs(["input"]);
+            ? await client.ClassifyTextAsync(["input"])
+            : client.ClassifyText(["input"]);
         ModerationResult moderation = resultCollection.Single();
 
         AssertModerationCategories(moderation, selfHarmIntent: (true, 0.895f));
@@ -509,8 +510,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationCollection resultCollection = IsAsync
-            ? await client.ClassifyTextInputsAsync(["input"])
-            : client.ClassifyTextInputs(["input"]);
+            ? await client.ClassifyTextAsync(["input"])
+            : client.ClassifyText(["input"]);
         ModerationResult moderation = resultCollection.Single();
 
         AssertModerationCategories(moderation, selfHarmInstructions: (true, 0.895f));
@@ -536,8 +537,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationCollection resultCollection = IsAsync
-            ? await client.ClassifyTextInputsAsync(["input"])
-            : client.ClassifyTextInputs(["input"]);
+            ? await client.ClassifyTextAsync(["input"])
+            : client.ClassifyText(["input"]);
         ModerationResult moderation = resultCollection.Single();
 
         AssertModerationCategories(moderation, sexual: (true, 0.895f));
@@ -563,8 +564,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationCollection resultCollection = IsAsync
-            ? await client.ClassifyTextInputsAsync(["input"])
-            : client.ClassifyTextInputs(["input"]);
+            ? await client.ClassifyTextAsync(["input"])
+            : client.ClassifyText(["input"]);
         ModerationResult moderation = resultCollection.Single();
 
         AssertModerationCategories(moderation, sexualMinors: (true, 0.895f));
@@ -590,8 +591,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationCollection resultCollection = IsAsync
-            ? await client.ClassifyTextInputsAsync(["input"])
-            : client.ClassifyTextInputs(["input"]);
+            ? await client.ClassifyTextAsync(["input"])
+            : client.ClassifyText(["input"]);
         ModerationResult moderation = resultCollection.Single();
 
         AssertModerationCategories(moderation, violence: (true, 0.895f));
@@ -617,8 +618,8 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
         ModerationClient client = new ModerationClient("model", s_fakeCredential, clientOptions);
 
         ModerationCollection resultCollection = IsAsync
-            ? await client.ClassifyTextInputsAsync(["input"])
-            : client.ClassifyTextInputs(["input"]);
+            ? await client.ClassifyTextAsync(["input"])
+            : client.ClassifyText(["input"]);
         ModerationResult moderation = resultCollection.Single();
 
         AssertModerationCategories(moderation, violenceGraphic: (true, 0.895f));
@@ -633,12 +634,12 @@ public partial class ModerationsMockTests : SyncAsyncTestBase
 
         if (IsAsync)
         {
-            Assert.That(async () => await client.ClassifyTextInputsAsync(["input"], cancellationSource.Token),
+            Assert.That(async () => await client.ClassifyTextAsync(["input"], cancellationSource.Token),
                 Throws.InstanceOf<OperationCanceledException>());
         }
         else
         {
-            Assert.That(() => client.ClassifyTextInputs(["input"], cancellationSource.Token),
+            Assert.That(() => client.ClassifyText(["input"], cancellationSource.Token),
                 Throws.InstanceOf<OperationCanceledException>());
         }
     }

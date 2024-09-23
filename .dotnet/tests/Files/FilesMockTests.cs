@@ -1,20 +1,21 @@
-﻿using System;
+﻿using NUnit.Framework;
+using OpenAI.Files;
+using OpenAI.Tests.Utility;
+using System;
 using System.ClientModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using NUnit.Framework;
-using OpenAI.Files;
-using OpenAI.Tests.Utility;
 
 namespace OpenAI.Tests.Files;
 
 [TestFixture(true)]
 [TestFixture(false)]
 [Parallelizable(ParallelScope.All)]
+[Category("Files")]
 [Category("Smoke")]
-public partial class FilesMockTests : SyncAsyncTestBase
+public class FilesMockTests : SyncAsyncTestBase
 {
     private static readonly ApiKeyCredential s_fakeCredential = new ApiKeyCredential("key");
 
@@ -43,12 +44,14 @@ public partial class FilesMockTests : SyncAsyncTestBase
         ("vision", OpenAIFilePurpose.Vision)
     };
 
+#pragma warning disable CS0618
     private static object[] s_statusSource =
     {
         ("uploaded", OpenAIFileStatus.Uploaded),
         ("processed", OpenAIFileStatus.Processed),
         ("error", OpenAIFileStatus.Error)
     };
+#pragma warning restore CS0618
 
     [Test]
     public async Task GetFileDeserializesId()
@@ -102,6 +105,8 @@ public partial class FilesMockTests : SyncAsyncTestBase
         Assert.That(fileInfo.Purpose, Is.EqualTo(purpose.expectedValue));
     }
 
+
+#pragma warning disable CS0618
     [Test]
     [TestCaseSource(nameof(s_statusSource))]
     public async Task GetFileDeserializesStatus((string stringValue, OpenAIFileStatus expectedValue) status)
@@ -119,7 +124,9 @@ public partial class FilesMockTests : SyncAsyncTestBase
 
         Assert.That(fileInfo.Status, Is.EqualTo(status.expectedValue));
     }
+#pragma warning restore CS0618
 
+#pragma warning disable CS0618
     [Test]
     public async Task GetFileDeserializesStatusDetails()
     {
@@ -136,6 +143,7 @@ public partial class FilesMockTests : SyncAsyncTestBase
 
         Assert.That(fileInfo.StatusDetails, Is.EqualTo("This is definitely an error."));
     }
+#pragma warning restore CS0618
 
     [Test]
     public void GetFileRespectsTheCancellationToken()
@@ -199,6 +207,7 @@ public partial class FilesMockTests : SyncAsyncTestBase
         Assert.That(fileInfo.Purpose, Is.EqualTo(purpose.expectedValue));
     }
 
+#pragma warning disable CS0618
     [Test]
     public async Task UploadFileDeserializesStatus(
         [ValueSource(nameof(s_fileSourceKindSource))] FileSourceKind fileSourceKind,
@@ -213,7 +222,9 @@ public partial class FilesMockTests : SyncAsyncTestBase
 
         Assert.That(fileInfo.Status, Is.EqualTo(status.expectedValue));
     }
+#pragma warning restore CS0618
 
+#pragma warning disable CS0618
     [Test]
     [TestCaseSource(nameof(s_fileSourceKindSource))]
     public async Task UploadFileDeserializesStatusDetails(FileSourceKind fileSourceKind)
@@ -227,6 +238,7 @@ public partial class FilesMockTests : SyncAsyncTestBase
 
         Assert.That(fileInfo.StatusDetails, Is.EqualTo("This is definitely an error."));
     }
+#pragma warning restore CS0618
 
     [Test]
     public void UploadFileRespectsTheCancellationToken()
@@ -315,6 +327,7 @@ public partial class FilesMockTests : SyncAsyncTestBase
         Assert.That(fileInfo.Purpose, Is.EqualTo(purpose.expectedValue));
     }
 
+#pragma warning disable CS0618
     [Test]
     [TestCaseSource(nameof(s_statusSource))]
     public async Task GetFilesDeserializesStatus((string stringValue, OpenAIFileStatus expectedValue) status)
@@ -337,7 +350,9 @@ public partial class FilesMockTests : SyncAsyncTestBase
 
         Assert.That(fileInfo.Status, Is.EqualTo(status.expectedValue));
     }
+#pragma warning restore CS0618
 
+#pragma warning disable CS0618
     [Test]
     public async Task GetFilesDeserializesStatusDetails()
     {
@@ -359,6 +374,7 @@ public partial class FilesMockTests : SyncAsyncTestBase
 
         Assert.That(fileInfo.StatusDetails, Is.EqualTo("This is definitely an error."));
     }
+#pragma warning restore CS0618
 
     [Test]
     public void GetFilesRespectsTheCancellationToken()

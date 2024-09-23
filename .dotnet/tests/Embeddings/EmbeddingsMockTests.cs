@@ -1,19 +1,20 @@
-﻿using System;
+﻿using NUnit.Framework;
+using OpenAI.Embeddings;
+using OpenAI.Tests.Utility;
+using System;
 using System.ClientModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using NUnit.Framework;
-using OpenAI.Embeddings;
-using OpenAI.Tests.Utility;
 
 namespace OpenAI.Tests.Embeddings;
 
 [TestFixture(true)]
 [TestFixture(false)]
 [Parallelizable(ParallelScope.All)]
+[Category("Embeddings")]
 [Category("Smoke")]
-public partial class EmbeddingsMockTests : SyncAsyncTestBase
+public class EmbeddingsMockTests : SyncAsyncTestBase
 {
     private static readonly ApiKeyCredential s_fakeCredential = new ApiKeyCredential("key");
 
@@ -45,7 +46,7 @@ public partial class EmbeddingsMockTests : SyncAsyncTestBase
             ? await client.GenerateEmbeddingAsync("prompt")
             : client.GenerateEmbedding("prompt");
 
-        float[] vector = embedding.Vector.ToArray();
+        float[] vector = embedding.ToFloats().ToArray();
         Assert.That(vector.SequenceEqual([1f, 2f, 3f]));
     }
 
@@ -114,7 +115,7 @@ public partial class EmbeddingsMockTests : SyncAsyncTestBase
             : client.GenerateEmbeddings(["prompt"]);
         Embedding embedding = embeddings.Single();
 
-        float[] vector = embedding.Vector.ToArray();
+        float[] vector = embedding.ToFloats().ToArray();
         Assert.That(vector.SequenceEqual([1f, 2f, 3f]));
     }
 
@@ -183,7 +184,7 @@ public partial class EmbeddingsMockTests : SyncAsyncTestBase
             : client.GenerateEmbeddings([[1]]);
         Embedding embedding = embeddings.Single();
 
-        float[] vector = embedding.Vector.ToArray();
+        float[] vector = embedding.ToFloats().ToArray();
         Assert.That(vector.SequenceEqual([1f, 2f, 3f]));
     }
 
