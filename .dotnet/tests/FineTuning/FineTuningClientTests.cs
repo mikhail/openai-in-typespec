@@ -326,6 +326,35 @@ public class FineTuningClientTests
         Assert.GreaterOrEqual(counter, 1);
     }
 
+    [Test]
+    [Parallelizable]
+    public async Task GetJobsWithAfter()
+    {
+        var jobs = client.GetJobsAsync(null, limit: 1, null);
+
+        var pages = (AsyncPageCollection<FineTuningJob>)jobs;
+
+        FineTuningJob firstJob = null;
+        await foreach (var pageResult in pages)
+        {
+            firstJob = pageResult.Values.First();
+            break;
+        }
+
+        var jobsAfter = client.GetJobsAsync(firstJob.JobId, limit: 1, null);
+
+        var pagesAfter = (AsyncPageCollection<FineTuningJob>)jobsAfter;
+
+        FineTuningJob secondJob = null;
+        await foreach (var pageResult in pagesAfter)
+        {
+            secondJob = pageResult.Values.First();
+            break;
+        }
+
+        Assert.AreNotEqual(firstJob.JobId, secondJob.JobId);
+    }
+
     private static FineTuningClient GetTestClient() => GetTestClient<FineTuningClient>(TestScenario.FineTuning);
 
 }
