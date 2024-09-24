@@ -19,12 +19,19 @@ using static OpenAI.Tests.TestHelpers;
 
 namespace OpenAI.Tests.FineTuning;
 
+
 [TestFixture]
 [Parallelizable(ParallelScope.Fixtures)]
 [Category("FineTuning")]
 [Category("Smoke")]
 public class FineTuningClientTests
 {
+
+    public enum Method
+    {
+        Sync,
+        Async
+    }
 
     FineTuningClient client;
     FileClient fileClient;
@@ -60,40 +67,29 @@ public class FineTuningClientTests
 
     [Test]
     [Parallelizable]
-    public void MinimalRequiredParams()
+    public async Task MinimalRequiredParams([Values]bool isAsync)
     {
 
-        FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
+        FineTuningJob job = isAsync
+            ? await client.CreateJobAsync("gpt-3.5-turbo", sampleFile.Id)
+            : client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
 
         Assert.True(job.Status.InProgress);
         Assert.AreEqual(0, job.Hyperparameters.CycleCount);
 
-        job = client.CancelJob(job.JobId);
+        job = isAsync
+            ? await client.CancelJobAsync(job.JobId)
+            : client.CancelJob(job.JobId);
 
         Assert.AreEqual(FineTuningJobStatus.Cancelled, job.Status);
         Assert.False(job.Status.InProgress);
     }
 
-    // minimal but async
-    [Test]
-    [Parallelizable]
-    public async Task MinimalRequiredParamsAsync()
-    {
-
-        FineTuningJob job = await client.CreateJobAsync("gpt-3.5-turbo", sampleFile.Id);
-
-        Assert.True(job.Status.InProgress);
-        Assert.AreEqual(0, job.Hyperparameters.CycleCount);
-
-        job = await client.CancelJobAsync(job.JobId);
-
-        Assert.AreEqual(FineTuningJobStatus.Cancelled, job.Status);
-        Assert.False(job.Status.InProgress);
-    }
+    
 
     [Test]
     [Parallelizable]
-    public void AllParameters()
+    public async Task AllParameters([Values]bool isAsync)
     {
         // This test does not check for Integrations because it requires a valid API key
 
@@ -110,11 +106,9 @@ public class FineTuningClientTests
             Seed = 1234567
         };
 
-        FineTuningJob job = client.CreateJob(
-            "gpt-3.5-turbo",
-            sampleFile.Id,
-            options
-            );
+        FineTuningJob job = isAsync
+            ? await client.CreateJobAsync("gpt-3.5-turbo", sampleFile.Id, options)
+            : client.CreateJob("gpt-3.5-turbo", sampleFile.Id, options);
 
         Assert.AreEqual(1, job.Hyperparameters.CycleCount);
         Assert.AreEqual(2, job.Hyperparameters.BatchSize);
@@ -123,46 +117,10 @@ public class FineTuningClientTests
         Assert.AreEqual(1234567, job.Seed);
         Assert.AreEqual(validationFile.Id, job.ValidationFileId);
 
-        job = client.CancelJob(job.JobId);
+        job = isAsync
+            ? await client.CancelJobAsync(job.JobId)
+            : client.CancelJob(job.JobId);
     }
-
-    [Test]
-    [Parallelizable]
-    public async Task AllParametersAsync()
-    {
-        // This test does not check for Integrations because it requires a valid API key
-
-        var options = new FineTuningOptions()
-        {
-            Hyperparameters = new()
-            {
-                CycleCount = 1,
-                BatchSize = 2,
-                LearningRate = 3
-            },
-            Suffix = "TestFTJob",
-            ValidationFile = validationFile.Id,
-            Seed = 1234567
-        };
-
-        FineTuningJob job = await client.CreateJobAsync(
-            "gpt-3.5-turbo",
-            sampleFile.Id,
-            options
-        );
-
-
-        Assert.AreEqual(1, job.Hyperparameters.CycleCount);
-        Assert.AreEqual(2, job.Hyperparameters.BatchSize);
-        Assert.AreEqual(3, job.Hyperparameters.LearningRateMultiplier);
-        Assert.AreEqual(job.UserProvidedSuffix, "TestFTJob");
-        Assert.AreEqual(1234567, job.Seed);
-        Assert.AreEqual(validationFile.Id, job.ValidationFileId);
-
-        job = await client.CancelJobAsync(job.JobId);
-    }
-
-
 
     [Test]
     [Parallelizable]
@@ -258,26 +216,73 @@ public class FineTuningClientTests
         });
     }
 
+    [Test]
+    [Parallelizable]
+    public void GetJobs([Values]bool isAsync)
+    {
+        // Arrange
+
+        // Act
+        var jobs = isAsync
+            ? client.GetJobsAsync().Take(10).ToBlockingEnumerable()
+            : client.GetJobs().Take(10);
+
+        // Assert
+        var counter = 0;
+        foreach (var job in jobs)
+        {
+            Assert.IsTrue(job.JobId.StartsWith("ftjob"));
+            counter++;
+        }
+
+        Assert.Greater(0, counter);
+        Assert.LessOrEqual(10, counter);
+    }
+    
+    [Test]
+    [Parallelizable]
+    public void GetJobsWithAfter()
+    {
+        var firstJob = client.GetJobs().First();
+
+        if (firstJob is null)
+        {
+            Assert.Fail("No jobs found. At least 2 jobs have to be found to run this test.");
+        }
+
+        var secondJob = client.GetJobs(firstJob.JobId).First();
+
+        Assert.AreNotEqual(firstJob.JobId, secondJob.JobId);
+        // Can't assert that one was created after the next because they might be created at the same second.
+        // Assert.Greater(secondJob.CreatedAt, firstJob.CreatedAt, $"{firstJob}, {secondJob}");
+    }
+
     /// Manual experiments show that there are always at least 2 events:
     /// First one is that the job is created
     /// Second one is "validating training file"
     /// If this test starts failing because of the wrong count, please first check if the above is still true
     [Test]
     [Parallelizable]
-    public async Task GetJobEvents()
+    public void GetJobEvents([Values(Method.Sync, Method.Async)]Method method)
     {
+        // Arrange
         FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
 
         ListEventsOptions options = new()
         {
             PageSize = 1
         };
-        var events = client.GetJobEventsAsync(job.JobId, options);
-
         client.CancelJob(job.JobId);
 
-        var count = 1;
-        await foreach (var e in events)
+        // Act
+        var events = (method == Method.Async)
+            ? client.GetJobEventsAsync(job.JobId, options).ToBlockingEnumerable()
+            : client.GetJobEvents(job.JobId, options);
+
+
+        // Assert
+        var count = 0;
+        foreach (var e in events)
         {
             Assert.IsTrue(e.Id.StartsWith("ftevent"));
             count++;
@@ -285,51 +290,6 @@ public class FineTuningClientTests
         Assert.GreaterOrEqual(count, 2);
     }
 
-    // Test getting all the jobs
-    [Test]
-    [Parallelizable]
-    public async Task GetJobs()
-    {
-        AsyncCollectionResult<FineTuningJob> jobs = client.GetJobsAsync(limit: 10);
-
-        var counter = 0;
-        await foreach (var job in jobs)
-        {
-            Assert.IsTrue(job.JobId.StartsWith("ftjob"));
-            counter++;
-        }
-
-        Assert.AreEqual(10, counter);
-    }
-
-    [Test]
-    [Parallelizable]
-    public async Task GetJobsWithAfter()
-    {
-        var firstJobList = client.GetJobsAsync(limit: 1);
-        FineTuningJob firstJob = null;
-        await foreach (var job in firstJobList)
-        {
-            firstJob = job;
-            break;
-        }
-        if (firstJob is null)
-        {
-            Assert.Fail("No jobs found. At least 2 jobs have to be found to run this test.");
-        }
-
-        var secondJobList = client.GetJobsAsync(firstJob.JobId, limit: 1);
-        FineTuningJob secondJob = null;
-        await foreach (var job in secondJobList)
-        {
-            secondJob = job;
-            break;
-        }
-
-        Assert.AreNotEqual(firstJob.JobId, secondJob.JobId);
-        // Can't assert that one was created after the next because they might be created at the same second.
-        // Assert.Greater(secondJob.CreatedAt, firstJob.CreatedAt, $"{firstJob}, {secondJob}");
-    }
 
     private static FineTuningClient GetTestClient() => GetTestClient<FineTuningClient>(TestScenario.FineTuning);
 

@@ -25,18 +25,14 @@ internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTu
     private readonly int? _pageSize;
     private readonly string _after;
     
-    private int returnedCount = 0;
-
     public AsyncFineTuningJobCollectionResult(FineTuningClient fineTuningClient,
         ClientPipeline pipeline, RequestOptions? options,
-        int? limit,
         int? pageSize, string after)
     {
         _fineTuningClient = fineTuningClient;
         _pipeline = pipeline;
         _options = options;
 
-        _limit = limit;
         _pageSize = pageSize;
         _after = after;
         _cancellationToken = _options?.CancellationToken ?? default;
@@ -50,9 +46,7 @@ internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTu
         while (true)
         {
             yield return page;
-            bool returnedEnough = (_limit.HasValue && returnedCount >= _limit);
-            bool theresNoMore = !HasNextPage(page);
-            if (returnedEnough || theresNoMore)
+            if (!HasNextPage(page))
             {
                 break;
             }
@@ -106,11 +100,6 @@ internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTu
         await foreach (FineTuningJob job in enumerable)
         {
             yield return job;
-            returnedCount++;
-            if (_limit.HasValue && returnedCount >= _limit.Value)
-            {
-                yield break;
-            }
         }
     }
 }

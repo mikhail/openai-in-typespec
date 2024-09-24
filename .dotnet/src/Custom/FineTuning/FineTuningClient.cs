@@ -184,15 +184,50 @@ public partial class FineTuningClient
         return job;
     }
 
-    public virtual AsyncCollectionResult<FineTuningJob> GetJobsAsync(string afterJobId = default, int? limit = default, int? pageSize = default, CancellationToken cancellationToken = default) // TODO: Convert after/limit to Options
+    public virtual CollectionResult<FineTuningJob> GetJobs(string afterJobId = default, int? pageSize = default, CancellationToken cancellationToken = default) // TODO: Convert after/limit to Options
     {
-        AsyncCollectionResult<FineTuningJob> result = GetJobsAsync(afterJobId, limit, pageSize, cancellationToken.ToRequestOptions());
+        var result = GetJobs(afterJobId, pageSize, cancellationToken.ToRequestOptions());
+
+        if (result is not CollectionResult<FineTuningJob> jobs)
+        {
+            throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJob)}>");
+        }
+
+        return jobs;
+    }
+
+    public virtual AsyncCollectionResult<FineTuningJob> GetJobsAsync(string afterJobId = default, int? pageSize = default, CancellationToken cancellationToken = default) // TODO: Convert after/limit to Options
+    {
+        AsyncCollectionResult<FineTuningJob> result = GetJobsAsync(afterJobId, pageSize, cancellationToken.ToRequestOptions());
 
         if (result is not AsyncCollectionResult<FineTuningJob> jobs) {
             throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJob)}>");
         }
 
         return jobs;
+    }
+
+    /// <summary>
+    /// This will auto resolve pagination and re-fetching.
+    /// </summary>
+    /// <param name="jobId"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public virtual CollectionResult<FineTuningJobEvent> GetJobEvents(string jobId, ListEventsOptions options = default, CancellationToken cancellationToken = default)
+    {
+        options ??= new ListEventsOptions()
+        {
+            JobId = jobId
+        };
+
+        var result = GetJobEvents(jobId, options.After, options.PageSize, cancellationToken.ToRequestOptions()); // TODO: how to handle if this doesn't take BinaryContent?
+
+        if (result is not CollectionResult<FineTuningJobEvent> events)
+        {
+            throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJobEvent)}>");
+        }
+        return events;
+
     }
 
     /// <summary>

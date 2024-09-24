@@ -73,16 +73,16 @@ public partial class FineTuningClient
     // - Renamed.
     // - Edited doc comment.
     /// <summary>
-    /// [Protocol Method] List your organization's fine-tuning jobs
+    /// [Protocol Method] List all of your organization's fine-tuning jobs
     /// </summary>
     /// <param name="afterJobId"> Identifier for the last job from the previous pagination request. </param>
-    /// <param name="limit"> Number of fine-tuning jobs to retrieve. </param>
+    /// <param name="pageSize"> Number of fine-tuning jobs to retrieve at a time. Collection will iterate until _all_ jobs are fetched. </param>
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual AsyncCollectionResult<FineTuningJob> GetJobsAsync(string afterJobId, int? limit, int? pageSize, RequestOptions options)
+    public virtual AsyncCollectionResult<FineTuningJob> GetJobsAsync(string afterJobId, int? pageSize, RequestOptions options)
     {
-        return new AsyncFineTuningJobCollectionResult(this, _pipeline, options, limit, pageSize, afterJobId);
+        return new AsyncFineTuningJobCollectionResult(this, _pipeline, options, pageSize, afterJobId);
     }
 
 
@@ -90,16 +90,16 @@ public partial class FineTuningClient
     // - Renamed.
     // - Edited doc comment.
     /// <summary>
-    /// [Protocol Method] List your organization's fine-tuning jobs
+    /// [Protocol Method] List all of your your organization's fine-tuning jobs
     /// </summary>
     /// <param name="after"> Identifier for the last job from the previous pagination request. </param>
-    /// <param name="limit"> Number of fine-tuning jobs to retrieve. </param>
+    /// <param name="pageSize"> Number of fine-tuning jobs to retrieve at a time. Collection will iterate until _all_ jobs are fetched. </param>
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual CollectionResult GetJobs(string after, int? limit, RequestOptions options)
+    public virtual CollectionResult GetJobs(string after, int? pageSize, RequestOptions options)
     {
-        return new FineTuningJobCollectionResult(this, _pipeline, options, limit, after);
+        return new FineTuningJobCollectionResult(this, _pipeline, options, pageSize, after);
     }
 
     // CUSTOM:

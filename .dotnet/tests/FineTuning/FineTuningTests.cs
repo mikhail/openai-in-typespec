@@ -88,7 +88,7 @@ internal class FineTuningTests : SyncAsyncTestBase
 
         FineTuningClient client = GetTestClient<FineTuningClient>(TestScenario.FineTuning);
 
-        foreach (ClientResult result in client.GetJobs(after: null, limit: null, options: null).GetRawPages())
+        foreach (ClientResult result in client.GetJobs(after: null, pageSize: null, options: null).GetRawPages())
         {
             BinaryData response = result.GetRawResponse().Content;
             JsonDocument jsonDocument = JsonDocument.Parse(response);
@@ -137,7 +137,7 @@ internal class FineTuningTests : SyncAsyncTestBase
         AssertSyncOnly();
 
         FineTuningClient client = GetTestClient<FineTuningClient>(TestScenario.FineTuning);
-        var enumerable = client.GetJobEvents("fakeJobId", after:null, limit:null, options: null);
+        var enumerable = client.GetJobEvents("fakeJobId");
 
         ClientResultException ex = Assert.Throws<ClientResultException>(() => enumerable.GetRawPages().GetEnumerator().MoveNext());
 
