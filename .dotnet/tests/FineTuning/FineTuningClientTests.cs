@@ -249,8 +249,7 @@ public class FineTuningClientTests
         {
             Assert.Fail("No jobs found. At least 2 jobs have to be found to run this test.");
         }
-
-        var secondJob = client.GetJobs(firstJob.JobId).First();
+        var secondJob = client.GetJobs(new(){AfterJobId = firstJob.JobId}).First();
 
         Assert.AreNotEqual(firstJob.JobId, secondJob.JobId);
         // Can't assert that one was created after the next because they might be created at the same second.

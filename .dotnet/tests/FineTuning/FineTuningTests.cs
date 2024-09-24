@@ -64,42 +64,6 @@ internal class FineTuningTests : SyncAsyncTestBase
     }
 
     [Test]
-    public async Task GetJobsAsyncWorks()
-    {
-        AssertAsyncOnly();
-
-        FineTuningClient client = GetTestClient<FineTuningClient>(TestScenario.FineTuning);
-
-        await foreach (ClientResult result in client.GetJobsAsync().GetRawPagesAsync())
-        {
-            BinaryData response = result.GetRawResponse().Content;
-            JsonDocument jsonDocument = JsonDocument.Parse(response);
-            JsonElement jsonRoot = jsonDocument.RootElement;
-
-            Assert.That(jsonRoot.TryGetProperty("data", out _), Is.True);
-            Assert.That(jsonRoot.TryGetProperty("has_more", out _), Is.True);
-        }
-    }
-
-    [Test]
-    public void GetJobsWorks()
-    {
-        AssertSyncOnly();
-
-        FineTuningClient client = GetTestClient<FineTuningClient>(TestScenario.FineTuning);
-
-        foreach (ClientResult result in client.GetJobs(after: null, pageSize: null, options: null).GetRawPages())
-        {
-            BinaryData response = result.GetRawResponse().Content;
-            JsonDocument jsonDocument = JsonDocument.Parse(response);
-            JsonElement jsonRoot = jsonDocument.RootElement;
-
-            Assert.That(jsonRoot.TryGetProperty("data", out _), Is.True);
-            Assert.That(jsonRoot.TryGetProperty("has_more", out _), Is.True);
-        }
-    }
-
-    [Test]
     public void CancelJobCanParseServiceError()
     {
         FineTuningClient client = GetTestClient<FineTuningClient>(TestScenario.FineTuning);

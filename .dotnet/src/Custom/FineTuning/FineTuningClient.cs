@@ -184,9 +184,10 @@ public partial class FineTuningClient
         return job;
     }
 
-    public virtual CollectionResult<FineTuningJob> GetJobs(string afterJobId = default, int? pageSize = default, CancellationToken cancellationToken = default) // TODO: Convert after/limit to Options
+    public virtual CollectionResult<FineTuningJob> GetJobs(ListJobsOptions options = default, CancellationToken cancellationToken = default) // TODO: Convert after/limit to Options
     {
-        var result = GetJobs(afterJobId, pageSize, cancellationToken.ToRequestOptions());
+        options ??= new ListJobsOptions();
+        var result = GetJobs(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
 
         if (result is not CollectionResult<FineTuningJob> jobs)
         {
@@ -196,9 +197,10 @@ public partial class FineTuningClient
         return jobs;
     }
 
-    public virtual AsyncCollectionResult<FineTuningJob> GetJobsAsync(string afterJobId = default, int? pageSize = default, CancellationToken cancellationToken = default) // TODO: Convert after/limit to Options
+    public virtual AsyncCollectionResult<FineTuningJob> GetJobsAsync(ListJobsOptions options = default, CancellationToken cancellationToken = default) // TODO: Convert after/limit to Options
     {
-        AsyncCollectionResult<FineTuningJob> result = GetJobsAsync(afterJobId, pageSize, cancellationToken.ToRequestOptions());
+        options ??= new ListJobsOptions();
+        AsyncCollectionResult<FineTuningJob> result = GetJobsAsync(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
 
         if (result is not AsyncCollectionResult<FineTuningJob> jobs)
         {
