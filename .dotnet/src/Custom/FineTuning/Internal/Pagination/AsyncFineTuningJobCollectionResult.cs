@@ -24,7 +24,7 @@ internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTu
     private readonly int? _limit;
     private readonly int? _pageSize;
     private readonly string _after;
-    
+
     public AsyncFineTuningJobCollectionResult(FineTuningClient fineTuningClient,
         ClientPipeline pipeline, RequestOptions? options,
         int? pageSize, string after)

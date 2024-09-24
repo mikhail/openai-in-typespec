@@ -67,7 +67,7 @@ public class FineTuningClientTests
 
     [Test]
     [Parallelizable]
-    public async Task MinimalRequiredParams([Values]bool isAsync)
+    public async Task MinimalRequiredParams([Values] bool isAsync)
     {
 
         FineTuningJob job = isAsync
@@ -85,11 +85,11 @@ public class FineTuningClientTests
         Assert.False(job.Status.InProgress);
     }
 
-    
+
 
     [Test]
     [Parallelizable]
-    public async Task AllParameters([Values]bool isAsync)
+    public async Task AllParameters([Values] bool isAsync)
     {
         // This test does not check for Integrations because it requires a valid API key
 
@@ -218,7 +218,7 @@ public class FineTuningClientTests
 
     [Test]
     [Parallelizable]
-    public void GetJobs([Values]bool isAsync)
+    public void GetJobs([Values] bool isAsync)
     {
         // Arrange
 
@@ -238,7 +238,7 @@ public class FineTuningClientTests
         Assert.Greater(0, counter);
         Assert.LessOrEqual(10, counter);
     }
-    
+
     [Test]
     [Parallelizable]
     public void GetJobsWithAfter()
@@ -263,7 +263,7 @@ public class FineTuningClientTests
     /// If this test starts failing because of the wrong count, please first check if the above is still true
     [Test]
     [Parallelizable]
-    public void GetJobEvents([Values(Method.Sync, Method.Async)]Method method)
+    public void GetJobEvents([Values(Method.Sync, Method.Async)] Method method)
     {
         // Arrange
         FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);

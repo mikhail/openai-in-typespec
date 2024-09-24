@@ -200,7 +200,8 @@ public partial class FineTuningClient
     {
         AsyncCollectionResult<FineTuningJob> result = GetJobsAsync(afterJobId, pageSize, cancellationToken.ToRequestOptions());
 
-        if (result is not AsyncCollectionResult<FineTuningJob> jobs) {
+        if (result is not AsyncCollectionResult<FineTuningJob> jobs)
+        {
             throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJob)}>");
         }
 
@@ -253,5 +254,5 @@ public partial class FineTuningClient
 
     }
 
-    
+
 }
