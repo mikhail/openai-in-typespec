@@ -5,6 +5,7 @@ using OpenAI.FineTuning;
 using OpenAI.Models;
 using System;
 using System.ClientModel;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -257,32 +258,13 @@ public class FineTuningClientTests
         });
     }
 
-    [Test]
-    [Parallelizable]
-    public async Task GetEventsWithPagination()
-    {
-        FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
-        client.CancelJob(job.JobId);
-
-        IAsyncEnumerable<ClientResult> result = client.GetPaginatedJobEventsAsync(job.JobId);
-        AsyncPageCollection<FineTuningJobEvent> pagesOfEvents = (AsyncPageCollection<FineTuningJobEvent>)result;
-
-        await foreach (var page in pagesOfEvents)
-        {
-            foreach (var @event in page.Values)
-            {
-                Assert.IsTrue(@event.Id.StartsWith("ftevent"));
-            }
-        }
-    }
-
     /// Manual experiments show that there are always at least 2 events:
     /// First one is that the job is created
     /// Second one is "validating training file"
     /// If this test starts failing because of the wrong count, please first check if the above is still true
     [Test]
     [Parallelizable]
-    public async Task AutoResolvePagination()
+    public async Task GetJobEvents()
     {
         FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
 
@@ -308,51 +290,45 @@ public class FineTuningClientTests
     [Parallelizable]
     public async Task GetJobs()
     {
-        var jobs = client.GetJobsAsync(null, limit: 10, null);
-
-        AsyncPageCollection<FineTuningJob> pages = (AsyncPageCollection<FineTuningJob>) jobs;
+        AsyncCollectionResult<FineTuningJob> jobs = client.GetJobsAsync(limit: 10);
 
         var counter = 0;
-        await foreach (var pageResult in pages)
+        await foreach (var job in jobs)
         {
-            foreach (var job in pageResult.Values)
-            {
-                Assert.IsTrue(job.JobId.StartsWith("ftjob"));
-                counter++;
-            }
-            break; // pages will auto resolve forever, so break early for test purposes.
+            Assert.IsTrue(job.JobId.StartsWith("ftjob"));
+            counter++;
         }
 
-        Assert.GreaterOrEqual(counter, 1);
+        Assert.AreEqual(10, counter);
     }
 
     [Test]
     [Parallelizable]
     public async Task GetJobsWithAfter()
     {
-        var jobs = client.GetJobsAsync(null, limit: 1, null);
-
-        var pages = (AsyncPageCollection<FineTuningJob>)jobs;
-
+        var firstJobList = client.GetJobsAsync(limit: 1);
         FineTuningJob firstJob = null;
-        await foreach (var pageResult in pages)
+        await foreach (var job in firstJobList)
         {
-            firstJob = pageResult.Values.First();
+            firstJob = job;
             break;
         }
-
-        var jobsAfter = client.GetJobsAsync(firstJob.JobId, limit: 1, null);
-
-        var pagesAfter = (AsyncPageCollection<FineTuningJob>)jobsAfter;
-
-        FineTuningJob secondJob = null;
-        await foreach (var pageResult in pagesAfter)
+        if (firstJob is null)
         {
-            secondJob = pageResult.Values.First();
+            Assert.Fail("No jobs found. At least 2 jobs have to be found to run this test.");
+        }
+
+        var secondJobList = client.GetJobsAsync(firstJob.JobId, limit: 1);
+        FineTuningJob secondJob = null;
+        await foreach (var job in secondJobList)
+        {
+            secondJob = job;
             break;
         }
 
         Assert.AreNotEqual(firstJob.JobId, secondJob.JobId);
+        // Can't assert that one was created after the next because they might be created at the same second.
+        // Assert.Greater(secondJob.CreatedAt, firstJob.CreatedAt, $"{firstJob}, {secondJob}");
     }
 
     private static FineTuningClient GetTestClient() => GetTestClient<FineTuningClient>(TestScenario.FineTuning);

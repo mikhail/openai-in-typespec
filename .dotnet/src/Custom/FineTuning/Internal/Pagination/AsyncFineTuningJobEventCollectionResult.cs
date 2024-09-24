@@ -3,17 +3,19 @@ using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 #nullable enable
 
 namespace OpenAI.FineTuning;
 
-internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult
+internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<FineTuningJobEvent>
 {
     private readonly FineTuningClient _fineTuningClient;
     private readonly ClientPipeline _pipeline;
     private readonly RequestOptions? _options;
+    private readonly CancellationToken _cancellationToken;
 
     // Initial values
     private readonly string _jobId;
@@ -31,6 +33,7 @@ internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult
         _jobId = jobId;
         _limit = limit;
         _after = after;
+        _cancellationToken = _options?.CancellationToken ?? default;
     }
 
     public async override IAsyncEnumerable<ClientResult> GetRawPagesAsync()
@@ -81,5 +84,20 @@ internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult
 
         using PipelineMessage message = _fineTuningClient.CreateGetFineTuningEventsRequest(jobId, after, limit, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
+    }
+
+    protected override async IAsyncEnumerable<FineTuningJobEvent> GetValuesFromPageAsync(ClientResult page)
+    {
+        Argument.AssertNotNull(page, nameof(page));
+
+        PipelineResponse response = page.GetRawResponse();
+
+        InternalListFineTuningJobEventsResponse list = ModelReaderWriter.Read<InternalListFineTuningJobEventsResponse>(response.Content)!;
+        var enumerable = list.Data.ToAsyncEnumerable(_cancellationToken);
+
+        await foreach (var item in enumerable)
+        {
+            yield return item;
+        }
     }
 }

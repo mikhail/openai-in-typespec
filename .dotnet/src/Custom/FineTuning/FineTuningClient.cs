@@ -184,20 +184,15 @@ public partial class FineTuningClient
         return job;
     }
 
-    /// <summary>
-    /// This will auto resolve pagination and re-fetching.
-    /// </summary>
-    /// <param name="jobId"></param>
-    /// <param name="options"></param>
-    /// <returns></returns>
-    public virtual async IAsyncEnumerable<FineTuningJobEvent> GetJobEventsAsync(string jobId, ListEventsOptions options = default)
+    public virtual AsyncCollectionResult<FineTuningJob> GetJobsAsync(string afterJobId = default, int? limit = default, int? pageSize = default, CancellationToken cancellationToken = default) // TODO: Convert after/limit to Options
     {
-        options ??= new ListEventsOptions();
+        AsyncCollectionResult<FineTuningJob> result = GetJobsAsync(afterJobId, limit, pageSize, cancellationToken.ToRequestOptions());
 
-        IAsyncEnumerable<ClientResult> result = GetPaginatedJobEventsAsync(jobId, options);
-        AsyncPageCollection<FineTuningJobEvent> pagesOfEvents = (AsyncPageCollection<FineTuningJobEvent>)result;
+        if (result is not AsyncCollectionResult<FineTuningJob> jobs) {
+            throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJob)}>");
+        }
 
-        await foreach (var value in pagesOfEvents.GetAllValuesAsync()) yield return value;
+        return jobs;
     }
 
     /// <summary>
@@ -206,13 +201,22 @@ public partial class FineTuningClient
     /// <param name="jobId"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public virtual IEnumerable<FineTuningJobEvent> GetJobEvents(string jobId, ListEventsOptions options = default)
+    public virtual AsyncCollectionResult<FineTuningJobEvent> GetJobEventsAsync(string jobId, ListEventsOptions options = default, CancellationToken cancellationToken = default)
     {
-        options ??= new ListEventsOptions();
+        options ??= new ListEventsOptions()
+        {
+            JobId = jobId
+        };
 
-        IEnumerable<ClientResult> result = GetLimitedJobEvents(jobId, after:options.After, limit:options.PageSize, options:null);
-        PageCollection<FineTuningJobEvent> pagesOfEvents = (PageCollection<FineTuningJobEvent>)result;
+        var result = GetJobEventsAsync(jobId, options.After, options.PageSize, cancellationToken.ToRequestOptions()); // TODO: how to handle if this doesn't take BinaryContent?
 
-        foreach (var value in pagesOfEvents.GetAllValues()) yield return value;
+        if (result is not AsyncCollectionResult<FineTuningJobEvent> events)
+        {
+            throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJobEvent)}>");
+        }
+        return events;
+
     }
+
+    
 }

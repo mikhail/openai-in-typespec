@@ -75,14 +75,14 @@ public partial class FineTuningClient
     /// <summary>
     /// [Protocol Method] List your organization's fine-tuning jobs
     /// </summary>
-    /// <param name="after"> Identifier for the last job from the previous pagination request. </param>
+    /// <param name="afterJobId"> Identifier for the last job from the previous pagination request. </param>
     /// <param name="limit"> Number of fine-tuning jobs to retrieve. </param>
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual AsyncCollectionResult GetJobsAsync(string after, int? limit, RequestOptions options)
+    public virtual AsyncCollectionResult<FineTuningJob> GetJobsAsync(string afterJobId, int? limit, int? pageSize, RequestOptions options)
     {
-        return new AsyncFineTuningJobCollectionResult(this, _pipeline, options, limit, after);
+        return new AsyncFineTuningJobCollectionResult(this, _pipeline, options, limit, pageSize, afterJobId);
     }
 
 
@@ -200,8 +200,6 @@ public partial class FineTuningClient
     /// <returns> The response returned from the service. </returns>
     public virtual AsyncCollectionResult GetJobEventsAsync(string jobId, string after, int? limit, RequestOptions options)
     {
-        options ??= new ListEventsOptions();
-
         return new AsyncFineTuningJobEventCollectionResult(this, _pipeline, options, jobId, limit, after);
     }
 

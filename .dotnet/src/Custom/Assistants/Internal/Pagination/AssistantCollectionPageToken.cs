@@ -73,7 +73,7 @@ internal class AssistantCollectionPageToken : ContinuationToken
 
         if (data.ToMemory().Length == 0)
         {
-            throw new ArgumentException($"Failed to create {nameof(AssistantsPageToken)} from provided token.", nameof(token));
+            throw new ArgumentException($"Failed to create {nameof(AssistantCollectionPageToken)} from provided token.", nameof(token));
         }
 
         Utf8JsonReader reader = new(data);
