@@ -198,7 +198,7 @@ public partial class FineTuningClient
     /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual AsyncCollectionResult GetJobEventsAsync(string jobId, string after, int? limit, RequestOptions options)
+    public virtual AsyncCollectionResult<FineTuningJobEvent> GetJobEventsAsync(string jobId, string after, int? limit, RequestOptions options)
     {
         return new AsyncFineTuningJobEventCollectionResult(this, _pipeline, options, jobId, limit, after);
     }
@@ -217,7 +217,7 @@ public partial class FineTuningClient
     /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual CollectionResult GetJobEvents(string jobId, string after, int? limit, RequestOptions options)
+    public virtual CollectionResult<FineTuningJobEvent> GetJobEvents(string jobId, string after, int? limit, RequestOptions options)
     {
         Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
 
@@ -235,11 +235,11 @@ public partial class FineTuningClient
     /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual AsyncCollectionResult GetJobCheckpointsAsync(string jobId, string after, int? limit, RequestOptions options)
+    public virtual AsyncCollectionResult<FineTuningJobCheckpoint> GetJobCheckpointsAsync(string jobId, string after, int? limit, RequestOptions options)
     {
         Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
 
-        return new AsyncFineTuningJobCheckpointCollectionResult(this, _pipeline, options, jobId, limit, after);
+        return new AsyncFineTuningJobCheckpointCollectionResult(this, _pipeline, options, jobId, after, limit);
 
     }
 
@@ -254,7 +254,7 @@ public partial class FineTuningClient
     /// <exception cref="ArgumentException"> <paramref name="jobId"/> is an empty string, and was expected to be non-empty. </exception>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual CollectionResult GetJobCheckpoints(string jobId, string after, int? limit, RequestOptions options)
+    public virtual CollectionResult<FineTuningJobCheckpoint> GetJobCheckpoints(string jobId, string after, int? limit, RequestOptions options)
     {
         Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
 

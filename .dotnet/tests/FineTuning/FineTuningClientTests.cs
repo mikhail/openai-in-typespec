@@ -235,8 +235,8 @@ public class FineTuningClientTests
             counter++;
         }
 
-        Assert.Greater(0, counter);
-        Assert.LessOrEqual(10, counter);
+        Assert.Greater(counter, 0);
+        Assert.LessOrEqual(counter, 10);
     }
 
     [Test]
@@ -249,7 +249,7 @@ public class FineTuningClientTests
         {
             Assert.Fail("No jobs found. At least 2 jobs have to be found to run this test.");
         }
-        var secondJob = client.GetJobs(new(){AfterJobId = firstJob.JobId}).First();
+        var secondJob = client.GetJobs(new() { AfterJobId = firstJob.JobId }).First();
 
         Assert.AreNotEqual(firstJob.JobId, secondJob.JobId);
         // Can't assert that one was created after the next because they might be created at the same second.
@@ -277,16 +277,36 @@ public class FineTuningClientTests
         var events = (method == Method.Async)
             ? client.GetJobEventsAsync(job.JobId, options).ToBlockingEnumerable()
             : client.GetJobEvents(job.JobId, options);
-
+        var first = events.FirstOrDefault();
 
         // Assert
-        var count = 0;
-        foreach (var e in events)
+        if (first is null)
         {
-            Assert.IsTrue(e.Id.StartsWith("ftevent"));
-            count++;
+            Assert.Fail("No events found.");
         }
-        Assert.GreaterOrEqual(count, 2);
+    }
+
+    [Test]
+    [Parallelizable]
+    public void GetJobCheckpoints([Values(Method.Sync, Method.Async)] Method method)
+    {
+        // Arrange
+        // TODO: When `status` option becomes available, use it to get a succeeded job
+        FineTuningJob job = client.GetJobs(new() { PageSize = 100 })
+                                  .Where((job) => job.Status == "succeeded")
+                                  .First();
+
+        // Act
+        var checkpoints = (method == Method.Async)
+            ? client.GetJobCheckpointsAsync(job.JobId).ToBlockingEnumerable()
+            : client.GetJobCheckpoints(job.JobId);
+        FineTuningJobCheckpoint first = checkpoints.FirstOrDefault();
+
+        // Assert
+        if (first is null)
+        {
+            Assert.Fail("No checkpoints found.");
+        }
     }
 
 

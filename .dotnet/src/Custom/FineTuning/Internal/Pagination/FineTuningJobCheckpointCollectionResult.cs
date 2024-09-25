@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning;
 
-internal class FineTuningJobCheckpointCollectionResult : CollectionResult
+internal class FineTuningJobCheckpointCollectionResult : CollectionResult<FineTuningJobCheckpoint>
 {
     private readonly FineTuningClient _fineTuningClient;
     private readonly ClientPipeline _pipeline;
@@ -87,5 +87,14 @@ internal class FineTuningJobCheckpointCollectionResult : CollectionResult
 
         using PipelineMessage message = _fineTuningClient.CreateGetFineTuningJobCheckpointsRequest(jobId, after, limit, options);
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
+    }
+
+    protected override IEnumerable<FineTuningJobCheckpoint> GetValuesFromPage(ClientResult page)
+    {
+        Argument.AssertNotNull(page, nameof(page));
+
+        PipelineResponse response = page.GetRawResponse();
+        InternalListFineTuningJobCheckpointsResponse points = ModelReaderWriter.Read<InternalListFineTuningJobCheckpointsResponse>(response.Content)!;
+        return points.Data;
     }
 }

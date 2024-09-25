@@ -33,11 +33,8 @@ internal partial class InternalCreateFineTuningJobRequestWandbIntegrationWandb
 [CodeGenModel("FineTuningJobObject")]
 internal readonly partial struct InternalFineTuningJobObject { }
 
-[CodeGenModel("FineTuningJobCheckpoint")]
-internal partial class InternalFineTuningJobCheckpoint { }
 
-[CodeGenModel("FineTuningJobCheckpointMetrics")]
-internal partial class InternalFineTuningJobCheckpointMetrics { }
+
 
 [CodeGenModel("FineTuningJobCheckpointObject")]
 internal readonly partial struct InternalFineTuningJobCheckpointObject { }

@@ -254,9 +254,9 @@ model FineTuningJobCheckpoint {
 
   /** Metrics at the step number during the fine-tuning job. */
   metrics: {
-    step?: float32;
-    train_loss?: float32;
-    train_mean_token_accuracy?: float32;
+    step: int32;
+    train_loss: float32;
+    train_mean_token_accuracy: float32;
     valid_loss?: float32;
     valid_mean_token_accuracy?: float32;
     full_valid_loss?: float32;

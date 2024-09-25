@@ -6892,8 +6892,8 @@ components:
           type: object
           properties:
             step:
-              type: number
-              format: float
+              type: integer
+              format: int32
             train_loss:
               type: number
               format: float
@@ -6912,6 +6912,10 @@ components:
             full_valid_mean_token_accuracy:
               type: number
               format: float
+          required:
+            - step
+            - train_loss
+            - train_mean_token_accuracy
           description: Metrics at the step number during the fine-tuning job.
         fine_tuning_job_id:
           type: string

@@ -86,18 +86,13 @@ internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<F
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
     }
 
-    protected override async IAsyncEnumerable<FineTuningJobEvent> GetValuesFromPageAsync(ClientResult page)
+    protected override IAsyncEnumerable<FineTuningJobEvent> GetValuesFromPageAsync(ClientResult page)
     {
         Argument.AssertNotNull(page, nameof(page));
 
         PipelineResponse response = page.GetRawResponse();
-
         InternalListFineTuningJobEventsResponse list = ModelReaderWriter.Read<InternalListFineTuningJobEventsResponse>(response.Content)!;
-        var enumerable = list.Data.ToAsyncEnumerable(_cancellationToken);
 
-        await foreach (var item in enumerable)
-        {
-            yield return item;
-        }
+        return list.Data.ToAsyncEnumerable(_cancellationToken);
     }
 }

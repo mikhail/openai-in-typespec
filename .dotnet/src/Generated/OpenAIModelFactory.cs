@@ -128,6 +128,19 @@ namespace OpenAI
             return new JobError(code, message, invalidParameter, serializedAdditionalRawData: null);
         }
 
+        public static CheckpointMetrics CheckpointMetrics(int step = default, float trainLoss = default, float trainMeanTokenAccuracy = default, float? validLoss = null, float? validMeanTokenAccuracy = null, float? fullValidLoss = null, float? fullValidMeanTokenAccuracy = null)
+        {
+            return new CheckpointMetrics(
+                step,
+                trainLoss,
+                trainMeanTokenAccuracy,
+                validLoss,
+                validMeanTokenAccuracy,
+                fullValidLoss,
+                fullValidMeanTokenAccuracy,
+                serializedAdditionalRawData: null);
+        }
+
         public static FineTuningJobEvent FineTuningJobEvent(string id = null, DateTimeOffset createdAt = default, string level = null, string message = null, FineTuningJobEventObject @object = default)
         {
             return new FineTuningJobEvent(

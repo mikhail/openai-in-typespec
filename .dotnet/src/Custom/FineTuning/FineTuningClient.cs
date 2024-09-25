@@ -3,6 +3,7 @@ using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
@@ -253,8 +254,34 @@ public partial class FineTuningClient
             throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJobEvent)}>");
         }
         return events;
-
     }
 
+    public virtual CollectionResult<FineTuningJobCheckpoint> GetJobCheckpoints(string jobId, ListCheckpointsOptions options = default, CancellationToken cancellationToken = default)
+    {
+        options ??= new ListCheckpointsOptions() { };
+
+        var result = GetJobCheckpoints(jobId, options.AfterCheckpointId, options.PageSize, cancellationToken.ToRequestOptions());
+
+        if (result is not CollectionResult<FineTuningJobCheckpoint> checkpoints)
+        {
+            throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJobCheckpoint)}>");
+        }
+
+        return checkpoints;
+    }
+
+    public virtual AsyncCollectionResult<FineTuningJobCheckpoint> GetJobCheckpointsAsync(string jobId, ListCheckpointsOptions options = default, CancellationToken cancellationToken = default)
+    {
+        options ??= new ListCheckpointsOptions() { };
+
+        var result = GetJobCheckpointsAsync(jobId, options.AfterCheckpointId, options.PageSize, cancellationToken.ToRequestOptions());
+
+        if (result is not AsyncCollectionResult<FineTuningJobCheckpoint> checkpoints)
+        {
+            throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJobCheckpoint)}>");
+        }
+
+        return checkpoints;
+    }
 
 }
