@@ -300,6 +300,10 @@ public class FineTuningClientTests
         {
             Assert.Fail("No checkpoints found.");
         }
+
+        CheckpointMetrics metrics = first.Metrics;
+        Assert.NotNull(metrics);
+        Assert.Greater(metrics.Step, 0);
     }
 
 
