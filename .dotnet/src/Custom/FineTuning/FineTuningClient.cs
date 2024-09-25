@@ -253,14 +253,7 @@ public partial class FineTuningClient
     {
         options ??= new ListCheckpointsOptions() { };
 
-        var result = GetJobCheckpointsAsync(jobId, options.AfterCheckpointId, options.PageSize, cancellationToken.ToRequestOptions());
-
-        if (result is not AsyncCollectionResult<FineTuningJobCheckpoint> checkpoints)
-        {
-            throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJobCheckpoint)}>");
-        }
-
-        return checkpoints;
+        return GetJobCheckpointsAsync(jobId, options.AfterCheckpointId, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
 }
