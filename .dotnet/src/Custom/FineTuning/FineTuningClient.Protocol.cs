@@ -97,7 +97,7 @@ public partial class FineTuningClient
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual CollectionResult GetJobs(string after, int? pageSize, RequestOptions options)
+    public virtual CollectionResult<FineTuningJob> GetJobs(string after, int? pageSize, RequestOptions options)
     {
         return new FineTuningJobCollectionResult(this, _pipeline, options, pageSize, after);
     }

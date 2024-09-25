@@ -96,8 +96,9 @@ public partial class FineTuningClient
 
     /// <summary> Creates a job with a training file and base model. </summary>
     /// <param name="baseModel"> The original model to use as a starting base to fine-tune. String such as "gpt-3.5-turbo" </param>
-    /// <param name="trainingFileId"> The training file name that is already uploaded. String should match pattern '^file-[a-zA-Z0-9]{24}$'. </param>
+    /// <param name="trainingFileId"> The training file Id that is already uploaded. String should match pattern '^file-[a-zA-Z0-9]{24}$'. </param>
     /// <param name="options"> Additional options (<see cref="FineTuningOptions"/>) to customize the request. </param>
+    /// <param name="cancellationToken"> The cancellation token. </param>
     /// <returns>A <see cref="ClientResult{FineTuningJob}"/> containing the newly started fine-tuning job.</returns>
     public virtual ClientResult<FineTuningJob> CreateJob(
         string baseModel,
@@ -114,12 +115,7 @@ public partial class FineTuningClient
         return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
     }
 
-    /// <summary> Async Creates a job with a training file and base model. </summary>
-    /// <param name="baseModel"> The original model to use as a starting base to fine-tune. String such as "gpt-3.5-turbo" </param>
-    /// <param name="trainingFileId"> The training file Id that is already uploaded. String should match pattern '^file-[a-zA-Z0-9]{24}$'. </param>
-    /// <param name="options"> Additional options (<see cref="FineTuningOptions"/>) to customize the request. </param>
-    /// <param name="cancellationToken"> The cancellation token. </param>
-    /// <returns>A <see cref="Task"/> of a <see cref="ClientResult{FineTuningJob}"/> containing the newly started fine-tuning job.</returns>
+    /// <inheritdoc cref="CreateJob(string, string, FineTuningOptions, CancellationToken)"/>
     public virtual async Task<ClientResult<FineTuningJob>> CreateJobAsync(
         string baseModel,
         string trainingFileId,
@@ -148,19 +144,29 @@ public partial class FineTuningClient
         return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
     }
 
-    /// <summary> Async version of cancel job</summary>
-    /// <param name="jobId"> The job ID to cancel. </param>
-    /// <param name="cancellationToken"> The cancellation token. </param>
-    /// <returns> A <see cref="Task{T}"/> of <see cref="ClientResult{FineTuningJob}"/> containing the canceled fine-tuning job. </returns>
+    /// <inheritdoc cref="CancelJob(string, CancellationToken)"/>
     public virtual async Task<ClientResult<FineTuningJob>> CancelJobAsync(string jobId, CancellationToken cancellationToken = default)
     {
         ClientResult result = await CancelJobAsync(jobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
         return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
     }
 
-    public virtual async Task<ClientResult<FineTuningJob>> GetJobAsync(string jobId)
+    /// <summary>
+    /// Retrieves a fine-tuning job with the specified job ID.
+    /// </summary>
+    /// <param name="jobId">The ID of the job to retrieve.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns> A <see cref="ClientResult{FineTuningJob}"/> containing the fine-tuning job. </returns>
+    public virtual ClientResult<FineTuningJob> GetJob(string jobId, CancellationToken cancellationToken = default)
     {
-        ClientResult result = await GetJobAsync(jobId, null).ConfigureAwait(false);
+        ClientResult result = GetJob(jobId, cancellationToken.ToRequestOptions());
+        return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
+    }
+
+    /// <inheritdoc cref="GetJob(string, CancellationToken)"/>
+    public virtual async Task<ClientResult<FineTuningJob>> GetJobAsync(string jobId, CancellationToken cancellationToken = default)
+    {
+        ClientResult result = await GetJobAsync(jobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
         return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
     }
 
@@ -186,91 +192,63 @@ public partial class FineTuningClient
         return job;
     }
 
-    public virtual CollectionResult<FineTuningJob> GetJobs(ListJobsOptions options = default, CancellationToken cancellationToken = default) // TODO: Convert after/limit to Options
+
+    /// <summary>
+    /// Retrieves a list of fine-tuning jobs.
+    /// </summary>
+    /// <param name="options"> Additional options: <see cref="ListJobsOptions"/> to customize the request. </param>
+    /// <param name="cancellationToken"> The cancellation token. </param>
+    /// <returns> A <see cref="CollectionResult{FineTuningJob}"/> containing the list of fine-tuning jobs. </returns>
+    public virtual CollectionResult<FineTuningJob> GetJobs(ListJobsOptions options = default, CancellationToken cancellationToken = default)
     {
         options ??= new ListJobsOptions();
-        var result = GetJobs(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
-
-        if (result is not CollectionResult<FineTuningJob> jobs)
-        {
-            throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJob)}>");
-        }
-
-        return jobs;
+        return GetJobs(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
-    public virtual AsyncCollectionResult<FineTuningJob> GetJobsAsync(ListJobsOptions options = default, CancellationToken cancellationToken = default) // TODO: Convert after/limit to Options
+    /// <inheritdoc cref="GetJobs(ListJobsOptions, CancellationToken)"/>
+    /// <returns> A <see cref="AsyncCollectionResult{FineTuningJob}"/> containing the list of fine-tuning jobs. </returns>
+    public virtual AsyncCollectionResult<FineTuningJob> GetJobsAsync(ListJobsOptions options = default, CancellationToken cancellationToken = default)
     {
         options ??= new ListJobsOptions();
-        AsyncCollectionResult<FineTuningJob> result = GetJobsAsync(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
-
-        if (result is not AsyncCollectionResult<FineTuningJob> jobs)
-        {
-            throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJob)}>");
-        }
-
-        return jobs;
+        return GetJobsAsync(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
     /// <summary>
-    /// This will auto resolve pagination and re-fetching.
+    /// Gets a list of events for a fine-tuning job.
     /// </summary>
-    /// <param name="jobId"></param>
-    /// <param name="options"></param>
-    /// <returns></returns>
+    /// <param name="jobId"> The ID of the job to retrieve events for. </param>
+    /// <param name="options"> Additional options: <see cref="ListEventsOptions"/> to customize the request. </param>
+    /// <param name="cancellationToken"> The cancellation token. </param>
+    /// <returns> A <see cref="CollectionResult{FineTuningJobEvent}"/> containing the list of events for the job. </returns>
     public virtual CollectionResult<FineTuningJobEvent> GetJobEvents(string jobId, ListEventsOptions options = default, CancellationToken cancellationToken = default)
     {
-        options ??= new ListEventsOptions()
-        {
-            JobId = jobId
-        };
+        options ??= new ListEventsOptions();
+        return GetJobEvents(jobId, options.After, options.PageSize, cancellationToken.ToRequestOptions());
+    }
 
-        var result = GetJobEvents(jobId, options.After, options.PageSize, cancellationToken.ToRequestOptions()); // TODO: how to handle if this doesn't take BinaryContent?
-
-        if (result is not CollectionResult<FineTuningJobEvent> events)
-        {
-            throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJobEvent)}>");
-        }
-        return events;
-
+    /// <inheritdoc cref="GetJobEvents(string, ListEventsOptions, CancellationToken)"/>
+    /// <returns> A <see cref="AsyncCollectionResult{FineTuningJobEvent}"/> containing the list of events for the job. </returns>
+    public virtual AsyncCollectionResult<FineTuningJobEvent> GetJobEventsAsync(string jobId, ListEventsOptions options = default, CancellationToken cancellationToken = default)
+    {
+        options ??= new ListEventsOptions();
+        return GetJobEventsAsync(jobId, options.After, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
     /// <summary>
-    /// This will auto resolve pagination and re-fetching.
+    /// Gets a list of checkpoints for a fine-tuning job.
     /// </summary>
-    /// <param name="jobId"></param>
-    /// <param name="options"></param>
-    /// <returns></returns>
-    public virtual AsyncCollectionResult<FineTuningJobEvent> GetJobEventsAsync(string jobId, ListEventsOptions options = default, CancellationToken cancellationToken = default)
-    {
-        options ??= new ListEventsOptions()
-        {
-            JobId = jobId
-        };
-
-        var result = GetJobEventsAsync(jobId, options.After, options.PageSize, cancellationToken.ToRequestOptions()); // TODO: how to handle if this doesn't take BinaryContent?
-
-        if (result is not AsyncCollectionResult<FineTuningJobEvent> events)
-        {
-            throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJobEvent)}>");
-        }
-        return events;
-    }
-
+    /// <param name="jobId"> The ID of the job to retrieve checkpoints for. </param>
+    /// <param name="options"> Additional options: <see cref="ListCheckpointsOptions"/> to customize the request. </param>
+    /// <param name="cancellationToken"> The cancellation token. </param>
+    /// <returns> A <see cref="CollectionResult{FineTuningJobCheckpoint}"/> containing the list of checkpoints for the job. </returns>
     public virtual CollectionResult<FineTuningJobCheckpoint> GetJobCheckpoints(string jobId, ListCheckpointsOptions options = default, CancellationToken cancellationToken = default)
     {
-        options ??= new ListCheckpointsOptions() { };
-
-        var result = GetJobCheckpoints(jobId, options.AfterCheckpointId, options.PageSize, cancellationToken.ToRequestOptions());
-
-        if (result is not CollectionResult<FineTuningJobCheckpoint> checkpoints)
-        {
-            throw new InvalidOperationException($"Failed to cast protocol return type to expected collection type {nameof(AsyncCollectionResult)}<{nameof(FineTuningJobCheckpoint)}>");
-        }
-
-        return checkpoints;
+        options ??= new ListCheckpointsOptions();
+        return GetJobCheckpoints(jobId, options.AfterCheckpointId, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
+    /// <inheritdoc cref="GetJobCheckpoints(string, ListCheckpointsOptions, CancellationToken)"/>
+    /// <returns> A <see cref="AsyncCollectionResult{FineTuningJobCheckpoint}"/> containing the list of checkpoints for the job. </returns>
     public virtual AsyncCollectionResult<FineTuningJobCheckpoint> GetJobCheckpointsAsync(string jobId, ListCheckpointsOptions options = default, CancellationToken cancellationToken = default)
     {
         options ??= new ListCheckpointsOptions() { };
