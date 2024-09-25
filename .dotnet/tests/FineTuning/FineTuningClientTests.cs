@@ -306,7 +306,5 @@ public class FineTuningClientTests
         Assert.Greater(metrics.Step, 0);
     }
 
-
     private static FineTuningClient GetTestClient() => GetTestClient<FineTuningClient>(TestScenario.FineTuning);
-
 }
