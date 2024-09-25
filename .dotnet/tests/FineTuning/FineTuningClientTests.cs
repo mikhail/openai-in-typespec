@@ -2,16 +2,9 @@ using NUnit.Framework;
 using NUnit.Framework.Internal;
 using OpenAI.Files;
 using OpenAI.FineTuning;
-using OpenAI.Models;
-using System;
 using System.ClientModel;
-using System.ClientModel.Primitives;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Text.Json;
 using System.Threading.Tasks;
 using static OpenAI.Tests.TestHelpers;
 
@@ -39,8 +32,8 @@ public class FineTuningClientTests
     string samplePath;
     string validationPath;
 
-    OpenAIFileInfo sampleFile;
-    OpenAIFileInfo validationFile;
+    OpenAIFile sampleFile;
+    OpenAIFile validationFile;
 
     [OneTimeSetUp]
     public void Setup()

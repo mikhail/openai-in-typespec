@@ -118,6 +118,7 @@ public partial class FineTuningClient
     /// <param name="baseModel"> The original model to use as a starting base to fine-tune. String such as "gpt-3.5-turbo" </param>
     /// <param name="trainingFileId"> The training file Id that is already uploaded. String should match pattern '^file-[a-zA-Z0-9]{24}$'. </param>
     /// <param name="options"> Additional options (<see cref="FineTuningOptions"/>) to customize the request. </param>
+    /// <param name="cancellationToken"> The cancellation token. </param>
     /// <returns>A <see cref="Task"/> of a <see cref="ClientResult{FineTuningJob}"/> containing the newly started fine-tuning job.</returns>
     public virtual async Task<ClientResult<FineTuningJob>> CreateJobAsync(
         string baseModel,
