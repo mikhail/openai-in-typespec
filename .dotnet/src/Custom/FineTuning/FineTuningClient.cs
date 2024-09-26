@@ -33,6 +33,12 @@ namespace OpenAI.FineTuning;
 [CodeGenSuppress("GetFineTuningJobCheckpoints", typeof(string), typeof(string), typeof(int?))]
 public partial class FineTuningClient
 {
+    // CUSTOM: Remove virtual keyword.
+    /// <summary>
+    /// The HTTP pipeline for sending and receiving REST requests and responses.
+    /// </summary>
+    public ClientPipeline Pipeline => _pipeline;
+
     // CUSTOM: Added as a convenience.
     /// <summary> Initializes a new instance of <see cref="FineTuningClient">. </summary>
     /// <param name="apiKey"> The API key to authenticate with the service. </param>
@@ -60,14 +66,12 @@ public partial class FineTuningClient
     {
     }
 
-    // Customization: documented constructors, apply protected visibility    
-    // CUSTOM:
-    // - Used a custom pipeline.
-    // - Demoted the endpoint parameter to be a property in the options class.
-    /// <summary> Initializes a new instance of <see cref="FineTuningClient">. </summary>
-    /// <param name="credential"> The API key to authenticate with the service. </param>
-    /// <param name="options"> The options to configure the client. </param>
-    /// <exception cref="ArgumentNullException"> <paramref name="credential"/> is null. </exception>
+    /// <summary>
+    /// Initializes a new instance of <see cref="FineTuningClient"/> that will use an API key when authenticating.
+    /// </summary>
+    /// <param name="credential"> The API key used to authenticate with the service endpoint. </param>
+    /// <param name="options"> Additional options to customize the client. </param>
+    /// <exception cref="ArgumentNullException"> The provided <paramref name="credential"/> was null. </exception>
     public FineTuningClient(ApiKeyCredential credential, OpenAIClientOptions options)
     {
         Argument.AssertNotNull(credential, nameof(credential));
@@ -111,7 +115,7 @@ public partial class FineTuningClient
         options.Model = baseModel;
         options.TrainingFile = trainingFileId;
 
-        ClientResult result = CreateJob(options.ToBinaryContent(), cancellationToken.ToRequestOptions());
+        FineTuningJobOperation result = CreateFineTuningJob(options.ToBinaryContent(), false, cancellationToken.ToRequestOptions());
         return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
     }
 
@@ -128,28 +132,11 @@ public partial class FineTuningClient
         options.Model = baseModel;
         options.TrainingFile = trainingFileId;
 
-        ClientResult result = await CreateJobAsync(options.ToBinaryContent(), cancellationToken.ToRequestOptions()).ConfigureAwait(false);
+        FineTuningJobOperation result = await CreateFineTuningJobAsync(options.ToBinaryContent(), false, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
         return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
     }
 
-    /// <summary>
-    /// Cancels a fine-tuning job with the specified job ID.
-    /// </summary>
-    /// <param name="jobId">The ID of the job to cancel.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A <see cref="ClientResult{FineTuningJob}"/> containing the canceled fine-tuning job.</returns>
-    public virtual ClientResult<FineTuningJob> CancelJob(string jobId, CancellationToken cancellationToken = default)
-    {
-        ClientResult result = CancelJob(jobId, cancellationToken.ToRequestOptions());
-        return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
-    }
-
-    /// <inheritdoc cref="CancelJob(string, CancellationToken)"/>
-    public virtual async Task<ClientResult<FineTuningJob>> CancelJobAsync(string jobId, CancellationToken cancellationToken = default)
-    {
-        ClientResult result = await CancelJobAsync(jobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
-        return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
-    }
+    
 
     /// <summary>
     /// Retrieves a fine-tuning job with the specified job ID.
@@ -213,47 +200,8 @@ public partial class FineTuningClient
         return GetJobsAsync(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
-    /// <summary>
-    /// Gets a list of events for a fine-tuning job.
-    /// </summary>
-    /// <param name="jobId"> The ID of the job to retrieve events for. </param>
-    /// <param name="options"> Additional options: <see cref="ListEventsOptions"/> to customize the request. </param>
-    /// <param name="cancellationToken"> The cancellation token. </param>
-    /// <returns> A <see cref="CollectionResult{FineTuningJobEvent}"/> containing the list of events for the job. </returns>
-    public virtual CollectionResult<FineTuningJobEvent> GetJobEvents(string jobId, ListEventsOptions options = default, CancellationToken cancellationToken = default)
+    internal virtual FineTuningJobOperation CreateCreateJobOperation(string jobId, string status, PipelineResponse response)
     {
-        options ??= new ListEventsOptions();
-        return GetJobEvents(jobId, options.After, options.PageSize, cancellationToken.ToRequestOptions());
+        return new FineTuningJobOperation(_pipeline, _endpoint, jobId, status, response);
     }
-
-    /// <inheritdoc cref="GetJobEvents(string, ListEventsOptions, CancellationToken)"/>
-    /// <returns> A <see cref="AsyncCollectionResult{FineTuningJobEvent}"/> containing the list of events for the job. </returns>
-    public virtual AsyncCollectionResult<FineTuningJobEvent> GetJobEventsAsync(string jobId, ListEventsOptions options = default, CancellationToken cancellationToken = default)
-    {
-        options ??= new ListEventsOptions();
-        return GetJobEventsAsync(jobId, options.After, options.PageSize, cancellationToken.ToRequestOptions());
-    }
-
-    /// <summary>
-    /// Gets a list of checkpoints for a fine-tuning job.
-    /// </summary>
-    /// <param name="jobId"> The ID of the job to retrieve checkpoints for. </param>
-    /// <param name="options"> Additional options: <see cref="ListCheckpointsOptions"/> to customize the request. </param>
-    /// <param name="cancellationToken"> The cancellation token. </param>
-    /// <returns> A <see cref="CollectionResult{FineTuningJobCheckpoint}"/> containing the list of checkpoints for the job. </returns>
-    public virtual CollectionResult<FineTuningJobCheckpoint> GetJobCheckpoints(string jobId, ListCheckpointsOptions options = default, CancellationToken cancellationToken = default)
-    {
-        options ??= new ListCheckpointsOptions();
-        return GetJobCheckpoints(jobId, options.AfterCheckpointId, options.PageSize, cancellationToken.ToRequestOptions());
-    }
-
-    /// <inheritdoc cref="GetJobCheckpoints(string, ListCheckpointsOptions, CancellationToken)"/>
-    /// <returns> A <see cref="AsyncCollectionResult{FineTuningJobCheckpoint}"/> containing the list of checkpoints for the job. </returns>
-    public virtual AsyncCollectionResult<FineTuningJobCheckpoint> GetJobCheckpointsAsync(string jobId, ListCheckpointsOptions options = default, CancellationToken cancellationToken = default)
-    {
-        options ??= new ListCheckpointsOptions() { };
-
-        return GetJobCheckpointsAsync(jobId, options.AfterCheckpointId, options.PageSize, cancellationToken.ToRequestOptions());
-    }
-
 }

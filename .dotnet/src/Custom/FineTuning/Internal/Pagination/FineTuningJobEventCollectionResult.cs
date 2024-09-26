@@ -10,24 +10,21 @@ namespace OpenAI.FineTuning;
 
 internal class FineTuningJobEventCollectionResult : CollectionResult<FineTuningJobEvent>
 {
-    private readonly FineTuningClient _fineTuningClient;
-    private readonly ClientPipeline _pipeline;
+    private readonly FineTuningJobOperation _operation;
     private readonly RequestOptions? _options;
 
     // Initial values
-    private readonly string _jobId;
     private readonly int? _limit;
-    private readonly string _after;
+    private readonly string? _after;
 
-    public FineTuningJobEventCollectionResult(FineTuningClient fineTuningClient,
-        ClientPipeline pipeline, RequestOptions? options,
-        string jobId, int? limit, string after)
+    public FineTuningJobEventCollectionResult(
+        FineTuningJobOperation fineTuningJobOperation,
+        RequestOptions? options,
+        int? limit, string? after)
     {
-        _fineTuningClient = fineTuningClient;
-        _pipeline = pipeline;
+        _operation = fineTuningJobOperation;
         _options = options;
 
-        _jobId = jobId;
         _limit = limit;
         _after = after;
     }
@@ -48,11 +45,11 @@ internal class FineTuningJobEventCollectionResult : CollectionResult<FineTuningJ
     {
         Argument.AssertNotNull(page, nameof(page));
 
-        return FineTuningJobEventCollectionPageToken.FromResponse(page, _jobId, _limit);
+        return FineTuningJobEventCollectionPageToken.FromResponse(page, _operation.JobId, _limit);
     }
 
     public ClientResult GetFirstPage()
-        => GetJobEvents(_jobId, _after, _limit, _options);
+        => _operation.GetJobEventsPage(_after, _limit, _options);
 
     public ClientResult GetNextPage(ClientResult result)
     {
@@ -67,7 +64,7 @@ internal class FineTuningJobEventCollectionResult : CollectionResult<FineTuningJ
         string? lastId = lastItem.TryGetProperty("id", out JsonElement idElement) ?
             idElement.GetString() : null;
 
-        return GetJobEvents(_jobId, lastId, _limit, _options);
+        return _operation.GetJobEventsPage(lastId, _limit, _options);
     }
 
     public static bool HasNextPage(ClientResult result)
@@ -80,14 +77,6 @@ internal class FineTuningJobEventCollectionResult : CollectionResult<FineTuningJ
         bool hasMore = doc.RootElement.GetProperty("has_more"u8).GetBoolean();
 
         return hasMore;
-    }
-
-    internal virtual ClientResult GetJobEvents(string jobId, string? after, int? limit, RequestOptions? options)
-    {
-        Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
-
-        using PipelineMessage message = _fineTuningClient.CreateGetFineTuningEventsRequest(jobId, after, limit, options);
-        return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
     protected override IEnumerable<FineTuningJobEvent> GetValuesFromPage(ClientResult page)

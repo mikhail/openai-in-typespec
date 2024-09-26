@@ -10,27 +10,24 @@ using System.Threading.Tasks;
 
 namespace OpenAI.FineTuning;
 
-internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<FineTuningJobEvent>
+internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult
 {
-    private readonly FineTuningClient _fineTuningClient;
-    private readonly ClientPipeline _pipeline;
+    private readonly FineTuningJobOperation _operation;
     private readonly RequestOptions? _options;
     private readonly CancellationToken _cancellationToken;
 
     // Initial values
-    private readonly string _jobId;
     private readonly int? _limit;
-    private readonly string _after;
+    private readonly string? _after;
 
-    public AsyncFineTuningJobEventCollectionResult(FineTuningClient fineTuningClient,
-        ClientPipeline pipeline, RequestOptions? options,
-        string jobId, int? limit, string after)
+    public AsyncFineTuningJobEventCollectionResult(
+        FineTuningJobOperation fineTuningJobOperation,
+        RequestOptions? options,
+        int? limit, string? after)
     {
-        _fineTuningClient = fineTuningClient;
-        _pipeline = pipeline;
+        _operation = fineTuningJobOperation;
         _options = options;
 
-        _jobId = jobId;
         _limit = limit;
         _after = after;
         _cancellationToken = _options?.CancellationToken ?? default;
@@ -52,11 +49,11 @@ internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<F
     {
         Argument.AssertNotNull(page, nameof(page));
 
-        return FineTuningJobEventCollectionPageToken.FromResponse(page, _jobId, _limit);
+        return FineTuningJobEventCollectionPageToken.FromResponse(page, _operation.JobId, _limit);
     }
 
     public async Task<ClientResult> GetFirstPageAsync()
-        => await GetJobEventsAsync(_jobId, _after, _limit, _options).ConfigureAwait(false);
+        => await _operation.GetJobEventsPageAsync(_after, _limit, _options).ConfigureAwait(false);
 
     public async Task<ClientResult> GetNextPageAsync(ClientResult result)
     {
@@ -71,28 +68,9 @@ internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<F
         string? lastId = lastItem.TryGetProperty("id", out JsonElement idElement) ?
             idElement.GetString() : null;
 
-        return await GetJobEventsAsync(_jobId, lastId, _limit, _options).ConfigureAwait(false);
+        return await _operation.GetJobEventsPageAsync(lastId, _limit, _options).ConfigureAwait(false);
     }
 
     public static bool HasNextPage(ClientResult result)
         => FineTuningJobEventCollectionResult.HasNextPage(result);
-
-
-    internal virtual async Task<ClientResult> GetJobEventsAsync(string jobId, string? after, int? limit, RequestOptions? options)
-    {
-        Argument.AssertNotNullOrEmpty(jobId, nameof(jobId));
-
-        using PipelineMessage message = _fineTuningClient.CreateGetFineTuningEventsRequest(jobId, after, limit, options);
-        return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
-    }
-
-    protected override IAsyncEnumerable<FineTuningJobEvent> GetValuesFromPageAsync(ClientResult page)
-    {
-        Argument.AssertNotNull(page, nameof(page));
-
-        PipelineResponse response = page.GetRawResponse();
-        InternalListFineTuningJobEventsResponse list = ModelReaderWriter.Read<InternalListFineTuningJobEventsResponse>(response.Content)!;
-
-        return list.Data.ToAsyncEnumerable(_cancellationToken);
-    }
 }

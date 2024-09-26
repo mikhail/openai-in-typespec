@@ -3,7 +3,6 @@ using OpenAI.FineTuning;
 using OpenAI.Tests.Utility;
 using System;
 using System.ClientModel;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using static OpenAI.Tests.TestHelpers;
@@ -34,11 +33,11 @@ internal class FineTuningTests : SyncAsyncTestBase
 
         if (IsAsync)
         {
-            ex = Assert.ThrowsAsync<ClientResultException>(async () => await client.CreateJobAsync(BinaryContent.Create(data)));
+            ex = Assert.ThrowsAsync<ClientResultException>(async () => await client.CreateFineTuningJobAsync(BinaryContent.Create(data), waitUntilCompleted: false));
         }
         else
         {
-            ex = Assert.Throws<ClientResultException>(() => client.CreateJob(BinaryContent.Create(data)));
+            ex = Assert.Throws<ClientResultException>(() => client.CreateFineTuningJob(BinaryContent.Create(data), waitUntilCompleted: false));
         }
 
         Assert.That(ex.Status, Is.EqualTo(400));
@@ -64,75 +63,63 @@ internal class FineTuningTests : SyncAsyncTestBase
     }
 
     [Test]
-    public void CancelJobCanParseServiceError()
-    {
-        FineTuningClient client = GetTestClient<FineTuningClient>(TestScenario.FineTuning);
-        ClientResultException ex = null;
-
-        if (IsAsync)
-        {
-            ex = Assert.ThrowsAsync<ClientResultException>(async () => await client.CancelJobAsync("fakeJobId", options: null));
-        }
-        else
-        {
-            ex = Assert.Throws<ClientResultException>(() => client.CancelJob("fakeJobId", options: null));
-        }
-
-        Assert.That(ex.Status, Is.EqualTo(404));
-    }
-
-    [Test]
-    public void GetJobEventsAsyncCanParseServiceError()
+    public async Task GetJobsAsyncWorks()
     {
         AssertAsyncOnly();
 
         FineTuningClient client = GetTestClient<FineTuningClient>(TestScenario.FineTuning);
-        IAsyncEnumerable<FineTuningJobEvent> enumerable = client.GetJobEventsAsync("fakeJobId");
-        var enumerator = enumerable.GetAsyncEnumerator();
 
-        ClientResultException ex = Assert.ThrowsAsync<ClientResultException>(async () => await enumerator.MoveNextAsync());
+        await foreach (ClientResult result in client.GetJobsAsync(afterJobId: null, pageSize: null, options: null).GetRawPagesAsync())
+        {
+            BinaryData response = result.GetRawResponse().Content;
+            JsonDocument jsonDocument = JsonDocument.Parse(response);
+            JsonElement jsonRoot = jsonDocument.RootElement;
 
-        Assert.That(ex.Status, Is.EqualTo(404));
+            Assert.That(jsonRoot.TryGetProperty("data", out _), Is.True);
+            Assert.That(jsonRoot.TryGetProperty("has_more", out _), Is.True);
+        }
     }
 
     [Test]
-    public void GetJobEventsCanParseServiceError()
+    public void GetJobsWorks()
     {
         AssertSyncOnly();
 
         FineTuningClient client = GetTestClient<FineTuningClient>(TestScenario.FineTuning);
-        var enumerable = client.GetJobEvents("fakeJobId");
 
-        ClientResultException ex = Assert.Throws<ClientResultException>(() => enumerable.GetRawPages().GetEnumerator().MoveNext());
+        foreach (ClientResult result in client.GetJobs(after: null, pageSize: null, options: null).GetRawPages())
+        {
+            BinaryData response = result.GetRawResponse().Content;
+            JsonDocument jsonDocument = JsonDocument.Parse(response);
+            JsonElement jsonRoot = jsonDocument.RootElement;
 
-        Assert.That(ex.Status, Is.EqualTo(404));
+            Assert.That(jsonRoot.TryGetProperty("data", out _), Is.True);
+            Assert.That(jsonRoot.TryGetProperty("has_more", out _), Is.True);
+        }
     }
 
-    [Test]
-    public void GetJobCheckpointsAsyncCanParseServiceError()
-    {
-        AssertAsyncOnly();
+    // We need to add this test back once we have access to the test resources
+    //
+    //[Test]
+    //public void BasicFineTuningJobOperationsWork()
+    //{
+    //    // Upload training file first
+    //    FileClient fileClient = GetTestClient<FileClient>(TestScenario.Files);
+    //    string filename = "toy_chat.jsonl";
+    //    BinaryData fileContent = BinaryData.FromString("""
+    //        {"messages": [{"role": "user", "content": "I lost my book today."}, {"role": "assistant", "content": "You can read everything on ebooks these days!"}]}
+    //        {"messages": [{"role": "system", "content": "You are a happy assistant that puts a positive spin on everything."}, {"role": "assistant", "content": "You're great!"}]}
+    //        """);
+    //    OpenAIFile uploadedFile = fileClient.UploadFile(fileContent, filename, FileUploadPurpose.FineTune);
+    //    Assert.That(uploadedFile?.Filename, Is.EqualTo(filename));
 
-        FineTuningClient client = GetTestClient<FineTuningClient>(TestScenario.FineTuning);
-        IAsyncEnumerable<ClientResult> enumerable = client.GetJobCheckpointsAsync("fakeJobId", after: null, limit: null, options: null).GetRawPagesAsync();
-        IAsyncEnumerator<ClientResult> enumerator = enumerable.GetAsyncEnumerator();
+    //    // Submit fine-tuning job
+    //    FineTuningClient client = GetTestClient<FineTuningClient>(TestScenario.FineTuning);
 
-        ClientResultException ex = Assert.ThrowsAsync<ClientResultException>(async () => await enumerator.MoveNextAsync());
+    //    string json = $"{{\"training_file\":\"{uploadedFile.Id}\",\"model\":\"gpt-3.5-turbo\"}}";
+    //    BinaryData input = BinaryData.FromString(json);
+    //    using BinaryContent content = BinaryContent.Create(input);
 
-        Assert.That(ex.Status, Is.EqualTo(404));
-    }
-
-    [Test]
-    public void GetJobCheckpointsCanParseServiceError()
-    {
-        AssertSyncOnly();
-
-        FineTuningClient client = GetTestClient<FineTuningClient>(TestScenario.FineTuning);
-        IEnumerable<ClientResult> enumerable = client.GetJobCheckpoints("fakeJobId", after: null, limit: null, options: null).GetRawPages();
-        IEnumerator<ClientResult> enumerator = enumerable.GetEnumerator();
-
-        ClientResultException ex = Assert.Throws<ClientResultException>(() => enumerator.MoveNext());
-
-        Assert.That(ex.Status, Is.EqualTo(404));
-    }
+    //    FineTuningJobOperation operation = client.CreateJob(content, waitUntilCompleted: false);
+    //}
 }

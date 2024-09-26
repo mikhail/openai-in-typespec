@@ -66,8 +66,8 @@ public partial class VectorStoreClient
     /// <returns>
     /// A <see cref="VectorStoreFileAssociation"/> instance that represents the new association.
     /// </returns>
-    public virtual Task<ClientResult<VectorStoreFileAssociation>> AddFileToVectorStoreAsync(VectorStore vectorStore, OpenAIFile file)
-        => AddFileToVectorStoreAsync(vectorStore?.Id, file?.Id);
+    public virtual Task<AddFileToVectorStoreOperation> AddFileToVectorStoreAsync(VectorStore vectorStore, OpenAIFile file, bool waitUntilCompleted)
+        => AddFileToVectorStoreAsync(vectorStore?.Id, file?.Id, waitUntilCompleted);
 
     /// <summary>
     /// Associates an uploaded file with a vector store, beginning ingestion of the file into the vector store.
@@ -77,8 +77,8 @@ public partial class VectorStoreClient
     /// <returns>
     /// A <see cref="VectorStoreFileAssociation"/> instance that represents the new association.
     /// </returns>
-    public virtual ClientResult<VectorStoreFileAssociation> AddFileToVectorStore(VectorStore vectorStore, OpenAIFile file)
-        => AddFileToVectorStore(vectorStore?.Id, file?.Id);
+    public virtual AddFileToVectorStoreOperation AddFileToVectorStore(VectorStore vectorStore, OpenAIFile file, bool waitUntilCompleted)
+        => AddFileToVectorStore(vectorStore?.Id, file?.Id, waitUntilCompleted);
 
     /// <summary>
     /// Gets a page collection holding <see cref="VectorStoreFileAssociation"/> instances that represent file inclusions in the
@@ -164,8 +164,8 @@ public partial class VectorStoreClient
     /// <param name="vectorStore"> The vector store to associate files with. </param>
     /// <param name="files"> The files to associate with the vector store. </param>
     /// <returns> A <see cref="VectorStoreBatchFileJob"/> instance representing the batch operation. </returns>
-    public virtual Task<ClientResult<VectorStoreBatchFileJob>> CreateBatchFileJobAsync(VectorStore vectorStore, IEnumerable<OpenAIFile> files)
-        => CreateBatchFileJobAsync(vectorStore?.Id, files?.Select(file => file.Id));
+    public virtual Task<CreateBatchFileJobOperation> CreateBatchFileJobAsync(VectorStore vectorStore, IEnumerable<OpenAIFile> files, bool waitUntilCompleted)
+        => CreateBatchFileJobAsync(vectorStore?.Id, files?.Select(file => file.Id), waitUntilCompleted);
 
     /// <summary>
     /// Begins a batch job to associate multiple jobs with a vector store, beginning the ingestion process.
@@ -173,8 +173,8 @@ public partial class VectorStoreClient
     /// <param name="vectorStore"> The vector store to associate files with. </param>
     /// <param name="files"> The files to associate with the vector store. </param>
     /// <returns> A <see cref="VectorStoreBatchFileJob"/> instance representing the batch operation. </returns>
-    public virtual ClientResult<VectorStoreBatchFileJob> CreateBatchFileJob(VectorStore vectorStore, IEnumerable<OpenAIFile> files)
-        => CreateBatchFileJob(vectorStore?.Id, files?.Select(file => file.Id));
+    public virtual CreateBatchFileJobOperation CreateBatchFileJob(VectorStore vectorStore, IEnumerable<OpenAIFile> files, bool waitUntilCompleted)
+        => CreateBatchFileJob(vectorStore?.Id, files?.Select(file => file.Id), waitUntilCompleted);
 
     /// <summary>
     /// Gets an updated instance of an existing <see cref="VectorStoreBatchFileJob"/>, refreshing its status.
