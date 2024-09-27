@@ -45,7 +45,6 @@ public partial class FineTuningJob
     [CodeGenMember("TrainedTokens")]
     public int? BillableTrainedTokens { get; }
 
-    // toStrnig
     public override string ToString()
     {
         return $"FineTuningJob<{JobId}, {Status}, {CreatedAt}>";

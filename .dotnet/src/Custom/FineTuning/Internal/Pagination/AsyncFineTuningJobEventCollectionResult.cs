@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace OpenAI.FineTuning;
 
-internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult
+internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<FineTuningJobEvent>
 {
     private readonly FineTuningJobOperation _operation;
     private readonly RequestOptions? _options;
@@ -73,4 +73,13 @@ internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult
 
     public static bool HasNextPage(ClientResult result)
         => FineTuningJobEventCollectionResult.HasNextPage(result);
+
+    protected override IAsyncEnumerable<FineTuningJobEvent> GetValuesFromPageAsync(ClientResult page)
+    {
+        Argument.AssertNotNull(page, nameof(page));
+
+        PipelineResponse response = page.GetRawResponse();
+        InternalListFineTuningJobEventsResponse list = ModelReaderWriter.Read<InternalListFineTuningJobEventsResponse>(response.Content)!;
+        return list.Data.ToAsyncEnumerable(_cancellationToken);
+    }
 }

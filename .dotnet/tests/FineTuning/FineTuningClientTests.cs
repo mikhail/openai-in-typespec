@@ -2,6 +2,7 @@ using NUnit.Framework;
 using NUnit.Framework.Internal;
 using OpenAI.Files;
 using OpenAI.FineTuning;
+using System;
 using System.ClientModel;
 using System.IO;
 using System.Linq;
@@ -63,16 +64,19 @@ public class FineTuningClientTests
     public async Task MinimalRequiredParams([Values] bool isAsync)
     {
 
-        FineTuningJob job = isAsync
+        FineTuningJobOperation jobOp = isAsync
             ? await client.CreateJobAsync("gpt-3.5-turbo", sampleFile.Id)
             : client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
 
+        FineTuningJob job = jobOp.GetJob();
         Assert.True(job.Status.InProgress);
         Assert.AreEqual(0, job.Hyperparameters.CycleCount);
 
+        await jobOp.CancelAsync();
+
         job = isAsync
-            ? await client.CancelJobAsync(job.JobId)
-            : client.CancelJob(job.JobId);
+            ? await jobOp.CancelAsync()
+            : jobOp.Cancel();
 
         Assert.AreEqual(FineTuningJobStatus.Cancelled, job.Status);
         Assert.False(job.Status.InProgress);
@@ -99,10 +103,10 @@ public class FineTuningClientTests
             Seed = 1234567
         };
 
-        FineTuningJob job = isAsync
+        FineTuningJobOperation jobOp = isAsync
             ? await client.CreateJobAsync("gpt-3.5-turbo", sampleFile.Id, options)
             : client.CreateJob("gpt-3.5-turbo", sampleFile.Id, options);
-
+        FineTuningJob job = jobOp.GetJob();
         Assert.AreEqual(1, job.Hyperparameters.CycleCount);
         Assert.AreEqual(2, job.Hyperparameters.BatchSize);
         Assert.AreEqual(3, job.Hyperparameters.LearningRateMultiplier);
@@ -110,16 +114,15 @@ public class FineTuningClientTests
         Assert.AreEqual(1234567, job.Seed);
         Assert.AreEqual(validationFile.Id, job.ValidationFileId);
 
-        job = isAsync
-            ? await client.CancelJobAsync(job.JobId)
-            : client.CancelJob(job.JobId);
+        jobOp.Cancel();
     }
 
     [Test]
     [Parallelizable]
     [Explicit("This test is slow and costs $ because it completes the fine-tuning job.")]
-    public async Task TestWaitForSuccess()
+    public void TestWaitForSuccess()
     {
+        // TODO: maybe remove this. It's just testing LRO pattern and not client.
         // Keep number of iterations low to avoid high costs
         var hp = new HyperparameterOptions()
         {
@@ -127,22 +130,15 @@ public class FineTuningClientTests
             BatchSize = 10,
         };
 
-        FineTuningJob job = client.CreateJob(
+        FineTuningJobOperation jobOp = client.CreateJob(
             "gpt-3.5-turbo",
             sampleFile.Id,
             options: new() { Hyperparameters = hp }
         );
 
-        job = await client.WaitUntilCompleted(job);
-        // Debug logs might be similar to:
-        /*
-         *     Waiting for 30 seconds
-         *     Waiting for 30 seconds
-         *     ...
-         *     Waiting for 30 seconds
-         *     Waiting for 00:03:16.7177007
-         */
+        jobOp.WaitForCompletion();
 
+        FineTuningJob job = jobOp.GetJob();
         Assert.AreEqual(FineTuningJobStatus.Succeeded, job.Status);
     }
 
@@ -152,7 +148,7 @@ public class FineTuningClientTests
     [Explicit("This test requires wandb.ai account and api key integration.")]
     public void WandBIntegrations()
     {
-        FineTuningJob job = client.CreateJob(
+        FineTuningJobOperation job = client.CreateJob(
             "gpt-3.5-turbo",
             sampleFile.Id,
             options: new()
@@ -160,7 +156,7 @@ public class FineTuningClientTests
                 Integrations = { new WeightsAndBiasesIntegration("ft-tests") },
             }
         );
-        client.CancelJob(job.JobId);
+        job.Cancel();
     }
 
     [Test]
@@ -187,7 +183,7 @@ public class FineTuningClientTests
     {
         Assert.Throws<ClientResultException>(() =>
         {
-            FineTuningJob job = client.CreateJob(
+            client.CreateJob(
                 "gpt-3.5-turbo",
                 sampleFile.Id,
                 new() { ValidationFile = "7" }
@@ -201,32 +197,37 @@ public class FineTuningClientTests
     {
         Assert.ThrowsAsync<ClientResultException>(async () =>
         {
-            var job = await client.CreateJobAsync(
+            await client.CreateJobAsync(
                 "gpt-3.5-turbo",
                 sampleFile.Id,
                 new() { ValidationFile = "7" }
-                );
+            );
         });
     }
 
     [Test]
     [Parallelizable]
-    public void GetJobs([Values] bool isAsync)
+    public void GetJobs([Values(Method.Sync, Method.Async)] Method method)
     {
         // Arrange
 
         // Act
-        var jobs = isAsync
+        Console.WriteLine("Getting jobs");
+        var jobs = (method == Method.Async)
             ? client.GetJobsAsync().Take(10).ToBlockingEnumerable()
             : client.GetJobs().Take(10);
 
+        Console.WriteLine("Got jobs");
         // Assert
         var counter = 0;
         foreach (var job in jobs)
         {
+            Console.WriteLine($"{counter} jobs");
+            Console.WriteLine($"Job: {job.JobId}");
             Assert.IsTrue(job.JobId.StartsWith("ftjob"));
             counter++;
         }
+        Console.WriteLine($"Got {counter} jobs");
 
         Assert.Greater(counter, 0);
         Assert.LessOrEqual(counter, 10);
@@ -258,18 +259,19 @@ public class FineTuningClientTests
     public void GetJobEvents([Values(Method.Sync, Method.Async)] Method method)
     {
         // Arrange
-        FineTuningJob job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
+        FineTuningJobOperation job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
 
         ListEventsOptions options = new()
         {
             PageSize = 1
         };
-        client.CancelJob(job.JobId);
+        job.Cancel();
 
         // Act
         var events = (method == Method.Async)
-            ? client.GetJobEventsAsync(job.JobId, options).ToBlockingEnumerable()
-            : client.GetJobEvents(job.JobId, options);
+            ? job.GetJobEventsAsync(options).ToBlockingEnumerable()
+            : job.GetJobEvents(options);
+
         var first = events.FirstOrDefault();
 
         // Assert
@@ -289,10 +291,12 @@ public class FineTuningClientTests
                                   .Where((job) => job.Status == "succeeded")
                                   .First();
 
+        var jobOperation = FineTuningJobOperation.Rehydrate(client, job.JobId);
+
         // Act
         var checkpoints = (method == Method.Async)
-            ? client.GetJobCheckpointsAsync(job.JobId).ToBlockingEnumerable()
-            : client.GetJobCheckpoints(job.JobId);
+            ? jobOperation.GetJobCheckpointsAsync().ToBlockingEnumerable()
+            : jobOperation.GetJobCheckpoints();
         FineTuningJobCheckpoint first = checkpoints.FirstOrDefault();
 
         // Assert

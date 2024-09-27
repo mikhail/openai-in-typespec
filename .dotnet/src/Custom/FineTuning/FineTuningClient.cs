@@ -104,7 +104,7 @@ public partial class FineTuningClient
     /// <param name="options"> Additional options (<see cref="FineTuningOptions"/>) to customize the request. </param>
     /// <param name="cancellationToken"> The cancellation token. </param>
     /// <returns>A <see cref="ClientResult{FineTuningJob}"/> containing the newly started fine-tuning job.</returns>
-    public virtual ClientResult<FineTuningJob> CreateJob(
+    public virtual FineTuningJobOperation CreateJob(
         string baseModel,
         string trainingFileId,
         FineTuningOptions options = default,
@@ -115,12 +115,11 @@ public partial class FineTuningClient
         options.Model = baseModel;
         options.TrainingFile = trainingFileId;
 
-        FineTuningJobOperation result = CreateFineTuningJob(options.ToBinaryContent(), false, cancellationToken.ToRequestOptions());
-        return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
+        return CreateFineTuningJob(options.ToBinaryContent(), false, cancellationToken.ToRequestOptions());
     }
 
     /// <inheritdoc cref="CreateJob(string, string, FineTuningOptions, CancellationToken)"/>
-    public virtual async Task<ClientResult<FineTuningJob>> CreateJobAsync(
+    public virtual async Task<FineTuningJobOperation> CreateJobAsync(
         string baseModel,
         string trainingFileId,
         FineTuningOptions options = default,
@@ -132,8 +131,7 @@ public partial class FineTuningClient
         options.Model = baseModel;
         options.TrainingFile = trainingFileId;
 
-        FineTuningJobOperation result = await CreateFineTuningJobAsync(options.ToBinaryContent(), false, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
-        return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
+        return await CreateFineTuningJobAsync(options.ToBinaryContent(), false, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
 
     
@@ -156,29 +154,6 @@ public partial class FineTuningClient
         ClientResult result = await GetJobAsync(jobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
         return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
     }
-
-    public virtual async Task<FineTuningJob> WaitUntilCompleted(FineTuningJob job)
-    {
-        while (job.Status.InProgress)
-        {
-            var estimate = job.EstimatedFinishAt;
-
-            if (estimate.HasValue)
-            {
-                // Console.WriteLine($"Waiting for {estimate.Value - DateTimeOffset.UtcNow}");
-                await Task.Delay(estimate.Value - DateTimeOffset.UtcNow).ConfigureAwait(false);
-            }
-            else
-            {
-                // Console.WriteLine("Waiting for 30 seconds");
-                await Task.Delay(30 * 1000).ConfigureAwait(false);
-            }
-
-            job = await GetJobAsync(job.JobId).ConfigureAwait(false);
-        }
-        return job;
-    }
-
 
     /// <summary>
     /// Retrieves a list of fine-tuning jobs.

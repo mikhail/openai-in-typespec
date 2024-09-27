@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ClientModel;
 using System.ClientModel.Primitives;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,12 +13,12 @@ namespace OpenAI.FineTuning;
 /// <summary>
 /// A long-running operation for creating a new model from a given dataset.
 /// </summary>
-public class FineTuningJobOperation : OperationResult
+public partial class FineTuningJobOperation : OperationResult
 {
-    private readonly ClientPipeline _pipeline;
-    private readonly Uri _endpoint;
+    internal readonly ClientPipeline _pipeline;
+    internal readonly Uri _endpoint;
 
-    private readonly string _jobId;
+    internal readonly string _jobId;
 
     internal FineTuningJobOperation(
         ClientPipeline pipeline,
@@ -175,7 +176,7 @@ public class FineTuningJobOperation : OperationResult
         return this;
     }
 
-    private void ApplyUpdate(ClientResult result)
+    internal void ApplyUpdate(ClientResult result)
     {
         PipelineResponse response = result.GetRawResponse();
 
@@ -184,13 +185,6 @@ public class FineTuningJobOperation : OperationResult
 
         HasCompleted = GetHasCompleted(status);
         SetRawResponse(response);
-    }
-
-    private static bool GetHasCompleted(string? status)
-    {
-        return status == FineTuningJobStatus.Succeeded ||
-            status == FineTuningJobStatus.Failed ||
-            status == FineTuningJobStatus.Cancelled;
     }
 
     // Generated protocol methods
@@ -225,8 +219,7 @@ public class FineTuningJobOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual ClientResult GetJob(RequestOptions? options)
     {
-        using PipelineMessage message = CreateRetrieveFineTuningJobRequest(_jobId, options);
-        return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
+        return ClientResult.FromResponse(GetRawResponse());
     }
 
     // CUSTOM:
@@ -286,7 +279,7 @@ public class FineTuningJobOperation : OperationResult
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual CollectionResult GetJobEvents( string? after, int? limit, RequestOptions options)
+    public virtual CollectionResult GetJobEvents(string? after, int? limit, RequestOptions options)
     {
         return new FineTuningJobEventCollectionResult(this, options, limit, after);
     }
@@ -299,7 +292,7 @@ public class FineTuningJobOperation : OperationResult
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual AsyncCollectionResult GetJobCheckpointsAsync(string? after, int? limit, RequestOptions? options)
+    public virtual AsyncCollectionResult<FineTuningJobCheckpoint> GetJobCheckpointsAsync(string? after, int? limit, RequestOptions? options)
     {
         return new AsyncFineTuningJobCheckpointCollectionResult(this, options, limit, after);
     }
@@ -367,9 +360,9 @@ public class FineTuningJobOperation : OperationResult
 
     internal virtual ClientResult GetJobEventsPage(string? after, int? limit, RequestOptions? options)
     {
-            using PipelineMessage message = CreateGetFineTuningEventsRequest(_jobId, after, limit, options);
-            return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
-        
+        using PipelineMessage message = CreateGetFineTuningEventsRequest(_jobId, after, limit, options);
+        return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
+
     }
 
     internal virtual PipelineMessage CreateRetrieveFineTuningJobRequest(string fineTuningJobId, RequestOptions? options)
