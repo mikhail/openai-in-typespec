@@ -13,6 +13,9 @@ namespace OpenAI.FineTuning;
 /// </summary>
 public partial class FineTuningJobOperation : OperationResult
 {
+    public FineTuningJob? Value = null;
+    public bool HasValue => Value != null;
+
     /// <summary>
     /// Updates the status of the operation.
     /// </summary>
@@ -42,7 +45,7 @@ public partial class FineTuningJobOperation : OperationResult
     }
 
 
-    private static bool GetHasCompleted(string? status)
+    private static bool GetHasCompleted(FineTuningJobStatus status)
     {
         return status == FineTuningJobStatus.Succeeded ||
             status == FineTuningJobStatus.Failed ||
@@ -54,12 +57,12 @@ public partial class FineTuningJobOperation : OperationResult
     ///
     /// [Learn more about fine-tuning](/docs/guides/fine-tuning)
     /// </summary>
-    /// <param name="cancellationToken"> The cancellation token to use. </param>"
+    /// <param name="cancellationToken"> The cancellation token to use. </param>
     /// <returns> The response returned from the service. </returns>
-    public virtual ClientResult<FineTuningJob> GetJob(CancellationToken cancellationToken = default) => CreateRequest(CreateRetrieveFineTuningJobRequest, cancellationToken);
+    public virtual ClientResult<FineTuningJob> GetJob(CancellationToken cancellationToken = default) => CreateRequestAndUpdate(CreateRetrieveFineTuningJobRequest, cancellationToken);
 
     /// <inheritdoc cref="GetJob(CancellationToken)"/>
-    public virtual async Task<ClientResult<FineTuningJob>> GetJobAsync(CancellationToken cancellationToken = default) => await CreateRequestAsync(CreateRetrieveFineTuningJobRequest, cancellationToken).ConfigureAwait(false);
+    public virtual async Task<ClientResult<FineTuningJob>> GetJobAsync(CancellationToken cancellationToken = default) => await CreateRequestAndUpdateAsync(CreateRetrieveFineTuningJobRequest, cancellationToken).ConfigureAwait(false);
 
 
     // CUSTOM:
@@ -71,23 +74,25 @@ public partial class FineTuningJobOperation : OperationResult
     /// <param name="cancellationToken"> The cancellation token to use. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual ClientResult<FineTuningJob> Cancel(CancellationToken cancellationToken = default) => CreateRequest(CreateCancelFineTuningJobRequest, cancellationToken);
+    public virtual ClientResult<FineTuningJob> Cancel(CancellationToken cancellationToken = default) => CreateRequestAndUpdate(CreateCancelFineTuningJobRequest, cancellationToken);
 
     /// <inheritdoc cref="Cancel(CancellationToken)"/>
-    public virtual async Task<ClientResult<FineTuningJob>> CancelAsync(CancellationToken cancellationToken = default) => await CreateRequestAsync(CreateCancelFineTuningJobRequest, cancellationToken).ConfigureAwait(false);
+    public virtual async Task<ClientResult<FineTuningJob>> CancelAsync(CancellationToken cancellationToken = default) => await CreateRequestAndUpdateAsync(CreateCancelFineTuningJobRequest, cancellationToken).ConfigureAwait(false);
 
-    private ClientResult<FineTuningJob> CreateRequest(Func<string, RequestOptions?, PipelineMessage> method,  CancellationToken cancellationToken)
+    private ClientResult<FineTuningJob> CreateRequestAndUpdate(Func<string, RequestOptions?, PipelineMessage> method, CancellationToken cancellationToken)
     {
         using PipelineMessage message = method(_jobId, cancellationToken.ToRequestOptions());
         var rawResponse = _pipeline.ProcessMessage(message, cancellationToken.ToRequestOptions());
-        return ClientResult.FromValue(FineTuningJob.FromResponse(rawResponse), rawResponse);
+        Value = FineTuningJob.FromResponse(rawResponse);
+        return ClientResult.FromValue(Value, rawResponse);
     }
 
-    private async Task<ClientResult<FineTuningJob>> CreateRequestAsync(Func<string, RequestOptions?, PipelineMessage> method, CancellationToken cancellationToken)
+    private async Task<ClientResult<FineTuningJob>> CreateRequestAndUpdateAsync(Func<string, RequestOptions?, PipelineMessage> method, CancellationToken cancellationToken)
     {
         using PipelineMessage message = method(_jobId, cancellationToken.ToRequestOptions());
         var rawResponse = await _pipeline.ProcessMessageAsync(message, cancellationToken.ToRequestOptions());
-        return ClientResult.FromValue(FineTuningJob.FromResponse(rawResponse), rawResponse);
+        Value = FineTuningJob.FromResponse(rawResponse);
+        return ClientResult.FromValue(Value, rawResponse);
     }
 
     

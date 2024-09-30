@@ -219,7 +219,8 @@ public partial class FineTuningJobOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual ClientResult GetJob(RequestOptions? options)
     {
-        return ClientResult.FromResponse(GetRawResponse());
+        using PipelineMessage message = CreateRetrieveFineTuningJobRequest(_jobId, options);
+        return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
     // CUSTOM:

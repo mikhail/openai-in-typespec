@@ -119,27 +119,20 @@ public class FineTuningClientTests
 
     [Test]
     [Parallelizable]
-    [Explicit("This test is slow and costs $ because it completes the fine-tuning job.")]
-    public void TestWaitForSuccess()
+    public async Task WaitForCompletion()
     {
-        // TODO: maybe remove this. It's just testing LRO pattern and not client.
-        // Keep number of iterations low to avoid high costs
-        var hp = new HyperparameterOptions()
-        {
-            CycleCount = 1,
-            BatchSize = 10,
-        };
+        FineTuningJobOperation jobOp = await client.CreateJobAsync("gpt-3.5-turbo", sampleFile.Id);
 
-        FineTuningJobOperation jobOp = client.CreateJob(
-            "gpt-3.5-turbo",
-            sampleFile.Id,
-            options: new() { Hyperparameters = hp }
-        );
+        Assert.False(jobOp.HasCompleted);
 
-        jobOp.WaitForCompletion();
+        var delayedCancel = Task.Delay(1000).ContinueWith(async (_) => { await jobOp.CancelAsync(); });
 
-        FineTuningJob job = jobOp.GetJob();
-        Assert.AreEqual(FineTuningJobStatus.Succeeded, job.Status);
+        await jobOp.WaitForCompletionAsync();
+        await delayedCancel;
+
+        FineTuningJob job = jobOp.Value;
+
+        Assert.AreEqual(FineTuningJobStatus.Cancelled, job.Status);
     }
 
 
