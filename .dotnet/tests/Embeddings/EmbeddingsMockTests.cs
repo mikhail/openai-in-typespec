@@ -171,8 +171,8 @@ public class EmbeddingsMockTests : SyncAsyncTestBase
         EmbeddingClient client = new EmbeddingClient("model", s_fakeCredential, clientOptions);
 
         OpenAIEmbeddingCollection embeddings = IsAsync
-            ? await client.GenerateEmbeddingsAsync([[1]])
-            : client.GenerateEmbeddings([[1]]);
+            ? await client.GenerateEmbeddingsAsync([new[] { 1 }])
+            : client.GenerateEmbeddings([new[] { 1 }]);
 
         Assert.That(embeddings.Usage.InputTokenCount, Is.EqualTo(10));
         Assert.That(embeddings.Usage.TotalTokenCount, Is.EqualTo(20));
@@ -207,8 +207,8 @@ public class EmbeddingsMockTests : SyncAsyncTestBase
         EmbeddingClient client = new EmbeddingClient("model", s_fakeCredential, clientOptions);
 
         OpenAIEmbeddingCollection embeddings = IsAsync
-            ? await client.GenerateEmbeddingsAsync([[1]])
-            : client.GenerateEmbeddings([[1]]);
+            ? await client.GenerateEmbeddingsAsync([new[] { 1 }])
+            : client.GenerateEmbeddings([new[] { 1 }]);
         OpenAIEmbedding embedding = embeddings.Single();
 
         float[] vector = embedding.ToFloats().ToArray();
@@ -224,12 +224,12 @@ public class EmbeddingsMockTests : SyncAsyncTestBase
 
         if (IsAsync)
         {
-            Assert.That(async () => await client.GenerateEmbeddingsAsync([[1]], cancellationToken: cancellationSource.Token),
+            Assert.That(async () => await client.GenerateEmbeddingsAsync([new[] { 1 }], cancellationToken: cancellationSource.Token),
                 Throws.InstanceOf<OperationCanceledException>());
         }
         else
         {
-            Assert.That(() => client.GenerateEmbeddings([[1]], cancellationToken: cancellationSource.Token),
+            Assert.That(() => client.GenerateEmbeddings([new[] { 1 }], cancellationToken: cancellationSource.Token),
                 Throws.InstanceOf<OperationCanceledException>());
         }
     }

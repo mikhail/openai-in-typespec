@@ -12,6 +12,7 @@ namespace OpenAI.VectorStores;
 /// <summary>
 /// The service client for OpenAI vector store operations.
 /// </summary>
+[Experimental("OPENAI001")]
 [CodeGenClient("VectorStores")]
 [CodeGenSuppress("VectorStoreClient", typeof(ClientPipeline), typeof(ApiKeyCredential), typeof(Uri))]
 [CodeGenSuppress("CreateVectorStoreAsync", typeof(VectorStoreCreationOptions))]
@@ -40,7 +41,6 @@ namespace OpenAI.VectorStores;
 [CodeGenSuppress("CancelVectorStoreFileBatch", typeof(string), typeof(string))]
 [CodeGenSuppress("GetFilesInVectorStoreBatchesAsync", typeof(string), typeof(string), typeof(int?), typeof(InternalListFilesInVectorStoreBatchRequestOrder?), typeof(string), typeof(string), typeof(VectorStoreFileStatusFilter?))]
 [CodeGenSuppress("GetFilesInVectorStoreBatches", typeof(string), typeof(string), typeof(int?), typeof(InternalListFilesInVectorStoreBatchRequestOrder?), typeof(string), typeof(string), typeof(VectorStoreFileStatusFilter?))]
-[Experimental("OPENAI001")]
 public partial class VectorStoreClient
 {
     // CUSTOM: Remove virtual keyword.
@@ -54,15 +54,6 @@ public partial class VectorStoreClient
     /// <param name="apiKey"> The API key to authenticate with the service. </param>
     /// <exception cref="ArgumentNullException"> <paramref name="apiKey"/> is null. </exception>
     public VectorStoreClient(string apiKey) : this(new ApiKeyCredential(apiKey), new OpenAIClientOptions())
-    {
-    }
-
-    // CUSTOM: Added as a convenience.
-    /// <summary> Initializes a new instance of <see cref="VectorStoreClient">. </summary>
-    /// <param name="apiKey"> The API key to authenticate with the service. </param>
-    /// <param name="options"> The options to configure the client. </param>
-    /// <exception cref="ArgumentNullException"> <paramref name="apiKey"/> is null. </exception>
-    public VectorStoreClient(string apiKey, OpenAIClientOptions options) : this(new ApiKeyCredential(apiKey), options)
     {
     }
 
@@ -482,7 +473,7 @@ public partial class VectorStoreClient
     /// store.
     /// </summary>
     /// <remarks>
-    /// This does not delete the file. To delete the file, use <see cref="FileClient.DeleteFile(string)"/>.
+    /// This does not delete the file. To delete the file, use <see cref="OpenAIFileClient.DeleteFile(string)"/>.
     /// </remarks>
     /// <param name="vectorStoreId"> The ID of the vector store that the file should be removed from. </param>
     /// <param name="fileId"> The ID of the file to remove from the vector store. </param>
@@ -501,7 +492,7 @@ public partial class VectorStoreClient
     /// store.
     /// </summary>
     /// <remarks>
-    /// This does not delete the file. To delete the file, use <see cref="FileClient.DeleteFile(string)"/>.
+    /// This does not delete the file. To delete the file, use <see cref="OpenAIFileClient.DeleteFile(string)"/>.
     /// </remarks>
     /// <param name="vectorStoreId"> The ID of the vector store that the file should be removed from. </param>
     /// <param name="fileId"> The ID of the file to remove from the vector store. </param>
@@ -569,24 +560,6 @@ public partial class VectorStoreClient
         return CreateBatchFileJob(vectorStoreId, content, waitUntilCompleted, options);
     }
 
-    internal virtual PipelineMessage CreateCreateVectorStoreFileBatchRequest(string vectorStoreId, BinaryContent content, RequestOptions options)
-    {
-        var message = _pipeline.CreateMessage();
-        message.ResponseClassifier = PipelineMessageClassifier200;
-        var request = message.Request;
-        request.Method = "POST";
-        var uri = new ClientUriBuilder();
-        uri.Reset(_endpoint);
-        uri.AppendPath("/vector_stores/", false);
-        uri.AppendPath(vectorStoreId, true);
-        uri.AppendPath("/file_batches", false);
-        request.Uri = uri.ToUri();
-        request.Headers.Set("Accept", "application/json");
-        request.Headers.Set("Content-Type", "application/json");
-        request.Content = content;
-        message.Apply(options);
-        return message;
-    }
     /// <summary>
     /// Gets a page collection of file associations associated with a vector store batch file job, representing the files
     /// that were scheduled for ingestion into the vector store.

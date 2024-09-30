@@ -26,15 +26,15 @@ namespace OpenAI.Chat
                 writer.WritePropertyName("index"u8);
                 writer.WriteNumberValue(Index);
             }
-            if (SerializedAdditionalRawData?.ContainsKey("id") != true && Optional.IsDefined(Id))
+            if (SerializedAdditionalRawData?.ContainsKey("id") != true && Optional.IsDefined(ToolCallId))
             {
                 writer.WritePropertyName("id"u8);
-                writer.WriteStringValue(Id);
+                writer.WriteStringValue(ToolCallId);
             }
             if (SerializedAdditionalRawData?.ContainsKey("type") != true)
             {
                 writer.WritePropertyName("type"u8);
-                writer.WriteStringValue(Kind.ToString());
+                writer.WriteStringValue(Kind.ToSerialString());
             }
             if (SerializedAdditionalRawData?.ContainsKey("function") != true && Optional.IsDefined(Function))
             {
@@ -107,7 +107,7 @@ namespace OpenAI.Chat
                     {
                         continue;
                     }
-                    type = new ChatToolCallKind(property.Value.GetString());
+                    type = property.Value.GetString().ToChatToolCallKind();
                     continue;
                 }
                 if (property.NameEquals("function"u8))
