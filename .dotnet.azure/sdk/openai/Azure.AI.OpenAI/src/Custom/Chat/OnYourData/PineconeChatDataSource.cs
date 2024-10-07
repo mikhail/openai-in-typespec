@@ -3,16 +3,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Azure.AI.OpenAI.Chat;
 
 [CodeGenModel("PineconeChatDataSource")]
 [Experimental("AOAI001")]
+#if AZURE_OPENAI_GA
+[EditorBrowsable(EditorBrowsableState.Never)]
+#endif
 public partial class PineconeChatDataSource : ChatDataSource
 {
     [CodeGenMember("Parameters")]
     internal InternalPineconeChatDataSourceParameters InternalParameters { get; }
+
+#if !AZURE_OPENAI_GA
 
     /// <inheritdoc cref="InternalPineconeChatDataSourceParameters.Environment"/>
     required public string Environment
@@ -95,6 +101,14 @@ public partial class PineconeChatDataSource : ChatDataSource
     {
         InternalParameters = new();
     }
+
+#else
+    public PineconeChatDataSource()
+    {
+        throw new InvalidOperationException($"Pinecone data sources are not supported in this GA version. Please use a preview library and service version for this integration.");
+    }
+
+#endif
 
     // CUSTOM: Made internal.
     /// <summary> Initializes a new instance of <see cref="PineconeChatDataSource"/>. </summary>

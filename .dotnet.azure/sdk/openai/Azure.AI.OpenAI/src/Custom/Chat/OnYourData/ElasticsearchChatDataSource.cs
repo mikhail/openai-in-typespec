@@ -3,16 +3,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Azure.AI.OpenAI.Chat;
 
 [CodeGenModel("ElasticsearchChatDataSource")]
 [Experimental("AOAI001")]
+#if AZURE_OPENAI_GA
+[EditorBrowsable(EditorBrowsableState.Never)]
+#endif
 public partial class ElasticsearchChatDataSource : ChatDataSource
 {
     [CodeGenMember("Parameters")]
     internal InternalElasticsearchChatDataSourceParameters InternalParameters { get; }
+
+#if !AZURE_OPENAI_GA
 
     /// <inheritdoc cref="InternalElasticsearchChatDataSourceParameters.Endpoint"/>
     required public Uri Endpoint
@@ -102,6 +108,13 @@ public partial class ElasticsearchChatDataSource : ChatDataSource
     {
         InternalParameters = new();
     }
+
+#else
+    public ElasticsearchChatDataSource()
+    {
+        throw new InvalidOperationException($"Elasticsearch data sources are not supported in this GA version. Please use a preview library and service version for this integration.");
+    }
+#endif
 
     // CUSTOM: Made internal.
     /// <summary> Initializes a new instance of <see cref="ElasticsearchChatDataSource"/>. </summary>
