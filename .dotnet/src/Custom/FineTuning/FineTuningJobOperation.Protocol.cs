@@ -32,7 +32,6 @@ public partial class FineTuningJobOperation : OperationResult
         _endpoint = endpoint;
         _jobId = jobId;
 
-        HasCompleted = GetHasCompleted(status);
         RehydrationToken = new FineTuningJobOperationToken(jobId);
     }
 
@@ -184,7 +183,6 @@ public partial class FineTuningJobOperation : OperationResult
         using JsonDocument doc = JsonDocument.Parse(response.Content);
         string? status = doc.RootElement.GetProperty("status"u8).GetString();
 
-        HasCompleted = GetHasCompleted(status);
         SetRawResponse(response);
     }
 
@@ -201,7 +199,7 @@ public partial class FineTuningJobOperation : OperationResult
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual async Task<ClientResult> GetJobAsync(RequestOptions? options)
+    internal virtual async Task<ClientResult> GetJobAsync(RequestOptions? options)
     {
         using PipelineMessage message = CreateRetrieveFineTuningJobRequest(_jobId, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
@@ -218,7 +216,7 @@ public partial class FineTuningJobOperation : OperationResult
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual ClientResult GetJob(RequestOptions? options)
+    internal virtual ClientResult GetJob(RequestOptions? options)
     {
         using PipelineMessage message = CreateRetrieveFineTuningJobRequest(_jobId, options);
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));

@@ -2003,17 +2003,15 @@ namespace OpenAI.FineTuning {
     }
     public class FineTuningJobOperation : OperationResult {
         public FineTuningJob? Value;
+        public new bool HasCompleted { get; }
         public bool HasValue { get; }
         public string JobId { get; }
         public override ContinuationToken? RehydrationToken { get; protected set; }
+        public FineTuningJobStatus? Status { get; }
         public virtual ClientResult Cancel(RequestOptions? options);
         public virtual ClientResult<FineTuningJob> Cancel(CancellationToken cancellationToken = default);
         public virtual Task<ClientResult> CancelAsync(RequestOptions? options);
         public virtual Task<ClientResult<FineTuningJob>> CancelAsync(CancellationToken cancellationToken = default);
-        public virtual ClientResult GetJob(RequestOptions? options);
-        public virtual ClientResult<FineTuningJob> GetJob(CancellationToken cancellationToken = default);
-        public virtual Task<ClientResult> GetJobAsync(RequestOptions? options);
-        public virtual Task<ClientResult<FineTuningJob>> GetJobAsync(CancellationToken cancellationToken = default);
         public virtual CollectionResult<FineTuningJobCheckpoint> GetJobCheckpoints(ListCheckpointsOptions? options = null, CancellationToken cancellationToken = default);
         public virtual CollectionResult GetJobCheckpoints(string? after, int? limit, RequestOptions? options);
         public virtual AsyncCollectionResult<FineTuningJobCheckpoint> GetJobCheckpointsAsync(ListCheckpointsOptions? options = null, CancellationToken cancellationToken = default);

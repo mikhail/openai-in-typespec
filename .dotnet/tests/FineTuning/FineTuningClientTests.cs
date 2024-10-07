@@ -119,16 +119,18 @@ public class FineTuningClientTests
 
     [Test]
     [Parallelizable]
-    public async Task WaitForCompletion()
+    [Explicit("This test is slow and costs $ because it completes the fine-tuning job.")]
+    public async Task TestWaitForSuccess()
     {
         FineTuningJobOperation jobOp = await client.CreateJobAsync("gpt-3.5-turbo", sampleFile.Id);
 
         Assert.False(jobOp.HasCompleted);
 
-        var delayedCancel = Task.Delay(1000).ContinueWith(async (_) => { await jobOp.CancelAsync(); });
+        var delay = Task.Delay(1000).ContinueWith(async (_) => { await jobOp.CancelAsync(); });
 
-        await jobOp.WaitForCompletionAsync();
-        await delayedCancel;
+        await Task.WhenAll(
+            jobOp.WaitForCompletionAsync(),
+            delay);
 
         FineTuningJob job = jobOp.Value;
 
