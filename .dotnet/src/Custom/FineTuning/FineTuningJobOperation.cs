@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ClientModel;
 using System.ClientModel.Primitives;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,34 +14,36 @@ namespace OpenAI.FineTuning;
 /// </summary>
 public partial class FineTuningJobOperation : OperationResult
 {
+    public FineTuningJob Value => FineTuningJob.FromResponse(GetRawResponse());
+    public bool HasValue = true;
+
     /// <summary>
     /// Updates the status of the operation.
     /// </summary>
     /// <param name="cancellationToken"> The cancellation token to use. </param>
-    /// <returns> The updated operation. </returns>
+    /// <returns> The freshly fetched <see cref="ClientResult{FineTuningJob}"/> object. </returns>
     public async ValueTask<ClientResult<FineTuningJob>> UpdateStatusAsync(CancellationToken cancellationToken = default)
     {
         ClientResult result = await GetJobAsync(cancellationToken.ToRequestOptions()).ConfigureAwait(false);
 
-        ApplyUpdate(result);
+        SetRawResponse(result.GetRawResponse());
 
         return (ClientResult<FineTuningJob>)result;
     }
 
     /// <summary>
-    /// Updates the status of the operation.
+    /// Re-fetches the latest information about the operation.
     /// </summary>
     /// <param name="cancellationToken"> The cancellation token to use. </param>
-    /// <returns> The updated operation. </returns>
+    /// <returns> The freshly fetched <see cref="ClientResult{FineTuningJob}"/> object. </returns>
     public ClientResult<FineTuningJob> UpdateStatus(CancellationToken cancellationToken = default)
     {
         ClientResult result = GetJob(cancellationToken.ToRequestOptions());
 
-        ApplyUpdate(result);
+        SetRawResponse(result.GetRawResponse());
 
         return (ClientResult<FineTuningJob>)result;
     }
-
 
     private static bool GetHasCompleted(string? status)
     {
@@ -49,14 +52,9 @@ public partial class FineTuningJobOperation : OperationResult
             status == FineTuningJobStatus.Cancelled;
     }
 
-    // Generated protocol methods
-
-    // CUSTOM:
-    // - Renamed.
-    // - Edited doc comment.
     /// <summary>
-    /// [Protocol Method] Get info about a fine-tuning job.
-    ///
+    /// Get info about a fine-tuning job.
+    /// 
     /// [Learn more about fine-tuning](/docs/guides/fine-tuning)
     /// </summary>
     /// <param name="cancellationToken"> The cancellation token to use. </param>"
@@ -68,11 +66,8 @@ public partial class FineTuningJobOperation : OperationResult
         return (ClientResult<FineTuningJob>)ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, cancellationToken.ToRequestOptions()).ConfigureAwait(false));
     }
 
-    // CUSTOM:
-    // - Renamed.
-    // - Edited doc comment.
     /// <summary>
-    /// [Protocol Method] Get info about a fine-tuning job.
+    /// Get info about a fine-tuning job.
     ///
     /// [Learn more about fine-tuning](/docs/guides/fine-tuning)
     /// </summary>
@@ -86,11 +81,8 @@ public partial class FineTuningJobOperation : OperationResult
         return ClientResult.FromValue(FineTuningJob.FromResponse(rawResponse), rawResponse);
     }
 
-    // CUSTOM:
-    // - Renamed.
-    // - Edited doc comment.
     /// <summary>
-    /// [Protocol Method] Immediately cancel a fine-tune job.
+    /// Immediately cancel a fine-tune job.
     /// </summary>
     /// <param name="cancellationToken"> The cancellation token to use. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
@@ -102,11 +94,8 @@ public partial class FineTuningJobOperation : OperationResult
         return ClientResult.FromValue(FineTuningJob.FromResponse(rawResponse), rawResponse);
     }
 
-    // CUSTOM:
-    // - Renamed.
-    // - Edited doc comment.
     /// <summary>
-    /// [Protocol Method] Immediately cancel a fine-tune job.
+    /// Immediately cancel a fine-tune job.
     /// </summary>
     /// <param name="cancellationToken"> The cancellation token to use. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
@@ -125,11 +114,8 @@ public partial class FineTuningJobOperation : OperationResult
         return ClientResult.FromValue(FineTuningJob.FromResponse(rawResponse), rawResponse);
     }
 
-    // CUSTOM:
-    // - Renamed.
-    // - Edited doc comment.
     /// <summary>
-    /// [Protocol Method] Get status updates for a fine-tuning job.
+    /// Get status updates for a fine-tuning job.
     /// </summary>
     /// <param name="options"> Filter parameters via <see cref="ListEventsOptions"/>. </param>
     /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -140,11 +126,8 @@ public partial class FineTuningJobOperation : OperationResult
         return new AsyncFineTuningJobEventCollectionResult(this, cancellationToken.ToRequestOptions(), options.PageSize, options.After);
     }
 
-    // CUSTOM:
-    // - Renamed.
-    // - Edited doc comment.
     /// <summary>
-    /// [Protocol Method] Get status updates for a fine-tuning job.
+    /// Get status updates for a fine-tuning job.
     /// </summary>
     /// <param name="options"> Filter parameters via <see cref="ListEventsOptions"/>. </param>
     /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -156,7 +139,7 @@ public partial class FineTuningJobOperation : OperationResult
     }
 
     /// <summary>
-    /// [Protocol Method] List the checkpoints for a fine-tuning job.
+    /// List the checkpoints for a fine-tuning job.
     /// </summary>
     /// <param name="options"> Filter parameters via <see cref="ListCheckpointsOptions"/>. </param>
     /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -169,7 +152,7 @@ public partial class FineTuningJobOperation : OperationResult
     }
 
     /// <summary>
-    /// [Protocol Method] List the checkpoints for a fine-tuning job.
+    /// List the checkpoints for a fine-tuning job.
     /// </summary>
     /// <param name="options"> Filter parameters via <see cref="ListCheckpointsOptions"/>. </param>
     /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -180,4 +163,44 @@ public partial class FineTuningJobOperation : OperationResult
         options ??= new ListCheckpointsOptions();
         return new FineTuningJobCheckpointCollectionResult(this, cancellationToken.ToRequestOptions(), options.PageSize, options.AfterCheckpointId);
     }
+
+    /// <summary>
+    /// Recreates a <see cref="FineTuningJobOperation"/> from a rehydration token.
+    /// </summary>
+    /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the operation status from the service. </param>
+    /// <param name="rehydrationToken"> The rehydration token corresponding to the operation to rehydrate. </param>
+    /// <param name="cancellationToken"> A token that can be used to cancel the request. </param>
+    /// <returns> The rehydrated operation <see cref="FineTuningJobOperation"/>. </returns>
+    /// <exception cref="ArgumentNullException"> <paramref name="client"/> or <paramref name="rehydrationToken"/> is null. </exception>
+    public static FineTuningJobOperation Rehydrate(FineTuningClient client, ContinuationToken rehydrationToken, CancellationToken cancellationToken = default)
+    {
+        return Rehydrate(client, rehydrationToken, cancellationToken.ToRequestOptions());
+    }
+
+
+    /// <inheritdoc cref="Rehydrate(FineTuningClient, ContinuationToken, CancellationToken)"/>"
+    public static async Task<FineTuningJobOperation> RehydrateAsync(FineTuningClient client, ContinuationToken rehydrationToken, CancellationToken cancellationToken = default)
+    {
+        return await RehydrateAsync(client, rehydrationToken, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Recreates a <see cref="FineTuningJobOperation"/> from a fine tuning job id.
+    /// </summary>
+    /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the operation status from the service. </param>
+    /// <param name="fineTuningJobId"> The id of the fine tuning job to rehydrate.</param>
+    /// <param name="cancellationToken"> A token that can be used to cancel the request. </param>
+    /// <returns> The rehydrated operation <see cref="FineTuningJobOperation"/>. </returns>
+    public static FineTuningJobOperation Rehydrate(FineTuningClient client, string fineTuningJobId, CancellationToken cancellationToken = default)
+    {
+        return Rehydrate(client, fineTuningJobId, cancellationToken.ToRequestOptions());
+    }
+
+    /// <inheritdoc cref="Rehydrate(FineTuningClient, string, CancellationToken)" />
+    public static async Task<FineTuningJobOperation> RehydrateAsync(FineTuningClient client, string fineTuningJobId, CancellationToken cancellationToken = default)
+    {
+        return await RehydrateAsync(client, fineTuningJobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
+    }
+
+
 }

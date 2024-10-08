@@ -125,7 +125,7 @@ public partial class FineTuningClient
         return await CreateFineTuningJobAsync(options.ToBinaryContent(), false, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
 
-    
+
 
     /// <summary>
     /// Retrieves a fine-tuning job with the specified job ID.
@@ -155,7 +155,9 @@ public partial class FineTuningClient
     public virtual CollectionResult<FineTuningJob> GetJobs(ListJobsOptions options = default, CancellationToken cancellationToken = default)
     {
         options ??= new ListJobsOptions();
-        return GetJobs(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
+        CollectionResult jobs = GetJobs(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
+
+        return (CollectionResult<FineTuningJob>)jobs;
     }
 
     /// <inheritdoc cref="GetJobs(ListJobsOptions, CancellationToken)"/>
@@ -163,11 +165,12 @@ public partial class FineTuningClient
     public virtual AsyncCollectionResult<FineTuningJob> GetJobsAsync(ListJobsOptions options = default, CancellationToken cancellationToken = default)
     {
         options ??= new ListJobsOptions();
-        return GetJobsAsync(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
+        AsyncCollectionResult jobs = GetJobsAsync(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
+        return (AsyncCollectionResult<FineTuningJob>)jobs;
     }
 
-    internal virtual FineTuningJobOperation CreateCreateJobOperation(string jobId, string status, PipelineResponse response)
+    internal virtual FineTuningJobOperation CreateCreateJobOperation(string jobId, PipelineResponse response)
     {
-        return new FineTuningJobOperation(_pipeline, _endpoint, jobId, status, response);
+        return new FineTuningJobOperation(_pipeline, _endpoint, jobId, response);
     }
 }

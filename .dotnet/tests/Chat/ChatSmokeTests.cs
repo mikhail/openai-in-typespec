@@ -679,7 +679,7 @@ public class ChatSmokeTests : SyncAsyncTestBase
         Assert.That(messageAsJson.RootElement.TryGetProperty("tool_calls", out JsonElement toolCallsProperty), Is.True);
         Assert.That(toolCallsProperty, Is.Not.Null);
         Assert.That(toolCallsProperty.ValueKind, Is.EqualTo(JsonValueKind.Array));
-        
+
         foreach (JsonElement toolCall in toolCallsProperty.EnumerateArray())
         {
             Assert.That(toolCall.TryGetProperty("id", out JsonElement toolCallIdProperty), Is.True);

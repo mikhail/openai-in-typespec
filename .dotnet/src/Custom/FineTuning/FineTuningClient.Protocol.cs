@@ -56,9 +56,8 @@ public partial class FineTuningClient
 
         using JsonDocument doc = JsonDocument.Parse(response.Content);
         string jobId = doc.RootElement.GetProperty("id"u8).GetString();
-        string status = doc.RootElement.GetProperty("status"u8).GetString();
 
-        FineTuningJobOperation operation = this.CreateCreateJobOperation(jobId, status, response);
+        FineTuningJobOperation operation = this.CreateCreateJobOperation(jobId, response);
         return await operation.WaitUntilAsync(waitUntilCompleted, options).ConfigureAwait(false);
     }
 
@@ -95,9 +94,8 @@ public partial class FineTuningClient
 
         using JsonDocument doc = JsonDocument.Parse(response.Content);
         string jobId = doc.RootElement.GetProperty("id"u8).GetString();
-        string status = doc.RootElement.GetProperty("status"u8).GetString();
 
-        FineTuningJobOperation operation = this.CreateCreateJobOperation(jobId, status, response);
+        FineTuningJobOperation operation = this.CreateCreateJobOperation(jobId, response);
         return operation.WaitUntil(waitUntilCompleted, options);
     }
 
@@ -112,7 +110,7 @@ public partial class FineTuningClient
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual AsyncCollectionResult<FineTuningJob> GetJobsAsync(string afterJobId, int? pageSize, RequestOptions options)
+    public virtual AsyncCollectionResult GetJobsAsync(string afterJobId, int? pageSize, RequestOptions options)
     {
         return new AsyncFineTuningJobCollectionResult(this, _pipeline, options, pageSize, afterJobId);
     }
@@ -129,7 +127,7 @@ public partial class FineTuningClient
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual CollectionResult<FineTuningJob> GetJobs(string after, int? pageSize, RequestOptions options)
+    public virtual CollectionResult GetJobs(string after, int? pageSize, RequestOptions options)
     {
         return new FineTuningJobCollectionResult(this, _pipeline, options, pageSize, after);
     }

@@ -28,7 +28,7 @@ public class FineTuningClientTests
     }
 
     FineTuningClient client;
-    FileClient fileClient;
+    OpenAIFileClient fileClient;
 
     string samplePath;
     string validationPath;
@@ -40,7 +40,7 @@ public class FineTuningClientTests
     public void Setup()
     {
         client = GetTestClient();
-        fileClient = GetTestClient<FileClient>(TestScenario.Files);
+        fileClient = GetTestClient<OpenAIFileClient>(TestScenario.Files);
 
         samplePath = Path.Combine("Assets", "fine_tuning_sample.jsonl");
         validationPath = Path.Combine("Assets", "fine_tuning_sample_validation.jsonl");
@@ -120,7 +120,7 @@ public class FineTuningClientTests
     [Test]
     [Parallelizable]
     [Explicit("This test is slow and costs $ because it completes the fine-tuning job.")]
-    public async Task TestWaitForSuccess()
+    public async Task TestWaitForCompletion()
     {
         FineTuningJobOperation jobOp = await client.CreateJobAsync("gpt-3.5-turbo", sampleFile.Id);
 
@@ -128,9 +128,7 @@ public class FineTuningClientTests
 
         var delay = Task.Delay(1000).ContinueWith(async (_) => { await jobOp.CancelAsync(); });
 
-        await Task.WhenAll(
-            jobOp.WaitForCompletionAsync(),
-            delay);
+        await jobOp.WaitForCompletionAsync();
 
         FineTuningJob job = jobOp.Value;
 

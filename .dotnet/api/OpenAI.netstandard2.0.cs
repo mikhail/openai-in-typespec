@@ -1922,9 +1922,9 @@ namespace OpenAI.FineTuning {
         public virtual Task<ClientResult> GetJobAsync(string fineTuningJobId, RequestOptions options);
         public virtual Task<ClientResult<FineTuningJob>> GetJobAsync(string jobId, CancellationToken cancellationToken = default);
         public virtual CollectionResult<FineTuningJob> GetJobs(ListJobsOptions options = null, CancellationToken cancellationToken = default);
-        public virtual CollectionResult<FineTuningJob> GetJobs(string after, int? pageSize, RequestOptions options);
+        public virtual CollectionResult GetJobs(string after, int? pageSize, RequestOptions options);
         public virtual AsyncCollectionResult<FineTuningJob> GetJobsAsync(ListJobsOptions options = null, CancellationToken cancellationToken = default);
-        public virtual AsyncCollectionResult<FineTuningJob> GetJobsAsync(string afterJobId, int? pageSize, RequestOptions options);
+        public virtual AsyncCollectionResult GetJobsAsync(string afterJobId, int? pageSize, RequestOptions options);
     }
     public abstract class FineTuningIntegration : IJsonModel<FineTuningIntegration>, IPersistableModel<FineTuningIntegration> {
         FineTuningIntegration IJsonModel<FineTuningIntegration>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options);
@@ -2003,16 +2003,17 @@ namespace OpenAI.FineTuning {
         readonly BinaryData IPersistableModel<object>.Write(ModelReaderWriterOptions options);
     }
     public class FineTuningJobOperation : OperationResult {
-        public FineTuningJob? Value;
+        public bool HasValue;
         public new bool HasCompleted { get; }
-        public bool HasValue { get; }
         public string JobId { get; }
         public override ContinuationToken? RehydrationToken { get; protected set; }
-        public FineTuningJobStatus? Status { get; }
+        public FineTuningJob Value { get; }
         public virtual ClientResult Cancel(RequestOptions? options);
         public virtual ClientResult<FineTuningJob> Cancel(CancellationToken cancellationToken = default);
         public virtual Task<ClientResult> CancelAsync(RequestOptions? options);
         public virtual Task<ClientResult<FineTuningJob>> CancelAsync(CancellationToken cancellationToken = default);
+        public virtual ClientResult<FineTuningJob> GetJob(CancellationToken cancellationToken = default);
+        public virtual Task<ClientResult<FineTuningJob>> GetJobAsync(CancellationToken cancellationToken = default);
         public virtual CollectionResult<FineTuningJobCheckpoint> GetJobCheckpoints(ListCheckpointsOptions? options = null, CancellationToken cancellationToken = default);
         public virtual CollectionResult GetJobCheckpoints(string? after, int? limit, RequestOptions? options);
         public virtual AsyncCollectionResult<FineTuningJobCheckpoint> GetJobCheckpointsAsync(ListCheckpointsOptions? options = null, CancellationToken cancellationToken = default);
@@ -2021,14 +2022,20 @@ namespace OpenAI.FineTuning {
         public virtual CollectionResult GetJobEvents(string? after, int? limit, RequestOptions options);
         public virtual AsyncCollectionResult<FineTuningJobEvent> GetJobEventsAsync(ListEventsOptions options, CancellationToken cancellationToken = default);
         public virtual AsyncCollectionResult GetJobEventsAsync(string? after, int? limit, RequestOptions options);
+        public static FineTuningJobOperation Rehydrate(FineTuningClient client, ContinuationToken rehydrationToken, RequestOptions options);
         public static FineTuningJobOperation Rehydrate(FineTuningClient client, ContinuationToken rehydrationToken, CancellationToken cancellationToken = default);
+        public static FineTuningJobOperation Rehydrate(FineTuningClient client, string fineTuningJobId, RequestOptions options);
         public static FineTuningJobOperation Rehydrate(FineTuningClient client, string fineTuningJobId, CancellationToken cancellationToken = default);
+        public static Task<FineTuningJobOperation> RehydrateAsync(FineTuningClient client, ContinuationToken rehydrationToken, RequestOptions options);
         public static Task<FineTuningJobOperation> RehydrateAsync(FineTuningClient client, ContinuationToken rehydrationToken, CancellationToken cancellationToken = default);
+        public static Task<FineTuningJobOperation> RehydrateAsync(FineTuningClient client, string fineTuningJobId, RequestOptions options);
         public static Task<FineTuningJobOperation> RehydrateAsync(FineTuningClient client, string fineTuningJobId, CancellationToken cancellationToken = default);
         public override ClientResult UpdateStatus(RequestOptions? options = null);
         public ClientResult<FineTuningJob> UpdateStatus(CancellationToken cancellationToken = default);
         public override ValueTask<ClientResult> UpdateStatusAsync(RequestOptions? options = null);
         public ValueTask<ClientResult<FineTuningJob>> UpdateStatusAsync(CancellationToken cancellationToken = default);
+        public new void WaitForCompletion(CancellationToken cancellationToken = default);
+        public new virtual ValueTask WaitForCompletionAsync(CancellationToken cancellationToken = default);
     }
     public readonly partial struct FineTuningJobStatus : IEquatable<FineTuningJobStatus> {
         private readonly object _dummy;
