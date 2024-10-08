@@ -122,9 +122,7 @@ public partial class FineTuningJobOperation : OperationResult
     public override async ValueTask<ClientResult> UpdateStatusAsync(RequestOptions? options = null)
     {
         ClientResult result = await GetJobAsync(options).ConfigureAwait(false);
-
         SetRawResponse(result.GetRawResponse());
-        Debug.WriteLine($"UpdateStatusAsync: {result.GetRawResponse().Content}");
         return result;
     }
 
@@ -132,9 +130,7 @@ public partial class FineTuningJobOperation : OperationResult
     public override ClientResult UpdateStatus(RequestOptions? options = null)
     {
         ClientResult result = GetJob(options);
-
         SetRawResponse(result.GetRawResponse());
-
         return result;
     }
 
@@ -415,13 +411,9 @@ public partial class FineTuningJobOperation : OperationResult
 
     new public virtual async ValueTask WaitForCompletionAsync(CancellationToken cancellationToken = default(CancellationToken))
     {
-
         while (!HasCompleted)
         {
-            Debug.WriteLine("WaitForCompletion: HasCompleted: " + HasCompleted);
-            System.Diagnostics.Debug.WriteLine("WaitForCompletion: content: " + GetRawResponse().Content.ToString());
             var delay = GetDelay();
-            System.Diagnostics.Debug.WriteLine("WaitForCompletion: delay: " + delay);
 
             await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
 
