@@ -15,7 +15,6 @@ namespace OpenAI.FineTuning;
 public partial class FineTuningJobOperation : OperationResult
 {
     public FineTuningJob Value => FineTuningJob.FromResponse(GetRawResponse());
-    public bool HasValue = true;
 
     /// <summary>
     /// Updates the status of the operation.
@@ -24,11 +23,7 @@ public partial class FineTuningJobOperation : OperationResult
     /// <returns> The freshly fetched <see cref="ClientResult{FineTuningJob}"/> object. </returns>
     public async ValueTask<ClientResult<FineTuningJob>> UpdateStatusAsync(CancellationToken cancellationToken = default)
     {
-        ClientResult result = await GetJobAsync(cancellationToken.ToRequestOptions()).ConfigureAwait(false);
-
-        SetRawResponse(result.GetRawResponse());
-
-        return (ClientResult<FineTuningJob>)result;
+        return (ClientResult<FineTuningJob>)await UpdateStatusAsync(cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -38,11 +33,7 @@ public partial class FineTuningJobOperation : OperationResult
     /// <returns> The freshly fetched <see cref="ClientResult{FineTuningJob}"/> object. </returns>
     public ClientResult<FineTuningJob> UpdateStatus(CancellationToken cancellationToken = default)
     {
-        ClientResult result = GetJob(cancellationToken.ToRequestOptions());
-
-        SetRawResponse(result.GetRawResponse());
-
-        return (ClientResult<FineTuningJob>)result;
+        return (ClientResult<FineTuningJob>)UpdateStatus(cancellationToken.ToRequestOptions());
     }
 
     private static bool GetHasCompleted(string? status)
@@ -62,8 +53,7 @@ public partial class FineTuningJobOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual async Task<ClientResult<FineTuningJob>> GetJobAsync(CancellationToken cancellationToken = default)
     {
-        using PipelineMessage message = CreateRetrieveFineTuningJobRequest(_jobId, cancellationToken.ToRequestOptions());
-        return (ClientResult<FineTuningJob>)ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, cancellationToken.ToRequestOptions()).ConfigureAwait(false));
+        return (ClientResult<FineTuningJob>)await GetJobAsync(cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -76,9 +66,7 @@ public partial class FineTuningJobOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual ClientResult<FineTuningJob> GetJob(CancellationToken cancellationToken = default)
     {
-        using PipelineMessage message = CreateRetrieveFineTuningJobRequest(_jobId, cancellationToken.ToRequestOptions());
-        var rawResponse = _pipeline.ProcessMessage(message, cancellationToken.ToRequestOptions());
-        return ClientResult.FromValue(FineTuningJob.FromResponse(rawResponse), rawResponse);
+        return (ClientResult<FineTuningJob>)GetJob(cancellationToken.ToRequestOptions());
     }
 
     /// <summary>
@@ -89,9 +77,7 @@ public partial class FineTuningJobOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual async Task<ClientResult<FineTuningJob>> CancelAsync(CancellationToken cancellationToken = default)
     {
-        using PipelineMessage message = CreateCancelFineTuningJobRequest(_jobId, cancellationToken.ToRequestOptions());
-        var rawResponse = await _pipeline.ProcessMessageAsync(message, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
-        return ClientResult.FromValue(FineTuningJob.FromResponse(rawResponse), rawResponse);
+        return (ClientResult<FineTuningJob>)await CancelAsync(cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -102,16 +88,7 @@ public partial class FineTuningJobOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual ClientResult<FineTuningJob> Cancel(CancellationToken cancellationToken = default)
     {
-        var method = CreateCancelFineTuningJobRequest;
-        PipelineMessage message;
-        return NewMethod(method, out message, cancellationToken);
-    }
-
-    private ClientResult<FineTuningJob> NewMethod(Func<string, RequestOptions?, PipelineMessage> method, out PipelineMessage message, CancellationToken cancellationToken)
-    {
-        message = method(_jobId, cancellationToken.ToRequestOptions());
-        var rawResponse = _pipeline.ProcessMessage(message, cancellationToken.ToRequestOptions());
-        return ClientResult.FromValue(FineTuningJob.FromResponse(rawResponse), rawResponse);
+        return (ClientResult<FineTuningJob>)Cancel(cancellationToken.ToRequestOptions());
     }
 
     /// <summary>
@@ -123,7 +100,8 @@ public partial class FineTuningJobOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual AsyncCollectionResult<FineTuningJobEvent> GetJobEventsAsync(ListEventsOptions options, CancellationToken cancellationToken = default)
     {
-        return new AsyncFineTuningJobEventCollectionResult(this, cancellationToken.ToRequestOptions(), options.PageSize, options.After);
+        options ??= new ListEventsOptions();
+        return (AsyncCollectionResult<FineTuningJobEvent>)GetJobEventsAsync(options.After, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
     /// <summary>
@@ -135,7 +113,8 @@ public partial class FineTuningJobOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual CollectionResult<FineTuningJobEvent> GetJobEvents(ListEventsOptions options, CancellationToken cancellationToken = default)
     {
-        return new FineTuningJobEventCollectionResult(this, cancellationToken.ToRequestOptions(), options.PageSize, options.After);
+        options ??= new ListEventsOptions();
+        return (CollectionResult<FineTuningJobEvent>)GetJobEvents(options.After, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
     /// <summary>
@@ -148,7 +127,8 @@ public partial class FineTuningJobOperation : OperationResult
     public virtual AsyncCollectionResult<FineTuningJobCheckpoint> GetJobCheckpointsAsync(ListCheckpointsOptions? options = null, CancellationToken cancellationToken = default)
     {
         options ??= new ListCheckpointsOptions();
-        return new AsyncFineTuningJobCheckpointCollectionResult(this, cancellationToken.ToRequestOptions(), options.PageSize, options.AfterCheckpointId);
+        return (AsyncCollectionResult<FineTuningJobCheckpoint>)GetJobCheckpointsAsync(options.AfterCheckpointId, options.PageSize, cancellationToken.ToRequestOptions());
+
     }
 
     /// <summary>
@@ -161,7 +141,7 @@ public partial class FineTuningJobOperation : OperationResult
     public virtual CollectionResult<FineTuningJobCheckpoint> GetJobCheckpoints(ListCheckpointsOptions? options = null, CancellationToken cancellationToken = default)
     {
         options ??= new ListCheckpointsOptions();
-        return new FineTuningJobCheckpointCollectionResult(this, cancellationToken.ToRequestOptions(), options.PageSize, options.AfterCheckpointId);
+        return (CollectionResult<FineTuningJobCheckpoint>)GetJobCheckpoints(options.AfterCheckpointId, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
     /// <summary>

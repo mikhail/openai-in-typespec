@@ -26,7 +26,6 @@ public partial class FineTuningJobCheckpoint
     [CodeGenMember("Object")]
     private string _object { get; }
 
-    // toString
     public override string ToString()
     {
         return $"FineTuningJobCheckpoint<{Id}, {StepNumber}, {FineTunedModelCheckpointId}>";

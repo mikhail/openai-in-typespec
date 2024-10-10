@@ -254,7 +254,7 @@ public partial class FineTuningJobOperation : OperationResult
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual AsyncCollectionResult<FineTuningJobCheckpoint> GetJobCheckpointsAsync(string? after, int? limit, RequestOptions? options)
+    public virtual AsyncCollectionResult GetJobCheckpointsAsync(string? after, int? limit, RequestOptions? options)
     {
         return new AsyncFineTuningJobCheckpointCollectionResult(this, options, limit, after);
     }
