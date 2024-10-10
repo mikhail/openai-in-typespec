@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace OpenAI.FineTuning;
 
-
 [CodeGenModel("FineTuningJobHyperparameters")]
 public readonly partial struct FineTuningJobHyperparameters
 {

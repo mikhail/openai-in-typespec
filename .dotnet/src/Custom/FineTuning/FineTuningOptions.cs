@@ -9,13 +9,11 @@ namespace OpenAI.FineTuning;
 [CodeGenModel("CreateFineTuningJobRequest")]
 public partial class FineTuningOptions
 {
-
     [CodeGenMember("CreateFineTuningJobRequestModel")]
     internal CreateFineTuningJobRequestModel Model { get; set; }
 
     [CodeGenMember("TrainingFile")]
     internal string TrainingFile { get; set; }
-
 
     /// <inheritdoc cref="HyperparameterOptions"/>
     [CodeGenMember("Hyperparameters")]
@@ -39,7 +37,6 @@ public partial class FineTuningOptions
     /// </summary>
     [CodeGenMember("Integrations")]
     public IList<FineTuningIntegration> Integrations { get; }
-
 
     /// <summary>
     /// The seed to use for reproducibility.

@@ -17,9 +17,9 @@ namespace OpenAI.FineTuning;
 [Experimental("OPENAI001")]
 public partial class FineTuningJobOperation : OperationResult
 {
-    internal readonly ClientPipeline _pipeline;
-    internal readonly Uri _endpoint;
-    internal readonly string _jobId;
+    private readonly ClientPipeline _pipeline;
+    private readonly Uri _endpoint;
+    private readonly string _jobId;
 
 
     new public bool HasCompleted
