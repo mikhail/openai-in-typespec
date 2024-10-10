@@ -14,7 +14,6 @@ public partial class FineTuningJob
     [CodeGenMember("Id")]
     public string JobId { get; }
 
-
     [CodeGenMember("Model")]
     public string BaseModel { get; }
 
