@@ -21,17 +21,6 @@ public partial class FineTuningJobOperation : OperationResult
     private readonly Uri _endpoint;
     private readonly string _jobId;
 
-
-    new public bool HasCompleted
-    {
-        get
-        {
-            using JsonDocument doc = JsonDocument.Parse(GetRawResponse().Content);
-            string status = doc.RootElement.GetProperty("status"u8).GetString()!;
-            return GetHasCompleted(status);
-        }
-    }
-
     internal FineTuningJobOperation(
             ClientPipeline pipeline,
             Uri endpoint,
@@ -41,7 +30,7 @@ public partial class FineTuningJobOperation : OperationResult
         _pipeline = pipeline;
         _endpoint = endpoint;
         _jobId = jobId;
-
+        ApplyUpdate(response);
         RehydrationToken = new FineTuningJobOperationToken(jobId);
     }
 
@@ -122,7 +111,7 @@ public partial class FineTuningJobOperation : OperationResult
     public override async ValueTask<ClientResult> UpdateStatusAsync(RequestOptions? options = null)
     {
         ClientResult result = await GetJobAsync(options).ConfigureAwait(false);
-        SetRawResponse(result.GetRawResponse());
+        ApplyUpdate(result.GetRawResponse());
         return result;
     }
 
@@ -130,8 +119,16 @@ public partial class FineTuningJobOperation : OperationResult
     public override ClientResult UpdateStatus(RequestOptions? options = null)
     {
         ClientResult result = GetJob(options);
-        SetRawResponse(result.GetRawResponse());
+        ApplyUpdate(result.GetRawResponse());
         return result;
+    }
+
+    private void ApplyUpdate(PipelineResponse response)
+    {
+        SetRawResponse(response);
+        using JsonDocument doc = JsonDocument.Parse(response.Content);
+        string status = doc.RootElement.GetProperty("status"u8).GetString()!;
+        HasCompleted = GetHasCompleted(status);
     }
 
     internal async Task<FineTuningJobOperation> WaitUntilAsync(bool waitUntilCompleted, RequestOptions? options)
@@ -409,7 +406,7 @@ public partial class FineTuningJobOperation : OperationResult
         return message;
     }
 
-    new public virtual async ValueTask WaitForCompletionAsync(CancellationToken cancellationToken = default(CancellationToken))
+    override public async ValueTask WaitForCompletionAsync(CancellationToken cancellationToken = default(CancellationToken))
     {
         while (!HasCompleted)
         {
@@ -421,7 +418,7 @@ public partial class FineTuningJobOperation : OperationResult
         }
     }
 
-    new public void WaitForCompletion(CancellationToken cancellationToken = default)
+    override public void WaitForCompletion(CancellationToken cancellationToken = default)
     {
         while (!HasCompleted)
         {

@@ -53,7 +53,8 @@ public partial class FineTuningJobOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual async Task<ClientResult<FineTuningJob>> GetJobAsync(CancellationToken cancellationToken = default)
     {
-        return (ClientResult<FineTuningJob>)await GetJobAsync(cancellationToken.ToRequestOptions()).ConfigureAwait(false);
+        var result = await GetJobAsync(cancellationToken.ToRequestOptions()).ConfigureAwait(false);
+        return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
     }
 
     /// <summary>
@@ -66,7 +67,8 @@ public partial class FineTuningJobOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual ClientResult<FineTuningJob> GetJob(CancellationToken cancellationToken = default)
     {
-        return (ClientResult<FineTuningJob>)GetJob(cancellationToken.ToRequestOptions());
+        var result = GetJob(cancellationToken.ToRequestOptions());
+        return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
     }
 
     /// <summary>
@@ -77,7 +79,8 @@ public partial class FineTuningJobOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual async Task<ClientResult<FineTuningJob>> CancelAsync(CancellationToken cancellationToken = default)
     {
-        return (ClientResult<FineTuningJob>)await CancelAsync(cancellationToken.ToRequestOptions()).ConfigureAwait(false);
+        var result = await CancelAsync(cancellationToken.ToRequestOptions()).ConfigureAwait(false);
+        return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
     }
 
     /// <summary>
@@ -88,7 +91,8 @@ public partial class FineTuningJobOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual ClientResult<FineTuningJob> Cancel(CancellationToken cancellationToken = default)
     {
-        return (ClientResult<FineTuningJob>)Cancel(cancellationToken.ToRequestOptions());
+        var result = Cancel(cancellationToken.ToRequestOptions());
+        return ClientResult.FromValue(FineTuningJob.FromResponse(result.GetRawResponse()), result.GetRawResponse());
     }
 
     /// <summary>
