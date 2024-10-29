@@ -64,11 +64,11 @@ public class FineTuningClientTests
     public async Task MinimalRequiredParams([Values] bool isAsync)
     {
 
-        FineTuningJobOperation jobOp = isAsync
+        FineTuningOperation jobOp = isAsync
             ? await client.CreateJobAsync("gpt-3.5-turbo", sampleFile.Id)
             : client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
 
-        FineTuningJob job = jobOp.GetJob();
+        FineTuningOperation job = jobOp.GetJob();
         Assert.True(job.Status.InProgress);
         Assert.AreEqual(0, job.Hyperparameters.CycleCount);
 
@@ -78,7 +78,7 @@ public class FineTuningClientTests
             ? await jobOp.CancelAsync()
             : jobOp.Cancel();
 
-        Assert.AreEqual(FineTuningJobStatus.Cancelled, job.Status);
+        Assert.AreEqual(FineTuningOperationStatus.Cancelled, job.Status);
         Assert.False(job.Status.InProgress);
     }
 
@@ -103,10 +103,10 @@ public class FineTuningClientTests
             Seed = 1234567
         };
 
-        FineTuningJobOperation jobOp = isAsync
+        FineTuningOperation jobOp = isAsync
             ? await client.CreateJobAsync("gpt-3.5-turbo", sampleFile.Id, options)
             : client.CreateJob("gpt-3.5-turbo", sampleFile.Id, options);
-        FineTuningJob job = jobOp.GetJob();
+        FineTuningOperation job = jobOp.GetJob();
         Assert.AreEqual(1, job.Hyperparameters.CycleCount);
         Assert.AreEqual(2, job.Hyperparameters.BatchSize);
         Assert.AreEqual(3, job.Hyperparameters.LearningRateMultiplier);
@@ -122,7 +122,7 @@ public class FineTuningClientTests
     [Explicit("This test is slow and costs $ because it completes the fine-tuning job.")]
     public async Task TestWaitForCompletion()
     {
-        FineTuningJobOperation jobOp = await client.CreateJobAsync("gpt-3.5-turbo", sampleFile.Id);
+        FineTuningOperation jobOp = await client.CreateJobAsync("gpt-3.5-turbo", sampleFile.Id);
 
         Assert.False(jobOp.HasCompleted);
 
@@ -130,9 +130,9 @@ public class FineTuningClientTests
 
         await jobOp.WaitForCompletionAsync();
 
-        FineTuningJob job = jobOp.Value;
+        FineTuningOperation job = jobOp.Value;
 
-        Assert.AreEqual(FineTuningJobStatus.Cancelled, job.Status);
+        Assert.AreEqual(FineTuningOperationStatus.Cancelled, job.Status);
     }
 
 
@@ -141,7 +141,7 @@ public class FineTuningClientTests
     [Explicit("This test requires wandb.ai account and api key integration.")]
     public void WandBIntegrations()
     {
-        FineTuningJobOperation job = client.CreateJob(
+        FineTuningOperation job = client.CreateJob(
             "gpt-3.5-turbo",
             sampleFile.Id,
             options: new()
@@ -252,7 +252,7 @@ public class FineTuningClientTests
     public void GetJobEvents([Values(Method.Sync, Method.Async)] Method method)
     {
         // Arrange
-        FineTuningJobOperation job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
+        FineTuningOperation job = client.CreateJob("gpt-3.5-turbo", sampleFile.Id);
 
         ListEventsOptions options = new()
         {
@@ -280,11 +280,11 @@ public class FineTuningClientTests
     {
         // Arrange
         // TODO: When `status` option becomes available, use it to get a succeeded job
-        FineTuningJob job = client.GetJobs(new() { PageSize = 100 })
+        FineTuningOperation job = client.GetJobs(new() { PageSize = 100 })
                                   .Where((job) => job.Status == "succeeded")
                                   .First();
 
-        var jobOperation = FineTuningJobOperation.Rehydrate(client, job.JobId);
+        var jobOperation = FineTuningOperation.Rehydrate(client, job.JobId);
 
         // Act
         var checkpoints = (method == Method.Async)

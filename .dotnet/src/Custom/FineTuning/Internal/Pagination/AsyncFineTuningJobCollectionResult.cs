@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace OpenAI.FineTuning;
 
-internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTuningJob>
+internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTuningOperation>
 {
     private readonly FineTuningClient _fineTuningClient;
     private readonly ClientPipeline _pipeline;
@@ -89,7 +89,7 @@ internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTu
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
     }
 
-    protected override IAsyncEnumerable<FineTuningJob> GetValuesFromPageAsync(ClientResult page)
+    protected override IAsyncEnumerable<FineTuningOperation> GetValuesFromPageAsync(ClientResult page)
     {
         Argument.AssertNotNull(page, nameof(page));
 

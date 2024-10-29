@@ -10,23 +10,23 @@ namespace OpenAI.Tests.FineTuning;
 [Category("FineTuning")]
 [Category("Unit")]
 
-internal class FineTuningJobTests
+internal class FineTuningOperationTests
 {
     [Test]
     [Parallelizable]
     public void TestInProgress()
     {
-        FineTuningJob job;
-        job = JobStub(status: FineTuningJobStatus.Queued);
+        FineTuningOperation job;
+        job = JobStub(status: FineTuningOperationStatus.Queued);
         Assert.IsTrue(job.Status.InProgress);
 
-        job = JobStub(status: FineTuningJobStatus.Succeeded);
+        job = JobStub(status: FineTuningOperationStatus.Succeeded);
         Assert.IsFalse(job.Status.InProgress);
     }
 
-    private static FineTuningJob JobStub(FineTuningJobStatus? status = null)
+    private static FineTuningOperation JobStub(FineTuningOperationStatus? status = null)
     {
-        return ModelReaderWriter.Read<FineTuningJob>(BinaryData.FromString($$"""
+        return ModelReaderWriter.Read<FineTuningOperation>(BinaryData.FromString($$"""
         {
           "object": "fine_tuning.job",
           "id": "ftjob-unitTest",
@@ -38,7 +38,7 @@ internal class FineTuningJobTests
           "model": "gpt-3.5-turbo-0125",
           "organization_id": "org-unitTest",
           "result_files": ["file-unitTest"],
-          "status": "{{status ?? FineTuningJobStatus.Succeeded}}",
+          "status": "{{status ?? FineTuningOperationStatus.Succeeded}}",
           "trained_tokens": 0,
           "training_file": "file-unitTest",
           "validation_file": "file-unitTest",

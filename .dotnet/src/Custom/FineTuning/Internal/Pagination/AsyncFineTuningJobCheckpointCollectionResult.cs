@@ -12,7 +12,7 @@ namespace OpenAI.FineTuning;
 
 internal class AsyncFineTuningJobCheckpointCollectionResult : AsyncCollectionResult<FineTuningJobCheckpoint>
 {
-    private readonly FineTuningJobOperation _operation;
+    private readonly FineTuningOperation _operation;
     private readonly RequestOptions? _options;
     private readonly CancellationToken _cancellationToken;
 
@@ -21,7 +21,7 @@ internal class AsyncFineTuningJobCheckpointCollectionResult : AsyncCollectionRes
     private readonly string? _after;
 
     public AsyncFineTuningJobCheckpointCollectionResult(
-        FineTuningJobOperation fineTuningJobOperation,
+        FineTuningOperation fineTuningJobOperation,
         RequestOptions? options,
         int? limit, string? after, CancellationToken cancellationToken = default)
     {

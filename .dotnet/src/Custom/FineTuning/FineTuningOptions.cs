@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace OpenAI.FineTuning;
 
 /// <summary>
-/// Represents additional options available when creating a <see cref="FineTuningJob"/>.
+/// Represents additional options available when creating a <see cref="FineTuningOperation"/>.
 /// </summary>
 [CodeGenModel("CreateFineTuningJobRequest")]
 public partial class FineTuningOptions

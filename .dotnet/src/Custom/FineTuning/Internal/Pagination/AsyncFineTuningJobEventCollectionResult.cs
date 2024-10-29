@@ -12,7 +12,7 @@ namespace OpenAI.FineTuning;
 
 internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<FineTuningJobEvent>
 {
-    private readonly FineTuningJobOperation _operation;
+    private readonly FineTuningOperation _operation;
     private readonly RequestOptions? _options;
     private readonly CancellationToken _cancellationToken;
 
@@ -21,7 +21,7 @@ internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<F
     private readonly string? _after;
 
     public AsyncFineTuningJobEventCollectionResult(
-        FineTuningJobOperation fineTuningJobOperation,
+        FineTuningOperation fineTuningJobOperation,
         RequestOptions? options,
         int? limit, string? after)
     {

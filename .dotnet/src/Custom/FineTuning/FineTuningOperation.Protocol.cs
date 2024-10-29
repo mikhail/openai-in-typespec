@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ClientModel;
 using System.ClientModel.Primitives;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Threading;
@@ -15,39 +15,24 @@ namespace OpenAI.FineTuning;
 /// A long-running operation for creating a new model from a given dataset.
 /// </summary>
 [Experimental("OPENAI001")]
-public partial class FineTuningJobOperation : OperationResult
+[CodeGenModel("FineTuningJob")]
+public partial class FineTuningOperation : OperationResult
 {
     private readonly ClientPipeline _pipeline;
     private readonly Uri _endpoint;
-    private readonly string _jobId;
-
-    internal FineTuningJobOperation(
-            ClientPipeline pipeline,
-            Uri endpoint,
-            string jobId,
-            PipelineResponse response) : base(response)
-    {
-        _pipeline = pipeline;
-        _endpoint = endpoint;
-        _jobId = jobId;
-        ApplyUpdate(response);
-        RehydrationToken = new FineTuningJobOperationToken(jobId);
-    }
-
-    public string JobId => _jobId;
 
     /// <inheritdoc/>
     public override ContinuationToken? RehydrationToken { get; protected set; }
 
     /// <summary>
-    /// Recreates a <see cref="FineTuningJobOperation"/> from a rehydration token.
+    /// Recreates a <see cref="FineTuningOperation"/> from a rehydration token.
     /// </summary>
     /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the operation status from the service. </param>
     /// <param name="rehydrationToken"> The rehydration token corresponding to the operation to rehydrate. </param>
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
-    /// <returns> The rehydrated operation <see cref="FineTuningJobOperation"/>. </returns>
+    /// <returns> The rehydrated operation <see cref="FineTuningOperation"/>. </returns>
     /// <exception cref="ArgumentNullException"> <paramref name="client"/> or <paramref name="rehydrationToken"/> is null. </exception>
-    public static FineTuningJobOperation Rehydrate(FineTuningClient client, ContinuationToken rehydrationToken, RequestOptions options)
+    public static FineTuningOperation Rehydrate(FineTuningClient client, ContinuationToken rehydrationToken, RequestOptions options)
     {
         Argument.AssertNotNull(client, nameof(client));
         Argument.AssertNotNull(rehydrationToken, nameof(rehydrationToken));
@@ -61,7 +46,7 @@ public partial class FineTuningJobOperation : OperationResult
     }
 
     /// <inheritdoc cref="Rehydrate(FineTuningClient, ContinuationToken, RequestOptions)"/>
-    public static async Task<FineTuningJobOperation> RehydrateAsync(FineTuningClient client, ContinuationToken rehydrationToken, RequestOptions options)
+    public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, ContinuationToken rehydrationToken, RequestOptions options)
     {
         Argument.AssertNotNull(client, nameof(client));
         Argument.AssertNotNull(rehydrationToken, nameof(rehydrationToken));
@@ -75,14 +60,14 @@ public partial class FineTuningJobOperation : OperationResult
     }
 
     /// <summary>
-    /// Recreates a <see cref="FineTuningJobOperation"/> from a fine tuning job id.
+    /// Recreates a <see cref="FineTuningOperation"/> from a fine tuning job id.
     /// </summary>
     /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the operation status from the service. </param>
     /// <param name="fineTuningJobId"> The id of the fine tuning job to rehydrate.</param>
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
-    /// <returns> The rehydrated operation <see cref="FineTuningJobOperation"/>. </returns>
+    /// <returns> The rehydrated operation <see cref="FineTuningOperation"/>. </returns>
     /// <exception cref="ArgumentNullException"> <paramref name="client"/> or <paramref name="fineTuningJobId"/> is null. </exception>
-    public static FineTuningJobOperation Rehydrate(FineTuningClient client, string fineTuningJobId, RequestOptions options)
+    public static FineTuningOperation Rehydrate(FineTuningClient client, string fineTuningJobId, RequestOptions options)
     {
         Argument.AssertNotNull(client, nameof(client));
         Argument.AssertNotNull(fineTuningJobId, nameof(fineTuningJobId));
@@ -94,7 +79,7 @@ public partial class FineTuningJobOperation : OperationResult
     }
 
     /// <inheritdoc cref="Rehydrate(FineTuningClient, string, RequestOptions)"/>/>
-    public static async Task<FineTuningJobOperation> RehydrateAsync(FineTuningClient client, string fineTuningJobId, RequestOptions options)
+    public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, string fineTuningJobId, RequestOptions options)
     {
         Argument.AssertNotNull(client, nameof(client));
         Argument.AssertNotNull(fineTuningJobId, nameof(fineTuningJobId));
@@ -111,7 +96,7 @@ public partial class FineTuningJobOperation : OperationResult
     public override async ValueTask<ClientResult> UpdateStatusAsync(RequestOptions? options = null)
     {
         ClientResult result = await GetJobAsync(options).ConfigureAwait(false);
-        ApplyUpdate(result.GetRawResponse());
+        ParseAndApplyUpdate(result.GetRawResponse());
         return result;
     }
 
@@ -119,26 +104,26 @@ public partial class FineTuningJobOperation : OperationResult
     public override ClientResult UpdateStatus(RequestOptions? options = null)
     {
         ClientResult result = GetJob(options);
-        ApplyUpdate(result.GetRawResponse());
+        ParseAndApplyUpdate(result.GetRawResponse());
         return result;
     }
 
-    private void ApplyUpdate(PipelineResponse response)
+    private FineTuningOperation ParseAndApplyUpdate(PipelineResponse response)
     {
         SetRawResponse(response);
-        using JsonDocument doc = JsonDocument.Parse(response.Content);
-        string status = doc.RootElement.GetProperty("status"u8).GetString()!;
-        HasCompleted = GetHasCompleted(status);
+        var parsedResponse = FineTuningOperation.FromResponse(response);
+        HasCompleted = GetHasCompleted(parsedResponse.Status);
+        return parsedResponse;
     }
 
-    internal async Task<FineTuningJobOperation> WaitUntilAsync(bool waitUntilCompleted, RequestOptions? options)
+    internal async Task<FineTuningOperation> WaitUntilAsync(bool waitUntilCompleted, RequestOptions? options)
     {
         if (!waitUntilCompleted) return this;
         await WaitForCompletionAsync(options?.CancellationToken ?? default).ConfigureAwait(false);
         return this;
     }
 
-    internal FineTuningJobOperation WaitUntil(bool waitUntilCompleted, RequestOptions? options)
+    internal FineTuningOperation WaitUntil(bool waitUntilCompleted, RequestOptions? options)
     {
         if (!waitUntilCompleted) return this;
         WaitForCompletion(options?.CancellationToken ?? default);

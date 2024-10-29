@@ -10,14 +10,14 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning
 {
-    public partial class FineTuningJob : IJsonModel<FineTuningJob>
+    public partial class FineTuningOperation : IJsonModel<FineTuningOperation>
     {
-        void IJsonModel<FineTuningJob>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        void IJsonModel<FineTuningOperation>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<FineTuningJob>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<FineTuningOperation>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
-                throw new FormatException($"The model {nameof(FineTuningJob)} does not support writing '{format}' format.");
+                throw new FormatException($"The model {nameof(FineTuningOperation)} does not support writing '{format}' format.");
             }
 
             writer.WriteStartObject();
@@ -36,7 +36,7 @@ namespace OpenAI.FineTuning
             if (SerializedAdditionalRawData?.ContainsKey("id") != true)
             {
                 writer.WritePropertyName("id"u8);
-                writer.WriteStringValue(JobId);
+                writer.WriteStringValue(_jobId);
             }
             if (SerializedAdditionalRawData?.ContainsKey("created_at") != true)
             {
@@ -199,19 +199,19 @@ namespace OpenAI.FineTuning
             writer.WriteEndObject();
         }
 
-        FineTuningJob IJsonModel<FineTuningJob>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        FineTuningOperation IJsonModel<FineTuningOperation>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<FineTuningJob>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<FineTuningOperation>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
-                throw new FormatException($"The model {nameof(FineTuningJob)} does not support reading '{format}' format.");
+                throw new FormatException($"The model {nameof(FineTuningOperation)} does not support reading '{format}' format.");
             }
 
             using JsonDocument document = JsonDocument.ParseValue(ref reader);
-            return DeserializeFineTuningJob(document.RootElement, options);
+            return DeserializeFineTuningOperation(document.RootElement, options);
         }
 
-        internal static FineTuningJob DeserializeFineTuningJob(JsonElement element, ModelReaderWriterOptions options = null)
+        internal static FineTuningOperation DeserializeFineTuningOperation(JsonElement element, ModelReaderWriterOptions options = null)
         {
             options ??= ModelSerializationExtensions.WireOptions;
 
@@ -230,7 +230,7 @@ namespace OpenAI.FineTuning
             string @object = default;
             string organizationId = default;
             IReadOnlyList<string> resultFiles = default;
-            FineTuningJobStatus status = default;
+            FineTuningOperationStatus status = default;
             int? trainedTokens = default;
             string trainingFile = default;
             string validationFile = default;
@@ -327,7 +327,7 @@ namespace OpenAI.FineTuning
                 }
                 if (property.NameEquals("status"u8))
                 {
-                    status = new FineTuningJobStatus(property.Value.GetString());
+                    status = new FineTuningOperationStatus(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("trained_tokens"u8))
@@ -391,7 +391,7 @@ namespace OpenAI.FineTuning
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new FineTuningJob(
+            return new FineTuningOperation(
                 userProvidedSuffix,
                 id,
                 createdAt,
@@ -413,41 +413,41 @@ namespace OpenAI.FineTuning
                 serializedAdditionalRawData);
         }
 
-        BinaryData IPersistableModel<FineTuningJob>.Write(ModelReaderWriterOptions options)
+        BinaryData IPersistableModel<FineTuningOperation>.Write(ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<FineTuningJob>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<FineTuningOperation>)this).GetFormatFromOptions(options) : options.Format;
 
             switch (format)
             {
                 case "J":
                     return ModelReaderWriter.Write(this, options);
                 default:
-                    throw new FormatException($"The model {nameof(FineTuningJob)} does not support writing '{options.Format}' format.");
+                    throw new FormatException($"The model {nameof(FineTuningOperation)} does not support writing '{options.Format}' format.");
             }
         }
 
-        FineTuningJob IPersistableModel<FineTuningJob>.Create(BinaryData data, ModelReaderWriterOptions options)
+        FineTuningOperation IPersistableModel<FineTuningOperation>.Create(BinaryData data, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<FineTuningJob>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<FineTuningOperation>)this).GetFormatFromOptions(options) : options.Format;
 
             switch (format)
             {
                 case "J":
                     {
                         using JsonDocument document = JsonDocument.Parse(data);
-                        return DeserializeFineTuningJob(document.RootElement, options);
+                        return DeserializeFineTuningOperation(document.RootElement, options);
                     }
                 default:
-                    throw new FormatException($"The model {nameof(FineTuningJob)} does not support reading '{options.Format}' format.");
+                    throw new FormatException($"The model {nameof(FineTuningOperation)} does not support reading '{options.Format}' format.");
             }
         }
 
-        string IPersistableModel<FineTuningJob>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+        string IPersistableModel<FineTuningOperation>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
 
-        internal static FineTuningJob FromResponse(PipelineResponse response)
+        internal static FineTuningOperation FromResponse(PipelineResponse response)
         {
             using var document = JsonDocument.Parse(response.Content);
-            return DeserializeFineTuningJob(document.RootElement);
+            return DeserializeFineTuningOperation(document.RootElement);
         }
 
         internal virtual BinaryContent ToBinaryContent()

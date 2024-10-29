@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning;
 
-internal class FineTuningJobCollectionResult : CollectionResult<FineTuningJob>
+internal class FineTuningJobCollectionResult : CollectionResult<FineTuningOperation>
 {
     private readonly FineTuningClient _fineTuningClient;
     private readonly ClientPipeline _pipeline;
@@ -86,7 +86,7 @@ internal class FineTuningJobCollectionResult : CollectionResult<FineTuningJob>
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
-    protected override IEnumerable<FineTuningJob> GetValuesFromPage(ClientResult page)
+    protected override IEnumerable<FineTuningOperation> GetValuesFromPage(ClientResult page)
     {
         Argument.AssertNotNull(page, nameof(page));
 

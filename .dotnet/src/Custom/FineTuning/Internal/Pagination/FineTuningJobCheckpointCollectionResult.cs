@@ -10,7 +10,7 @@ namespace OpenAI.FineTuning;
 
 internal class FineTuningJobCheckpointCollectionResult : CollectionResult<FineTuningJobCheckpoint>
 {
-    private readonly FineTuningJobOperation _operation;
+    private readonly FineTuningOperation _operation;
     private readonly RequestOptions? _options;
 
     // Initial values
@@ -18,7 +18,7 @@ internal class FineTuningJobCheckpointCollectionResult : CollectionResult<FineTu
     private readonly string? _after;
 
     public FineTuningJobCheckpointCollectionResult(
-        FineTuningJobOperation fineTuningJobOperation,
+        FineTuningOperation fineTuningJobOperation,
         RequestOptions? options,
         int? limit, string? after)
     {
