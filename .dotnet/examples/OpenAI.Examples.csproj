@@ -11,7 +11,7 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\OpenAI.csproj" />
+    <ProjectReference Include="..\src\OpenAI.Mikhail.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />

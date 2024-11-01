@@ -212,7 +212,7 @@ public partial class FineTuningOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual ClientResult CancelAndUpdate(CancellationToken cancellationToken = default)
     {
-        using PipelineMessage message = CreateCancelFineTuningJobRequest(JobId, cancellationToken.ToRequestOptions());
+        using PipelineMessage message = CancelJobPipelineMessage(JobId, cancellationToken.ToRequestOptions());
         PipelineResponse response = _pipeline.ProcessMessage(message, cancellationToken.ToRequestOptions());
         CopyLocalParameters(response, InternalFineTuningJob.FromResponse(response));
         return ClientResult.FromResponse(response);
@@ -226,7 +226,7 @@ public partial class FineTuningOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual async Task<ClientResult> CancelAndUpdateAsync(CancellationToken cancellationToken = default)
     {
-        using PipelineMessage message = CreateCancelFineTuningJobRequest(JobId, cancellationToken.ToRequestOptions());
+        using PipelineMessage message = CancelJobPipelineMessage(JobId, cancellationToken.ToRequestOptions());
         PipelineResponse response = await _pipeline.ProcessMessageAsync(message, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
         CopyLocalParameters(response, InternalFineTuningJob.FromResponse(response));
         return ClientResult.FromResponse(response);

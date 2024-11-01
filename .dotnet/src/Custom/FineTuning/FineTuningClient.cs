@@ -106,7 +106,7 @@ public partial class FineTuningClient
         options.Model = baseModel;
         options.TrainingFile = trainingFileId;
 
-        return CreateFineTuningJob(options.ToBinaryContent(), false, cancellationToken.ToRequestOptions());
+        return FineTune(options.ToBinaryContent(), false, cancellationToken.ToRequestOptions());
     }
 
     /// <inheritdoc cref="FineTune(string, string, FineTuningOptions, CancellationToken)"/>
@@ -122,7 +122,7 @@ public partial class FineTuningClient
         options.Model = baseModel;
         options.TrainingFile = trainingFileId;
 
-        return await CreateFineTuningJobAsync(options.ToBinaryContent(), false, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
+        return await FineTuneAsync(options.ToBinaryContent(), false, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -141,24 +141,11 @@ public partial class FineTuningClient
     /// <returns> A <see cref="AsyncCollectionResult{FineTuningJob}"/> containing the list of fine-tuning jobs. </returns>
     public virtual  AsyncCollectionResult<FineTuningOperation> GetJobsAsync(
     ListJobsOptions options = default,
-    // [EnumeratorCancellation]
     CancellationToken cancellationToken = default)
     {
         options ??= new ListJobsOptions();
         AsyncCollectionResult jobs = GetJobsAsync(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
         return (AsyncCollectionResult<FineTuningOperation>)jobs;
-        
-        //var rawPages = jobs.GetRawPagesAsync();
-        //PipelineResponse response;
-        //await foreach (var item in rawPages.WithCancellation(cancellationToken).ConfigureAwait(false))
-        //{
-        //    var firstPage = (ClientResult<InternalFineTuningJob>)item;
-        //    response = firstPage.GetRawResponse();
-        //    InternalFineTuningJob job = firstPage.Value;
-        //    yield return new FineTuningOperation(Pipeline, _endpoint, job.JobId, response);
-        //}
-
-        
     }
 
     internal virtual FineTuningOperation CreateOperationFromResponse(PipelineResponse response)

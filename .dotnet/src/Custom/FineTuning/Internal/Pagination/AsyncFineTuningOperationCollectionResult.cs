@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace OpenAI.FineTuning;
 
-internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTuningOperation>
+internal class AsyncFineTuningOperationCollectionResult : AsyncCollectionResult<FineTuningOperation>
 {
     private readonly FineTuningClient _fineTuningClient;
     private readonly ClientPipeline _pipeline;
@@ -25,7 +25,7 @@ internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTu
     private readonly int? _pageSize;
     private readonly string _after;
 
-    public AsyncFineTuningJobCollectionResult(FineTuningClient fineTuningClient,
+    public AsyncFineTuningOperationCollectionResult(FineTuningClient fineTuningClient,
         ClientPipeline pipeline, RequestOptions? options,
         int? pageSize, string after)
     {
@@ -85,7 +85,7 @@ internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTu
 
     internal virtual async Task<ClientResult> GetJobsAsync(string? after, int? limit, RequestOptions? options)
     {
-        using PipelineMessage message = _fineTuningClient.CreateGetPaginatedFineTuningJobsRequest(after, limit, options);
+        using PipelineMessage message = _fineTuningClient.GetJobsPipelineMessage(after, limit, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
     }
 

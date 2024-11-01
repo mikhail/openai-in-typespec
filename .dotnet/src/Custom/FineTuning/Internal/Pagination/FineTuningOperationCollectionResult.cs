@@ -82,7 +82,7 @@ internal class FineTuningOperationCollectionResult : CollectionResult<FineTuning
 
     internal virtual ClientResult GetJobs(string? after, int? limit, RequestOptions? options)
     {
-        using PipelineMessage message = _fineTuningClient.CreateGetPaginatedFineTuningJobsRequest(after, limit, options);
+        using PipelineMessage message = _fineTuningClient.GetJobsPipelineMessage(after, limit, options);
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
