@@ -95,7 +95,7 @@ namespace OpenAI.FineTuning
                     List<FineTuningEvent> array = new List<FineTuningEvent>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(FineTuningEvent.DeserializeFineTuningJobEvent(item, options));
+                        array.Add(FineTuningEvent.DeserializeFineTuningEvent(item, options));
                     }
                     data = array;
                     continue;

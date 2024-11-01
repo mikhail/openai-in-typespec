@@ -228,7 +228,7 @@ public class FineTuningClientTests
     }
 
     [Test]
-    [Parallelizable(ParallelScope.All)]
+    [Parallelizable]
     public void GetJobsWithAfter()
     {
         var firstJob = client.ListOperations().First();

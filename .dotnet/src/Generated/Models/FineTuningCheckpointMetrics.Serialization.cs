@@ -87,10 +87,10 @@ namespace OpenAI.FineTuning
             }
 
             using JsonDocument document = JsonDocument.ParseValue(ref reader);
-            return DeserializeCheckpointMetrics(document.RootElement, options);
+            return DeserializeFineTuningCheckpointMetrics(document.RootElement, options);
         }
 
-        internal static FineTuningCheckpointMetrics DeserializeCheckpointMetrics(JsonElement element, ModelReaderWriterOptions options = null)
+        internal static FineTuningCheckpointMetrics DeserializeFineTuningCheckpointMetrics(JsonElement element, ModelReaderWriterOptions options = null)
         {
             options ??= ModelSerializationExtensions.WireOptions;
 
@@ -200,7 +200,7 @@ namespace OpenAI.FineTuning
                 case "J":
                     {
                         using JsonDocument document = JsonDocument.Parse(data);
-                        return DeserializeCheckpointMetrics(document.RootElement, options);
+                        return DeserializeFineTuningCheckpointMetrics(document.RootElement, options);
                     }
                 default:
                     throw new FormatException($"The model {nameof(FineTuningCheckpointMetrics)} does not support reading '{options.Format}' format.");
@@ -212,7 +212,7 @@ namespace OpenAI.FineTuning
         internal static FineTuningCheckpointMetrics FromResponse(PipelineResponse response)
         {
             using var document = JsonDocument.Parse(response.Content);
-            return DeserializeCheckpointMetrics(document.RootElement);
+            return DeserializeFineTuningCheckpointMetrics(document.RootElement);
         }
 
         internal virtual BinaryContent ToBinaryContent()

@@ -87,10 +87,10 @@ namespace OpenAI.FineTuning
             }
 
             using JsonDocument document = JsonDocument.ParseValue(ref reader);
-            return DeserializeFineTuningJobCheckpoint(document.RootElement, options);
+            return DeserializeFineTuningCheckpoint(document.RootElement, options);
         }
 
-        internal static FineTuningCheckpoint DeserializeFineTuningJobCheckpoint(JsonElement element, ModelReaderWriterOptions options = null)
+        internal static FineTuningCheckpoint DeserializeFineTuningCheckpoint(JsonElement element, ModelReaderWriterOptions options = null)
         {
             options ??= ModelSerializationExtensions.WireOptions;
 
@@ -131,7 +131,7 @@ namespace OpenAI.FineTuning
                 }
                 if (property.NameEquals("metrics"u8))
                 {
-                    metrics = FineTuningCheckpointMetrics.DeserializeCheckpointMetrics(property.Value, options);
+                    metrics = FineTuningCheckpointMetrics.DeserializeFineTuningCheckpointMetrics(property.Value, options);
                     continue;
                 }
                 if (property.NameEquals("fine_tuning_job_id"u8))
@@ -184,7 +184,7 @@ namespace OpenAI.FineTuning
                 case "J":
                     {
                         using JsonDocument document = JsonDocument.Parse(data);
-                        return DeserializeFineTuningJobCheckpoint(document.RootElement, options);
+                        return DeserializeFineTuningCheckpoint(document.RootElement, options);
                     }
                 default:
                     throw new FormatException($"The model {nameof(FineTuningCheckpoint)} does not support reading '{options.Format}' format.");
@@ -196,7 +196,7 @@ namespace OpenAI.FineTuning
         internal static FineTuningCheckpoint FromResponse(PipelineResponse response)
         {
             using var document = JsonDocument.Parse(response.Content);
-            return DeserializeFineTuningJobCheckpoint(document.RootElement);
+            return DeserializeFineTuningCheckpoint(document.RootElement);
         }
 
         internal virtual BinaryContent ToBinaryContent()

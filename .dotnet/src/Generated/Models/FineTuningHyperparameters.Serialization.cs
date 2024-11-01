@@ -88,14 +88,14 @@ namespace OpenAI.FineTuning
             }
 
             using JsonDocument document = JsonDocument.ParseValue(ref reader);
-            return DeserializeFineTuningJobHyperparameters(document.RootElement, options);
+            return DeserializeFineTuningHyperparameters(document.RootElement, options);
         }
 
         void IJsonModel<object>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options) => ((IJsonModel<FineTuningHyperparameters>)this).Write(writer, options);
 
         object IJsonModel<object>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => ((IJsonModel<FineTuningHyperparameters>)this).Create(ref reader, options);
 
-        internal static FineTuningHyperparameters DeserializeFineTuningJobHyperparameters(JsonElement element, ModelReaderWriterOptions options = null)
+        internal static FineTuningHyperparameters DeserializeFineTuningHyperparameters(JsonElement element, ModelReaderWriterOptions options = null)
         {
             options ??= ModelSerializationExtensions.WireOptions;
 
@@ -153,7 +153,7 @@ namespace OpenAI.FineTuning
                 case "J":
                     {
                         using JsonDocument document = JsonDocument.Parse(data);
-                        return DeserializeFineTuningJobHyperparameters(document.RootElement, options);
+                        return DeserializeFineTuningHyperparameters(document.RootElement, options);
                     }
                 default:
                     throw new FormatException($"The model {nameof(FineTuningHyperparameters)} does not support reading '{options.Format}' format.");
@@ -171,7 +171,7 @@ namespace OpenAI.FineTuning
         internal static FineTuningHyperparameters FromResponse(PipelineResponse response)
         {
             using var document = JsonDocument.Parse(response.Content);
-            return DeserializeFineTuningJobHyperparameters(document.RootElement);
+            return DeserializeFineTuningHyperparameters(document.RootElement);
         }
 
         internal BinaryContent ToBinaryContent()

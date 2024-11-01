@@ -198,12 +198,12 @@ namespace OpenAI
             return new GeneratedImage(imageBytes, imageUri, revisedPrompt, serializedAdditionalRawData: null);
         }
 
-        public static FineTuningError JobError(string code = null, string message = null, string invalidParameter = null)
+        public static FineTuningError FineTuningError(string code = null, string message = null, string invalidParameter = null)
         {
             return new FineTuningError(code, message, invalidParameter, serializedAdditionalRawData: null);
         }
 
-        public static FineTuningCheckpointMetrics CheckpointMetrics(int step = default, float trainLoss = default, float trainMeanTokenAccuracy = default, float? validLoss = null, float? validMeanTokenAccuracy = null, float? fullValidLoss = null, float? fullValidMeanTokenAccuracy = null)
+        public static FineTuningCheckpointMetrics FineTuningCheckpointMetrics(int step = default, float trainLoss = default, float trainMeanTokenAccuracy = default, float? validLoss = null, float? validMeanTokenAccuracy = null, float? fullValidLoss = null, float? fullValidMeanTokenAccuracy = null)
         {
             return new FineTuningCheckpointMetrics(
                 step,
@@ -216,7 +216,7 @@ namespace OpenAI
                 serializedAdditionalRawData: null);
         }
 
-        public static FineTuningEvent FineTuningJobEvent(string id = null, DateTimeOffset createdAt = default, string level = null, string message = null, FineTuningJobEventObject @object = default)
+        public static FineTuningEvent FineTuningEvent(string id = null, DateTimeOffset createdAt = default, string level = null, string message = null, FineTuningJobEventObject @object = default)
         {
             return new FineTuningEvent(
                 id,

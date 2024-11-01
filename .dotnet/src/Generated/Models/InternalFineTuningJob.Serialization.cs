@@ -208,10 +208,10 @@ namespace OpenAI.FineTuning
             }
 
             using JsonDocument document = JsonDocument.ParseValue(ref reader);
-            return DeserializeFineTuningJob(document.RootElement, options);
+            return DeserializeInternalFineTuningJob(document.RootElement, options);
         }
 
-        internal static InternalFineTuningJob DeserializeFineTuningJob(JsonElement element, ModelReaderWriterOptions options = null)
+        internal static InternalFineTuningJob DeserializeInternalFineTuningJob(JsonElement element, ModelReaderWriterOptions options = null)
         {
             options ??= ModelSerializationExtensions.WireOptions;
 
@@ -268,7 +268,7 @@ namespace OpenAI.FineTuning
                         error = null;
                         continue;
                     }
-                    error = FineTuningError.DeserializeJobError(property.Value, options);
+                    error = FineTuningError.DeserializeFineTuningError(property.Value, options);
                     continue;
                 }
                 if (property.NameEquals("fine_tuned_model"u8))
@@ -297,7 +297,7 @@ namespace OpenAI.FineTuning
                     {
                         continue;
                     }
-                    hyperparameters = FineTuningHyperparameters.DeserializeFineTuningJobHyperparameters(property.Value, options);
+                    hyperparameters = FineTuningHyperparameters.DeserializeFineTuningHyperparameters(property.Value, options);
                     continue;
                 }
                 if (property.NameEquals("model"u8))
@@ -435,7 +435,7 @@ namespace OpenAI.FineTuning
                 case "J":
                     {
                         using JsonDocument document = JsonDocument.Parse(data);
-                        return DeserializeFineTuningJob(document.RootElement, options);
+                        return DeserializeInternalFineTuningJob(document.RootElement, options);
                     }
                 default:
                     throw new FormatException($"The model {nameof(InternalFineTuningJob)} does not support reading '{options.Format}' format.");
@@ -447,7 +447,7 @@ namespace OpenAI.FineTuning
         internal static InternalFineTuningJob FromResponse(PipelineResponse response)
         {
             using var document = JsonDocument.Parse(response.Content);
-            return DeserializeFineTuningJob(document.RootElement);
+            return DeserializeInternalFineTuningJob(document.RootElement);
         }
 
         internal virtual BinaryContent ToBinaryContent()

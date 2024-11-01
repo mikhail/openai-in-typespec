@@ -121,7 +121,7 @@ namespace OpenAI.FineTuning
                     List<FineTuningCheckpoint> array = new List<FineTuningCheckpoint>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(FineTuningCheckpoint.DeserializeFineTuningJobCheckpoint(item, options));
+                        array.Add(FineTuningCheckpoint.DeserializeFineTuningCheckpoint(item, options));
                     }
                     data = array;
                     continue;

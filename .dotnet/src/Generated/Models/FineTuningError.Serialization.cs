@@ -74,10 +74,10 @@ namespace OpenAI.FineTuning
             }
 
             using JsonDocument document = JsonDocument.ParseValue(ref reader);
-            return DeserializeJobError(document.RootElement, options);
+            return DeserializeFineTuningError(document.RootElement, options);
         }
 
-        internal static FineTuningError DeserializeJobError(JsonElement element, ModelReaderWriterOptions options = null)
+        internal static FineTuningError DeserializeFineTuningError(JsonElement element, ModelReaderWriterOptions options = null)
         {
             options ??= ModelSerializationExtensions.WireOptions;
 
@@ -144,7 +144,7 @@ namespace OpenAI.FineTuning
                 case "J":
                     {
                         using JsonDocument document = JsonDocument.Parse(data);
-                        return DeserializeJobError(document.RootElement, options);
+                        return DeserializeFineTuningError(document.RootElement, options);
                     }
                 default:
                     throw new FormatException($"The model {nameof(FineTuningError)} does not support reading '{options.Format}' format.");
@@ -156,7 +156,7 @@ namespace OpenAI.FineTuning
         internal static FineTuningError FromResponse(PipelineResponse response)
         {
             using var document = JsonDocument.Parse(response.Content);
-            return DeserializeJobError(document.RootElement);
+            return DeserializeFineTuningError(document.RootElement);
         }
 
         internal virtual BinaryContent ToBinaryContent()

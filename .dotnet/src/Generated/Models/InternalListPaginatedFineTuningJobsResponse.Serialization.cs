@@ -95,7 +95,7 @@ namespace OpenAI.FineTuning
                     List<InternalFineTuningJob> array = new List<InternalFineTuningJob>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(InternalFineTuningJob.DeserializeFineTuningJob(item, options));
+                        array.Add(InternalFineTuningJob.DeserializeInternalFineTuningJob(item, options));
                     }
                     data = array;
                     continue;
