@@ -8,9 +8,9 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning;
 
-internal class FineTuningJobEventCollectionResult : CollectionResult<FineTuningJobEvent>
+internal class FineTuningJobEventCollectionResult : CollectionResult<FineTuningEvent>
 {
-    private readonly FineTuningJobOperation _operation;
+    private readonly FineTuningOperation _operation;
     private readonly RequestOptions? _options;
 
     // Initial values
@@ -18,7 +18,7 @@ internal class FineTuningJobEventCollectionResult : CollectionResult<FineTuningJ
     private readonly string? _after;
 
     public FineTuningJobEventCollectionResult(
-        FineTuningJobOperation fineTuningJobOperation,
+        FineTuningOperation fineTuningJobOperation,
         RequestOptions? options,
         int? limit, string? after)
     {
@@ -79,7 +79,7 @@ internal class FineTuningJobEventCollectionResult : CollectionResult<FineTuningJ
         return hasMore;
     }
 
-    protected override IEnumerable<FineTuningJobEvent> GetValuesFromPage(ClientResult page)
+    protected override IEnumerable<FineTuningEvent> GetValuesFromPage(ClientResult page)
     {
         Argument.AssertNotNull(page, nameof(page));
 

@@ -8,10 +8,10 @@ using OpenAI.Models;
 
 namespace OpenAI.FineTuning
 {
-    public partial class FineTuningJobEvent
+    public partial class FineTuningEvent
     {
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
-        internal FineTuningJobEvent(string id, DateTimeOffset createdAt, string level, string message)
+        internal FineTuningEvent(string id, DateTimeOffset createdAt, string level, string message)
         {
             Argument.AssertNotNull(id, nameof(id));
             Argument.AssertNotNull(level, nameof(level));
@@ -23,7 +23,7 @@ namespace OpenAI.FineTuning
             Message = message;
         }
 
-        internal FineTuningJobEvent(string id, DateTimeOffset createdAt, string level, string message, FineTuningJobEventObject @object, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal FineTuningEvent(string id, DateTimeOffset createdAt, string level, string message, FineTuningJobEventObject @object, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Id = id;
             CreatedAt = createdAt;
@@ -33,7 +33,7 @@ namespace OpenAI.FineTuning
             SerializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        internal FineTuningJobEvent()
+        internal FineTuningEvent()
         {
         }
 

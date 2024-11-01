@@ -5,7 +5,7 @@ using System.Text;
 namespace OpenAI.FineTuning;
 
 [CodeGenModel("FineTuningJobEvent")]
-public partial class FineTuningJobEvent
+public partial class FineTuningEvent
 {
     [CodeGenMember("FineTuningJobEventLevel")]
     public string Level;

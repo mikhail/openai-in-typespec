@@ -7,17 +7,17 @@ using System.Collections.Generic;
 
 namespace OpenAI.FineTuning
 {
-    public partial class CheckpointMetrics
+    public partial class FineTuningCheckpointMetrics
     {
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
-        internal CheckpointMetrics(int step, float trainLoss, float trainMeanTokenAccuracy)
+        internal FineTuningCheckpointMetrics(int step, float trainLoss, float trainMeanTokenAccuracy)
         {
             Step = step;
             TrainLoss = trainLoss;
             TrainMeanTokenAccuracy = trainMeanTokenAccuracy;
         }
 
-        internal CheckpointMetrics(int step, float trainLoss, float trainMeanTokenAccuracy, float? validLoss, float? validMeanTokenAccuracy, float? fullValidLoss, float? fullValidMeanTokenAccuracy, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal FineTuningCheckpointMetrics(int step, float trainLoss, float trainMeanTokenAccuracy, float? validLoss, float? validMeanTokenAccuracy, float? fullValidLoss, float? fullValidMeanTokenAccuracy, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Step = step;
             TrainLoss = trainLoss;
@@ -29,7 +29,7 @@ namespace OpenAI.FineTuning
             SerializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        internal CheckpointMetrics()
+        internal FineTuningCheckpointMetrics()
         {
         }
 

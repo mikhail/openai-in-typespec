@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace OpenAI.FineTuning;
 
-internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<FineTuningJobEvent>
+internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<FineTuningEvent>
 {
-    private readonly FineTuningJobOperation _operation;
+    private readonly FineTuningOperation _operation;
     private readonly RequestOptions? _options;
     private readonly CancellationToken _cancellationToken;
 
@@ -21,7 +21,7 @@ internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<F
     private readonly string? _after;
 
     public AsyncFineTuningJobEventCollectionResult(
-        FineTuningJobOperation fineTuningJobOperation,
+        FineTuningOperation fineTuningJobOperation,
         RequestOptions? options,
         int? limit, string? after)
     {
@@ -74,7 +74,7 @@ internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<F
     public static bool HasNextPage(ClientResult result)
         => FineTuningJobEventCollectionResult.HasNextPage(result);
 
-    protected override IAsyncEnumerable<FineTuningJobEvent> GetValuesFromPageAsync(ClientResult page)
+    protected override IAsyncEnumerable<FineTuningEvent> GetValuesFromPageAsync(ClientResult page)
     {
         Argument.AssertNotNull(page, nameof(page));
 

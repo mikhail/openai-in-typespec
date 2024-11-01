@@ -3,7 +3,7 @@
 namespace OpenAI.FineTuning;
 
 [CodeGenModel("FineTuningJobCheckpoint")]
-public partial class FineTuningJobCheckpoint
+public partial class FineTuningCheckpoint
 {
     [CodeGenMember("Id")]
     public string Id { get; }
@@ -18,7 +18,7 @@ public partial class FineTuningJobCheckpoint
     public int StepNumber { get; }
 
     [CodeGenMember("FineTuningJobCheckpointMetrics")]
-    public CheckpointMetrics Metrics { get; }
+    public FineTuningCheckpointMetrics Metrics { get; }
 
     [CodeGenMember("FineTuningJobId")]
     public string JobId { get; }

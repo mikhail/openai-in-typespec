@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace OpenAI.FineTuning;
 
-internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTuningJob>
+internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTuningOperation>
 {
     private readonly FineTuningClient _fineTuningClient;
     private readonly ClientPipeline _pipeline;
@@ -81,7 +81,7 @@ internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTu
     }
 
     public static bool HasNextPage(ClientResult result)
-        => FineTuningJobCollectionResult.HasNextPage(result);
+        => FineTuningOperationCollectionResult.HasNextPage(result);
 
     internal virtual async Task<ClientResult> GetJobsAsync(string? after, int? limit, RequestOptions? options)
     {
@@ -89,12 +89,11 @@ internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTu
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
     }
 
-    protected override IAsyncEnumerable<FineTuningJob> GetValuesFromPageAsync(ClientResult page)
+    protected override IAsyncEnumerable<FineTuningOperation> GetValuesFromPageAsync(ClientResult page)
     {
         Argument.AssertNotNull(page, nameof(page));
 
         PipelineResponse response = page.GetRawResponse();
-        InternalListPaginatedFineTuningJobsResponse list = ModelReaderWriter.Read<InternalListPaginatedFineTuningJobsResponse>(response.Content)!;
-        return list.Data.ToAsyncEnumerable(_cancellationToken);
+        return _fineTuningClient.CreateOperationsFromPageResponse(response).ToAsyncEnumerable(_cancellationToken);
     }
 }

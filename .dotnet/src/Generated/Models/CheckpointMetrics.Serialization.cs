@@ -10,14 +10,14 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning
 {
-    public partial class CheckpointMetrics : IJsonModel<CheckpointMetrics>
+    public partial class FineTuningCheckpointMetrics : IJsonModel<FineTuningCheckpointMetrics>
     {
-        void IJsonModel<CheckpointMetrics>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        void IJsonModel<FineTuningCheckpointMetrics>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<CheckpointMetrics>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<FineTuningCheckpointMetrics>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
-                throw new FormatException($"The model {nameof(CheckpointMetrics)} does not support writing '{format}' format.");
+                throw new FormatException($"The model {nameof(FineTuningCheckpointMetrics)} does not support writing '{format}' format.");
             }
 
             writer.WriteStartObject();
@@ -78,19 +78,19 @@ namespace OpenAI.FineTuning
             writer.WriteEndObject();
         }
 
-        CheckpointMetrics IJsonModel<CheckpointMetrics>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        FineTuningCheckpointMetrics IJsonModel<FineTuningCheckpointMetrics>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<CheckpointMetrics>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<FineTuningCheckpointMetrics>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
-                throw new FormatException($"The model {nameof(CheckpointMetrics)} does not support reading '{format}' format.");
+                throw new FormatException($"The model {nameof(FineTuningCheckpointMetrics)} does not support reading '{format}' format.");
             }
 
             using JsonDocument document = JsonDocument.ParseValue(ref reader);
             return DeserializeCheckpointMetrics(document.RootElement, options);
         }
 
-        internal static CheckpointMetrics DeserializeCheckpointMetrics(JsonElement element, ModelReaderWriterOptions options = null)
+        internal static FineTuningCheckpointMetrics DeserializeCheckpointMetrics(JsonElement element, ModelReaderWriterOptions options = null)
         {
             options ??= ModelSerializationExtensions.WireOptions;
 
@@ -167,7 +167,7 @@ namespace OpenAI.FineTuning
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new CheckpointMetrics(
+            return new FineTuningCheckpointMetrics(
                 step,
                 trainLoss,
                 trainMeanTokenAccuracy,
@@ -178,22 +178,22 @@ namespace OpenAI.FineTuning
                 serializedAdditionalRawData);
         }
 
-        BinaryData IPersistableModel<CheckpointMetrics>.Write(ModelReaderWriterOptions options)
+        BinaryData IPersistableModel<FineTuningCheckpointMetrics>.Write(ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<CheckpointMetrics>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<FineTuningCheckpointMetrics>)this).GetFormatFromOptions(options) : options.Format;
 
             switch (format)
             {
                 case "J":
                     return ModelReaderWriter.Write(this, options);
                 default:
-                    throw new FormatException($"The model {nameof(CheckpointMetrics)} does not support writing '{options.Format}' format.");
+                    throw new FormatException($"The model {nameof(FineTuningCheckpointMetrics)} does not support writing '{options.Format}' format.");
             }
         }
 
-        CheckpointMetrics IPersistableModel<CheckpointMetrics>.Create(BinaryData data, ModelReaderWriterOptions options)
+        FineTuningCheckpointMetrics IPersistableModel<FineTuningCheckpointMetrics>.Create(BinaryData data, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<CheckpointMetrics>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<FineTuningCheckpointMetrics>)this).GetFormatFromOptions(options) : options.Format;
 
             switch (format)
             {
@@ -203,13 +203,13 @@ namespace OpenAI.FineTuning
                         return DeserializeCheckpointMetrics(document.RootElement, options);
                     }
                 default:
-                    throw new FormatException($"The model {nameof(CheckpointMetrics)} does not support reading '{options.Format}' format.");
+                    throw new FormatException($"The model {nameof(FineTuningCheckpointMetrics)} does not support reading '{options.Format}' format.");
             }
         }
 
-        string IPersistableModel<CheckpointMetrics>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+        string IPersistableModel<FineTuningCheckpointMetrics>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
 
-        internal static CheckpointMetrics FromResponse(PipelineResponse response)
+        internal static FineTuningCheckpointMetrics FromResponse(PipelineResponse response)
         {
             using var document = JsonDocument.Parse(response.Content);
             return DeserializeCheckpointMetrics(document.RootElement);

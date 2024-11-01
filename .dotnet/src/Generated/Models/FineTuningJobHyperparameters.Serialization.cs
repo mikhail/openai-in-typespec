@@ -10,14 +10,14 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning
 {
-    public partial struct FineTuningJobHyperparameters : IJsonModel<FineTuningJobHyperparameters>, IJsonModel<object>
+    public partial struct FineTuningHyperparameters : IJsonModel<FineTuningHyperparameters>, IJsonModel<object>
     {
-        void IJsonModel<FineTuningJobHyperparameters>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        void IJsonModel<FineTuningHyperparameters>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<FineTuningJobHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<FineTuningHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
-                throw new FormatException($"The model {nameof(FineTuningJobHyperparameters)} does not support writing '{format}' format.");
+                throw new FormatException($"The model {nameof(FineTuningHyperparameters)} does not support writing '{format}' format.");
             }
 
             writer.WriteStartObject();
@@ -79,23 +79,23 @@ namespace OpenAI.FineTuning
             writer.WriteEndObject();
         }
 
-        FineTuningJobHyperparameters IJsonModel<FineTuningJobHyperparameters>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        FineTuningHyperparameters IJsonModel<FineTuningHyperparameters>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<FineTuningJobHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<FineTuningHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
-                throw new FormatException($"The model {nameof(FineTuningJobHyperparameters)} does not support reading '{format}' format.");
+                throw new FormatException($"The model {nameof(FineTuningHyperparameters)} does not support reading '{format}' format.");
             }
 
             using JsonDocument document = JsonDocument.ParseValue(ref reader);
             return DeserializeFineTuningJobHyperparameters(document.RootElement, options);
         }
 
-        void IJsonModel<object>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options) => ((IJsonModel<FineTuningJobHyperparameters>)this).Write(writer, options);
+        void IJsonModel<object>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options) => ((IJsonModel<FineTuningHyperparameters>)this).Write(writer, options);
 
-        object IJsonModel<object>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => ((IJsonModel<FineTuningJobHyperparameters>)this).Create(ref reader, options);
+        object IJsonModel<object>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => ((IJsonModel<FineTuningHyperparameters>)this).Create(ref reader, options);
 
-        internal static FineTuningJobHyperparameters DeserializeFineTuningJobHyperparameters(JsonElement element, ModelReaderWriterOptions options = null)
+        internal static FineTuningHyperparameters DeserializeFineTuningJobHyperparameters(JsonElement element, ModelReaderWriterOptions options = null)
         {
             options ??= ModelSerializationExtensions.WireOptions;
 
@@ -128,25 +128,25 @@ namespace OpenAI.FineTuning
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new FineTuningJobHyperparameters(nEpochs, batchSize, learningRateMultiplier, serializedAdditionalRawData);
+            return new FineTuningHyperparameters(nEpochs, batchSize, learningRateMultiplier, serializedAdditionalRawData);
         }
 
-        BinaryData IPersistableModel<FineTuningJobHyperparameters>.Write(ModelReaderWriterOptions options)
+        BinaryData IPersistableModel<FineTuningHyperparameters>.Write(ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<FineTuningJobHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<FineTuningHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
 
             switch (format)
             {
                 case "J":
                     return ModelReaderWriter.Write(this, options);
                 default:
-                    throw new FormatException($"The model {nameof(FineTuningJobHyperparameters)} does not support writing '{options.Format}' format.");
+                    throw new FormatException($"The model {nameof(FineTuningHyperparameters)} does not support writing '{options.Format}' format.");
             }
         }
 
-        FineTuningJobHyperparameters IPersistableModel<FineTuningJobHyperparameters>.Create(BinaryData data, ModelReaderWriterOptions options)
+        FineTuningHyperparameters IPersistableModel<FineTuningHyperparameters>.Create(BinaryData data, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<FineTuningJobHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
+            var format = options.Format == "W" ? ((IPersistableModel<FineTuningHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
 
             switch (format)
             {
@@ -156,19 +156,19 @@ namespace OpenAI.FineTuning
                         return DeserializeFineTuningJobHyperparameters(document.RootElement, options);
                     }
                 default:
-                    throw new FormatException($"The model {nameof(FineTuningJobHyperparameters)} does not support reading '{options.Format}' format.");
+                    throw new FormatException($"The model {nameof(FineTuningHyperparameters)} does not support reading '{options.Format}' format.");
             }
         }
 
-        string IPersistableModel<FineTuningJobHyperparameters>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+        string IPersistableModel<FineTuningHyperparameters>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
 
-        BinaryData IPersistableModel<object>.Write(ModelReaderWriterOptions options) => ((IPersistableModel<FineTuningJobHyperparameters>)this).Write(options);
+        BinaryData IPersistableModel<object>.Write(ModelReaderWriterOptions options) => ((IPersistableModel<FineTuningHyperparameters>)this).Write(options);
 
-        object IPersistableModel<object>.Create(BinaryData data, ModelReaderWriterOptions options) => ((IPersistableModel<FineTuningJobHyperparameters>)this).Create(data, options);
+        object IPersistableModel<object>.Create(BinaryData data, ModelReaderWriterOptions options) => ((IPersistableModel<FineTuningHyperparameters>)this).Create(data, options);
 
-        string IPersistableModel<object>.GetFormatFromOptions(ModelReaderWriterOptions options) => ((IPersistableModel<FineTuningJobHyperparameters>)this).GetFormatFromOptions(options);
+        string IPersistableModel<object>.GetFormatFromOptions(ModelReaderWriterOptions options) => ((IPersistableModel<FineTuningHyperparameters>)this).GetFormatFromOptions(options);
 
-        internal static FineTuningJobHyperparameters FromResponse(PipelineResponse response)
+        internal static FineTuningHyperparameters FromResponse(PipelineResponse response)
         {
             using var document = JsonDocument.Parse(response.Content);
             return DeserializeFineTuningJobHyperparameters(document.RootElement);

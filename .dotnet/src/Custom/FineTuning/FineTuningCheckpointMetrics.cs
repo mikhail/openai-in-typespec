@@ -5,6 +5,6 @@ using System.Text;
 namespace OpenAI.FineTuning;
 
 [CodeGenModel("FineTuningJobCheckpointMetrics")]
-public partial class CheckpointMetrics
+public partial class FineTuningCheckpointMetrics
 {
 }

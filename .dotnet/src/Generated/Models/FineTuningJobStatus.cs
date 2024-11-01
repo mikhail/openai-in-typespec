@@ -7,11 +7,11 @@ using System.ComponentModel;
 
 namespace OpenAI.FineTuning
 {
-    public readonly partial struct FineTuningJobStatus : IEquatable<FineTuningJobStatus>
+    public readonly partial struct FineTuningStatus : IEquatable<FineTuningStatus>
     {
         private readonly string _value;
 
-        public FineTuningJobStatus(string value)
+        public FineTuningStatus(string value)
         {
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
@@ -23,19 +23,19 @@ namespace OpenAI.FineTuning
         private const string FailedValue = "failed";
         private const string CancelledValue = "cancelled";
 
-        public static FineTuningJobStatus ValidatingFiles { get; } = new FineTuningJobStatus(ValidatingFilesValue);
-        public static FineTuningJobStatus Queued { get; } = new FineTuningJobStatus(QueuedValue);
-        public static FineTuningJobStatus Running { get; } = new FineTuningJobStatus(RunningValue);
-        public static FineTuningJobStatus Succeeded { get; } = new FineTuningJobStatus(SucceededValue);
-        public static FineTuningJobStatus Failed { get; } = new FineTuningJobStatus(FailedValue);
-        public static FineTuningJobStatus Cancelled { get; } = new FineTuningJobStatus(CancelledValue);
-        public static bool operator ==(FineTuningJobStatus left, FineTuningJobStatus right) => left.Equals(right);
-        public static bool operator !=(FineTuningJobStatus left, FineTuningJobStatus right) => !left.Equals(right);
-        public static implicit operator FineTuningJobStatus(string value) => new FineTuningJobStatus(value);
+        public static FineTuningStatus ValidatingFiles { get; } = new FineTuningStatus(ValidatingFilesValue);
+        public static FineTuningStatus Queued { get; } = new FineTuningStatus(QueuedValue);
+        public static FineTuningStatus Running { get; } = new FineTuningStatus(RunningValue);
+        public static FineTuningStatus Succeeded { get; } = new FineTuningStatus(SucceededValue);
+        public static FineTuningStatus Failed { get; } = new FineTuningStatus(FailedValue);
+        public static FineTuningStatus Cancelled { get; } = new FineTuningStatus(CancelledValue);
+        public static bool operator ==(FineTuningStatus left, FineTuningStatus right) => left.Equals(right);
+        public static bool operator !=(FineTuningStatus left, FineTuningStatus right) => !left.Equals(right);
+        public static implicit operator FineTuningStatus(string value) => new FineTuningStatus(value);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object obj) => obj is FineTuningJobStatus other && Equals(other);
-        public bool Equals(FineTuningJobStatus other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
+        public override bool Equals(object obj) => obj is FineTuningStatus other && Equals(other);
+        public bool Equals(FineTuningStatus other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;

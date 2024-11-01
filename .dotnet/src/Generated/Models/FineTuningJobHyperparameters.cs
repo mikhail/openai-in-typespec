@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace OpenAI.FineTuning
 {
-    public readonly partial struct FineTuningJobHyperparameters
+    public readonly partial struct FineTuningHyperparameters
     {
-        internal FineTuningJobHyperparameters(BinaryData cycleCount, BinaryData batchSize, BinaryData learningRateMultiplier)
+        internal FineTuningHyperparameters(BinaryData cycleCount, BinaryData batchSize, BinaryData learningRateMultiplier)
         {
             Argument.AssertNotNull(cycleCount, nameof(cycleCount));
             Argument.AssertNotNull(batchSize, nameof(batchSize));
@@ -20,7 +20,7 @@ namespace OpenAI.FineTuning
             _LearningRateMultiplier = learningRateMultiplier;
         }
 
-        internal FineTuningJobHyperparameters(BinaryData cycleCount, BinaryData batchSize, BinaryData learningRateMultiplier, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal FineTuningHyperparameters(BinaryData cycleCount, BinaryData batchSize, BinaryData learningRateMultiplier, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             _CycleCount = cycleCount;
             _BatchSize = batchSize;
@@ -28,7 +28,7 @@ namespace OpenAI.FineTuning
             SerializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        public FineTuningJobHyperparameters()
+        public FineTuningHyperparameters()
         {
         }
     }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace OpenAI.FineTuning;
 
 [CodeGenModel("FineTuningJobHyperparameters")]
-public readonly partial struct FineTuningJobHyperparameters
+public readonly partial struct FineTuningHyperparameters
 {
     private static readonly BinaryData Auto = new("\"auto\"");
 

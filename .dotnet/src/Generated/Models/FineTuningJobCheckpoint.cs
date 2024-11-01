@@ -7,10 +7,10 @@ using System.Collections.Generic;
 
 namespace OpenAI.FineTuning
 {
-    public partial class FineTuningJobCheckpoint
+    public partial class FineTuningCheckpoint
     {
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
-        internal FineTuningJobCheckpoint(string id, DateTimeOffset createdAt, string fineTunedModelCheckpointId, int stepNumber, CheckpointMetrics metrics, string jobId)
+        internal FineTuningCheckpoint(string id, DateTimeOffset createdAt, string fineTunedModelCheckpointId, int stepNumber, FineTuningCheckpointMetrics metrics, string jobId)
         {
             Argument.AssertNotNull(id, nameof(id));
             Argument.AssertNotNull(fineTunedModelCheckpointId, nameof(fineTunedModelCheckpointId));
@@ -25,7 +25,7 @@ namespace OpenAI.FineTuning
             JobId = jobId;
         }
 
-        internal FineTuningJobCheckpoint(string id, DateTimeOffset createdAt, string fineTunedModelCheckpointId, int stepNumber, CheckpointMetrics metrics, string jobId, string @object, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal FineTuningCheckpoint(string id, DateTimeOffset createdAt, string fineTunedModelCheckpointId, int stepNumber, FineTuningCheckpointMetrics metrics, string jobId, string @object, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Id = id;
             CreatedAt = createdAt;
@@ -37,7 +37,7 @@ namespace OpenAI.FineTuning
             SerializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        internal FineTuningJobCheckpoint()
+        internal FineTuningCheckpoint()
         {
         }
     }

@@ -266,14 +266,14 @@ namespace OpenAI
             return new GeneratedImage(imageBytes, imageUri, revisedPrompt, serializedAdditionalRawData: null);
         }
 
-        public static JobError JobError(string code = null, string message = null, string invalidParameter = null)
+        public static FineTuningError JobError(string code = null, string message = null, string invalidParameter = null)
         {
-            return new JobError(code, message, invalidParameter, serializedAdditionalRawData: null);
+            return new FineTuningError(code, message, invalidParameter, serializedAdditionalRawData: null);
         }
 
-        public static CheckpointMetrics CheckpointMetrics(int step = default, float trainLoss = default, float trainMeanTokenAccuracy = default, float? validLoss = null, float? validMeanTokenAccuracy = null, float? fullValidLoss = null, float? fullValidMeanTokenAccuracy = null)
+        public static FineTuningCheckpointMetrics CheckpointMetrics(int step = default, float trainLoss = default, float trainMeanTokenAccuracy = default, float? validLoss = null, float? validMeanTokenAccuracy = null, float? fullValidLoss = null, float? fullValidMeanTokenAccuracy = null)
         {
-            return new CheckpointMetrics(
+            return new FineTuningCheckpointMetrics(
                 step,
                 trainLoss,
                 trainMeanTokenAccuracy,
@@ -284,9 +284,9 @@ namespace OpenAI
                 serializedAdditionalRawData: null);
         }
 
-        public static FineTuningJobEvent FineTuningJobEvent(string id = null, DateTimeOffset createdAt = default, string level = null, string message = null, FineTuningJobEventObject @object = default)
+        public static FineTuningEvent FineTuningJobEvent(string id = null, DateTimeOffset createdAt = default, string level = null, string message = null, FineTuningJobEventObject @object = default)
         {
-            return new FineTuningJobEvent(
+            return new FineTuningEvent(
                 id,
                 createdAt,
                 level,
