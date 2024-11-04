@@ -206,7 +206,7 @@ public class FineTuningClientTests
         // Arrange
         Console.WriteLine("Getting jobs");
         var jobs = (method == Method.Async)
-            ? client.GetJobsAsync().Take(10).ToBlockingEnumerable()
+            ? client.ListOperationsAsync().Take(10).ToBlockingEnumerable()
             : client.ListOperations().Take(10);
 
         Console.WriteLine("Got jobs");
