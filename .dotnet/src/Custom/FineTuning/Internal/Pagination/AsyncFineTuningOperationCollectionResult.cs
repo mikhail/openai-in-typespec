@@ -58,7 +58,7 @@ internal class AsyncFineTuningOperationCollectionResult : AsyncCollectionResult<
     {
         Argument.AssertNotNull(page, nameof(page));
 
-        return FineTuningJobCollectionPageToken.FromResponse(page, _pageSize);
+        return FineTuningCollectionPageToken.FromResponse(page, _pageSize);
     }
 
     public async Task<ClientResult> GetFirstPageAsync()

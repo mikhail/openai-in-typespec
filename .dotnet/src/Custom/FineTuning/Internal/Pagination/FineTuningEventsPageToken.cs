@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ClientModel;
-using System.ClientModel.Primitives;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
@@ -9,20 +8,18 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning;
 
-internal class FineTuningJobEventCollectionPageToken : ContinuationToken
+internal class FineTuningEventsPageToken : ContinuationToken
 {
-    protected FineTuningJobEventCollectionPageToken(string jobId, int? limit, string? after)
+    protected FineTuningEventsPageToken(string jobId, string? after, int? limit)
     {
         JobId = jobId;
-        Limit = limit;
         After = after;
+        Limit = limit;
     }
 
     public string JobId { get; }
-
-    public int? Limit { get; }
-
     public string? After { get; }
+    public int? Limit { get; }
 
     public override BinaryData ToBytes()
     {
@@ -30,7 +27,8 @@ internal class FineTuningJobEventCollectionPageToken : ContinuationToken
         using Utf8JsonWriter writer = new(stream);
 
         writer.WriteStartObject();
-        writer.WriteString("jobId", JobId);
+
+        writer.WriteString("fine_tuning_job_id", JobId);
 
         if (Limit.HasValue)
         {
@@ -50,25 +48,35 @@ internal class FineTuningJobEventCollectionPageToken : ContinuationToken
         return BinaryData.FromStream(stream);
     }
 
-    public static FineTuningJobEventCollectionPageToken FromToken(ContinuationToken pageToken)
+    public FineTuningEventsPageToken? GetNextPageToken(bool hasMore)
     {
-        if (pageToken is FineTuningJobEventCollectionPageToken token)
+        return hasMore
+            ? new FineTuningEventsPageToken(JobId, After, Limit)
+            : null;
+
+    }
+
+    public static FineTuningEventsPageToken FromToken(ContinuationToken token)
+    {
+        if (token is FineTuningEventsPageToken pageToken)
         {
-            return token;
+            return pageToken;
         }
 
-        BinaryData data = pageToken.ToBytes();
+        BinaryData data = token.ToBytes();
 
         if (data.ToMemory().Length == 0)
         {
-            throw new ArgumentException("Failed to create FineTuningJobEventCollectionPageToken from provided pageToken.", nameof(pageToken));
+            throw new ArgumentException(
+                $"Failed to create {nameof(FineTuningEventsPageToken)} from provided token.",
+                nameof(token));
         }
 
         Utf8JsonReader reader = new(data);
 
-        string jobId = null!;
-        int? limit = null;
+        string jobId = "";
         string? after = null;
+        int? limit = null;
 
         reader.Read();
 
@@ -87,49 +95,29 @@ internal class FineTuningJobEventCollectionPageToken : ContinuationToken
 
             switch (propertyName)
             {
-                case "jobId":
+                case "fine_tuning_job_id":
                     reader.Read();
                     Debug.Assert(reader.TokenType == JsonTokenType.String);
                     jobId = reader.GetString()!;
-                    break;
-                case "limit":
-                    reader.Read();
-                    Debug.Assert(reader.TokenType == JsonTokenType.Number);
-                    limit = reader.GetInt32();
                     break;
                 case "after":
                     reader.Read();
                     Debug.Assert(reader.TokenType == JsonTokenType.String);
                     after = reader.GetString();
                     break;
+                case "limit":
+                    reader.Read();
+                    Debug.Assert(reader.TokenType == JsonTokenType.Number);
+                    limit = reader.GetInt32();
+                    break;
                 default:
                     throw new JsonException($"Unrecognized property '{propertyName}'.");
             }
         }
 
-        if (jobId is null)
-        {
-            throw new ArgumentException("Failed to create FineTuningJobEventCollectionPageToken from provided pageToken.", nameof(pageToken));
-        }
-
-        return new(jobId, limit, after);
+        return new(jobId, after, limit);
     }
 
-    public static FineTuningJobEventCollectionPageToken FromOptions(string jobId, int? limit, string? after)
-        => new(jobId, limit, after);
-
-    public static FineTuningJobEventCollectionPageToken? FromResponse(ClientResult result, string jobId, int? limit)
-    {
-        PipelineResponse response = result.GetRawResponse();
-        using JsonDocument doc = JsonDocument.Parse(response.Content);
-        string lastId = doc.RootElement.GetProperty("last_id"u8).GetString()!;
-        bool hasMore = doc.RootElement.GetProperty("has_more"u8).GetBoolean();
-
-        if (!hasMore || lastId is null)
-        {
-            return null;
-        }
-
-        return new(jobId, limit, lastId);
-    }
+    public static FineTuningEventsPageToken FromOptions(string jobId, string? after, int? limit)
+        => new FineTuningEventsPageToken(jobId, after, limit);
 }

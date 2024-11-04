@@ -167,7 +167,7 @@ public partial class FineTuningOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual async Task<ClientResult> CancelAsync(RequestOptions options)
     {
-        using PipelineMessage message = CancelJobPipelineMessage(JobId, options);
+        using PipelineMessage message = CancelPipelineMessage(JobId, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
     }
 
@@ -179,7 +179,7 @@ public partial class FineTuningOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual ClientResult Cancel(RequestOptions options)
     {
-        using PipelineMessage message = CancelJobPipelineMessage(JobId, options);
+        using PipelineMessage message = CancelPipelineMessage(JobId, options);
         PipelineResponse response = _pipeline.ProcessMessage(message, options);
         return ClientResult.FromResponse(response);
     }
@@ -194,7 +194,7 @@ public partial class FineTuningOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual AsyncCollectionResult GetJobEventsAsync(string? after, int? limit, RequestOptions options)
     {
-        return new AsyncFineTuningJobEventCollectionResult(this, options, limit, after);
+        return new AsyncFineTuningEventCollectionResult(this, options, limit, after);
     }
 
     /// <summary>
@@ -205,9 +205,9 @@ public partial class FineTuningOperation : OperationResult
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual CollectionResult GetJobEvents(string? after, int? limit, RequestOptions options)
+    public virtual CollectionResult GetEvents(string? after, int? limit, RequestOptions options)
     {
-        return new FineTuningJobEventCollectionResult(this, options, limit, after);
+        return new FineTuningEventCollectionResult(this, options, limit, after);
     }
 
     /// <summary>
@@ -218,9 +218,9 @@ public partial class FineTuningOperation : OperationResult
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual AsyncCollectionResult GetJobCheckpointsAsync(string? after, int? limit, RequestOptions? options)
+    public virtual AsyncCollectionResult GetCheckpointsAsync(string? after, int? limit, RequestOptions? options)
     {
-        return new AsyncFineTuningJobCheckpointCollectionResult(this, options, limit, after);
+        return new AsyncFineTuningCheckpointCollectionResult(this, options, limit, after);
     }
 
     /// <summary>
@@ -231,9 +231,9 @@ public partial class FineTuningOperation : OperationResult
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual CollectionResult GetJobCheckpoints(string? after, int? limit, RequestOptions? options)
+    public virtual CollectionResult GetCheckpoints(string? after, int? limit, RequestOptions? options)
     {
-        return new FineTuningJobCheckpointCollectionResult(this, options, limit, after);
+        return new FineTuningCheckpointCollectionResult(this, options, limit, after);
     }
 
     /// <summary>
@@ -244,7 +244,7 @@ public partial class FineTuningOperation : OperationResult
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    internal virtual async Task<ClientResult> GetJobCheckpointsPageAsync(string? after, int? limit, RequestOptions? options)
+    internal virtual async Task<ClientResult> GetCheckpointsPageAsync(string? after, int? limit, RequestOptions? options)
     {
         using PipelineMessage message = GetCheckpointsPipelineMessage(JobId, after, limit, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
@@ -258,7 +258,7 @@ public partial class FineTuningOperation : OperationResult
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    internal virtual ClientResult GetJobPageCheckpoints(string? after, int? limit, RequestOptions? options)
+    internal virtual ClientResult GetPageCheckpoints(string? after, int? limit, RequestOptions? options)
     {
         using PipelineMessage message = GetCheckpointsPipelineMessage(JobId, after, limit, options);
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
@@ -272,25 +272,25 @@ public partial class FineTuningOperation : OperationResult
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    internal virtual ClientResult GetJobCheckpointsPage(string? after, int? limit, RequestOptions? options)
+    internal virtual ClientResult GetCheckpointsPage(string? after, int? limit, RequestOptions? options)
     {
         using PipelineMessage message = GetCheckpointsPipelineMessage(JobId, after, limit, options);
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
-    internal virtual async Task<ClientResult> GetJobEventsPageAsync(string? after, int? limit, RequestOptions? options)
+    internal virtual async Task<ClientResult> GetEventsPageAsync(string? after, int? limit, RequestOptions? options)
     {
         using PipelineMessage message = GetEventsPipelineMessage(JobId, after, limit, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
     }
 
-    internal virtual ClientResult GetJobEventsPage(string? after, int? limit, RequestOptions? options)
+    internal virtual ClientResult GetEventsPage(string? after, int? limit, RequestOptions? options)
     {
         using PipelineMessage message = GetEventsPipelineMessage(JobId, after, limit, options);
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
-    internal virtual PipelineMessage CancelJobPipelineMessage(string fineTuningJobId, RequestOptions? options)
+    internal virtual PipelineMessage CancelPipelineMessage(string fineTuningJobId, RequestOptions? options)
     {
         var message = _pipeline.CreateMessage();
         message.ResponseClassifier = PipelineMessageClassifier200;

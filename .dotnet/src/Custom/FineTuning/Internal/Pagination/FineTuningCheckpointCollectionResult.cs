@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning;
 
-internal class FineTuningJobEventCollectionResult : CollectionResult<FineTuningEvent>
+internal class FineTuningCheckpointCollectionResult : CollectionResult<FineTuningCheckpoint>
 {
     private readonly FineTuningOperation _operation;
     private readonly RequestOptions? _options;
@@ -17,7 +17,7 @@ internal class FineTuningJobEventCollectionResult : CollectionResult<FineTuningE
     private readonly int? _limit;
     private readonly string? _after;
 
-    public FineTuningJobEventCollectionResult(
+    public FineTuningCheckpointCollectionResult(
         FineTuningOperation fineTuningJobOperation,
         RequestOptions? options,
         int? limit, string? after)
@@ -45,11 +45,11 @@ internal class FineTuningJobEventCollectionResult : CollectionResult<FineTuningE
     {
         Argument.AssertNotNull(page, nameof(page));
 
-        return FineTuningJobEventCollectionPageToken.FromResponse(page, _operation.JobId, _limit);
+        return FineTuningCheckpointCollectionPageToken.FromResponse(page, _operation.JobId, _limit);
     }
 
     public ClientResult GetFirstPage()
-        => _operation.GetJobEventsPage(_after, _limit, _options);
+        => _operation.GetCheckpointsPage(_after, _limit, _options);
 
     public ClientResult GetNextPage(ClientResult result)
     {
@@ -64,7 +64,7 @@ internal class FineTuningJobEventCollectionResult : CollectionResult<FineTuningE
         string? lastId = lastItem.TryGetProperty("id", out JsonElement idElement) ?
             idElement.GetString() : null;
 
-        return _operation.GetJobEventsPage(lastId, _limit, _options);
+        return _operation.GetCheckpointsPage(lastId, _limit, _options);
     }
 
     public static bool HasNextPage(ClientResult result)
@@ -79,12 +79,12 @@ internal class FineTuningJobEventCollectionResult : CollectionResult<FineTuningE
         return hasMore;
     }
 
-    protected override IEnumerable<FineTuningEvent> GetValuesFromPage(ClientResult page)
+    protected override IEnumerable<FineTuningCheckpoint> GetValuesFromPage(ClientResult page)
     {
         Argument.AssertNotNull(page, nameof(page));
 
         PipelineResponse response = page.GetRawResponse();
-        InternalListFineTuningJobEventsResponse events = ModelReaderWriter.Read<InternalListFineTuningJobEventsResponse>(response.Content)!;
-        return events.Data;
+        InternalListFineTuningJobCheckpointsResponse points = ModelReaderWriter.Read<InternalListFineTuningJobCheckpointsResponse>(response.Content)!;
+        return points.Data;
     }
 }

@@ -9,9 +9,9 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning;
 
-internal class FineTuningJobCheckpointCollectionPageToken : ContinuationToken
+internal class FineTuningCheckpointCollectionPageToken: ContinuationToken
 {
-    protected FineTuningJobCheckpointCollectionPageToken(string jobId, int? pageSize, string? afterCheckpointId)
+    protected FineTuningCheckpointCollectionPageToken(string jobId, int? pageSize, string? afterCheckpointId)
     {
         JobId = jobId;
         PageSize = pageSize;
@@ -50,9 +50,9 @@ internal class FineTuningJobCheckpointCollectionPageToken : ContinuationToken
         return BinaryData.FromStream(stream);
     }
 
-    public static FineTuningJobCheckpointCollectionPageToken FromToken(ContinuationToken pageToken)
+    public static FineTuningCheckpointCollectionPageToken FromToken(ContinuationToken pageToken)
     {
-        if (pageToken is FineTuningJobCheckpointCollectionPageToken token)
+        if (pageToken is FineTuningCheckpointCollectionPageToken token)
         {
             return token;
         }
@@ -61,7 +61,7 @@ internal class FineTuningJobCheckpointCollectionPageToken : ContinuationToken
 
         if (data.ToMemory().Length == 0)
         {
-            throw new ArgumentException($"Failed to create {nameof(FineTuningJobCheckpointCollectionPageToken)} from provided argument.", nameof(pageToken));
+            throw new ArgumentException($"Failed to create {nameof(FineTuningCheckpointCollectionPageToken)} from provided argument.", nameof(pageToken));
         }
 
         Utf8JsonReader reader = new(data);
@@ -109,16 +109,16 @@ internal class FineTuningJobCheckpointCollectionPageToken : ContinuationToken
 
         if (jobId is null)
         {
-            throw new ArgumentException($"Failed to create {nameof(FineTuningJobCheckpointCollectionPageToken)} from provided argument.", nameof(pageToken));
+            throw new ArgumentException($"Failed to create {nameof(FineTuningCheckpointCollectionPageToken)} from provided argument.", nameof(pageToken));
         }
 
         return new(jobId, limit, after);
     }
 
-    public static FineTuningJobCheckpointCollectionPageToken FromOptions(string jobId, int? pageSize, string? afterCheckpointId)
+    public static FineTuningCheckpointCollectionPageToken FromOptions(string jobId, int? pageSize, string? afterCheckpointId)
         => new(jobId, pageSize, afterCheckpointId);
 
-    public static FineTuningJobCheckpointCollectionPageToken? FromResponse(ClientResult result, string jobId, int? pageSize)
+    public static FineTuningCheckpointCollectionPageToken? FromResponse(ClientResult result, string jobId, int? pageSize)
     {
         PipelineResponse response = result.GetRawResponse();
         using JsonDocument doc = JsonDocument.Parse(response.Content);

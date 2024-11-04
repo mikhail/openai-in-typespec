@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace OpenAI.FineTuning;
 
-internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<FineTuningEvent>
+internal class AsyncFineTuningEventCollectionResult : AsyncCollectionResult<FineTuningEvent>
 {
     private readonly FineTuningOperation _operation;
     private readonly RequestOptions? _options;
@@ -20,7 +20,7 @@ internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<F
     private readonly int? _limit;
     private readonly string? _after;
 
-    public AsyncFineTuningJobEventCollectionResult(
+    public AsyncFineTuningEventCollectionResult(
         FineTuningOperation fineTuningJobOperation,
         RequestOptions? options,
         int? limit, string? after)
@@ -49,11 +49,11 @@ internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<F
     {
         Argument.AssertNotNull(page, nameof(page));
 
-        return FineTuningJobEventCollectionPageToken.FromResponse(page, _operation.JobId, _limit);
+        return FineTuningEventCollectionPageToken.FromResponse(page, _operation.JobId, _limit);
     }
 
     public async Task<ClientResult> GetFirstPageAsync()
-        => await _operation.GetJobEventsPageAsync(_after, _limit, _options).ConfigureAwait(false);
+        => await _operation.GetEventsPageAsync(_after, _limit, _options).ConfigureAwait(false);
 
     public async Task<ClientResult> GetNextPageAsync(ClientResult result)
     {
@@ -68,11 +68,11 @@ internal class AsyncFineTuningJobEventCollectionResult : AsyncCollectionResult<F
         string? lastId = lastItem.TryGetProperty("id", out JsonElement idElement) ?
             idElement.GetString() : null;
 
-        return await _operation.GetJobEventsPageAsync(lastId, _limit, _options).ConfigureAwait(false);
+        return await _operation.GetEventsPageAsync(lastId, _limit, _options).ConfigureAwait(false);
     }
 
     public static bool HasNextPage(ClientResult result)
-        => FineTuningJobEventCollectionResult.HasNextPage(result);
+        => FineTuningEventCollectionResult.HasNextPage(result);
 
     protected override IAsyncEnumerable<FineTuningEvent> GetValuesFromPageAsync(ClientResult page)
     {

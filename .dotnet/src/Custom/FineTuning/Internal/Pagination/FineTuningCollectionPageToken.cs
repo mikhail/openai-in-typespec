@@ -8,9 +8,9 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning;
 
-internal class FineTuningJobCollectionPageToken : ContinuationToken
+internal class FineTuningCollectionPageToken : ContinuationToken
 {
-    protected FineTuningJobCollectionPageToken(int? limit, string? after)
+    protected FineTuningCollectionPageToken(int? limit, string? after)
     {
         Limit = limit;
         After = after;
@@ -20,9 +20,9 @@ internal class FineTuningJobCollectionPageToken : ContinuationToken
 
     public string? After { get; }
 
-    public static FineTuningJobCollectionPageToken FromToken(ContinuationToken pageToken)
+    public static FineTuningCollectionPageToken FromToken(ContinuationToken pageToken)
     {
-        if (pageToken is FineTuningJobCollectionPageToken token)
+        if (pageToken is FineTuningCollectionPageToken token)
         {
             return token;
         }
@@ -31,7 +31,7 @@ internal class FineTuningJobCollectionPageToken : ContinuationToken
 
         if (data.ToMemory().Length == 0)
         {
-            throw new ArgumentException("Failed to create FineTuningJobCollectionPageToken from provided pageToken.", nameof(pageToken));
+            throw new ArgumentException("Failed to create FineTuningCollectionPageToken from provided pageToken.", nameof(pageToken));
         }
 
         Utf8JsonReader reader = new(data);
@@ -74,10 +74,10 @@ internal class FineTuningJobCollectionPageToken : ContinuationToken
         return new(limit, after);
     }
 
-    public static FineTuningJobCollectionPageToken FromOptions(int? limit, string? after)
+    public static FineTuningCollectionPageToken FromOptions(int? limit, string? after)
         => new(limit, after);
 
-    public static FineTuningJobCollectionPageToken? FromResponse(ClientResult result, int? limit)
+    public static FineTuningCollectionPageToken? FromResponse(ClientResult result, int? limit)
     {
         PipelineResponse response = result.GetRawResponse();
         using JsonDocument doc = JsonDocument.Parse(response.Content);
