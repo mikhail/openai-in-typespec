@@ -131,17 +131,17 @@ public partial class FineTuningClient
     ///
     /// [Learn more about fine-tuning](/docs/guides/fine-tuning)
     /// </summary>
-    /// <param name="fineTuningJobId"> The ID of the fine-tuning job. </param>
+    /// <param name="JobId"> The ID of the fine-tuning job. </param>
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
-    /// <exception cref="ArgumentNullException"> <paramref name="fineTuningJobId"/> is null. </exception>
-    /// <exception cref="ArgumentException"> <paramref name="fineTuningJobId"/> is an empty string, and was expected to be non-empty. </exception>
+    /// <exception cref="ArgumentNullException"> <paramref name="JobId"/> is null. </exception>
+    /// <exception cref="ArgumentException"> <paramref name="JobId"/> is an empty string, and was expected to be non-empty. </exception>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    internal async Task<ClientResult> GetJobAsync(string fineTuningJobId, RequestOptions options)
+    internal async Task<ClientResult> GetJobAsync(string JobId, RequestOptions options)
     {
-        Argument.AssertNotNullOrEmpty(fineTuningJobId, nameof(fineTuningJobId));
+        Argument.AssertNotNullOrEmpty(JobId, nameof(JobId));
 
-        using PipelineMessage message = GetJobPipelineMessage(_pipeline, _endpoint, fineTuningJobId, options);
+        using PipelineMessage message = GetJobPipelineMessage(_pipeline, _endpoint, JobId, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
     }
 
@@ -150,17 +150,17 @@ public partial class FineTuningClient
     ///
     /// [Learn more about fine-tuning](/docs/guides/fine-tuning)
     /// </summary>
-    /// <param name="fineTuningJobId"> The ID of the fine-tuning job. </param>
+    /// <param name="JobId"> The ID of the fine-tuning job. </param>
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
-    /// <exception cref="ArgumentNullException"> <paramref name="fineTuningJobId"/> is null. </exception>
-    /// <exception cref="ArgumentException"> <paramref name="fineTuningJobId"/> is an empty string, and was expected to be non-empty. </exception>
+    /// <exception cref="ArgumentNullException"> <paramref name="JobId"/> is null. </exception>
+    /// <exception cref="ArgumentException"> <paramref name="JobId"/> is an empty string, and was expected to be non-empty. </exception>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    internal ClientResult GetJob(string fineTuningJobId, RequestOptions options)
+    internal ClientResult GetJob(string JobId, RequestOptions options)
     {
-        Argument.AssertNotNullOrEmpty(fineTuningJobId, nameof(fineTuningJobId));
+        Argument.AssertNotNullOrEmpty(JobId, nameof(JobId));
 
-        using PipelineMessage message = GetJobPipelineMessage(_pipeline, _endpoint, fineTuningJobId, options);
+        using PipelineMessage message = GetJobPipelineMessage(_pipeline, _endpoint, JobId, options);
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
@@ -204,7 +204,7 @@ public partial class FineTuningClient
         return message;
     }
 
-    internal static PipelineMessage GetJobPipelineMessage(ClientPipeline clientPipeline, Uri endpoint, string fineTuningJobId, RequestOptions options)
+    internal static PipelineMessage GetJobPipelineMessage(ClientPipeline clientPipeline, Uri endpoint, string JobId, RequestOptions options)
     {
         // This is referenced by client.GetJobAsync and client.GetJob, and operation.GetJobAsync and operation.GetJob.
         // It is static so that FineTuningOperation can use it as well.
@@ -215,7 +215,7 @@ public partial class FineTuningClient
         var uri = new ClientUriBuilder();
         uri.Reset(endpoint);
         uri.AppendPath("/fine_tuning/jobs/", false);
-        uri.AppendPath(fineTuningJobId, true);
+        uri.AppendPath(JobId, true);
         request.Uri = uri.ToUri();
         request.Headers.Set("Accept", "application/json");
         message.Apply(options);

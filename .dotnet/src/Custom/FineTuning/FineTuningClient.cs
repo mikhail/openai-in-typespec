@@ -129,11 +129,11 @@ public partial class FineTuningClient
     ///
     /// [Learn more about fine-tuning](/docs/guides/fine-tuning)
     /// </summary>
-    /// <param name="fineTuningJobId"> The ID of the fine-tuning job. </param>
+    /// <param name="JobId"> The ID of the fine-tuning job. </param>
     /// <param name="cancellationToken"> The cancellation token. </param>
-    public FineTuningOperation GetOperation(string fineTuningJobId, CancellationToken cancellationToken = default)
+    public FineTuningOperation GetOperation(string JobId, CancellationToken cancellationToken = default)
     {
-        return FineTuningOperation.Rehydrate(this, fineTuningJobId, cancellationToken.ToRequestOptions());
+        return FineTuningOperation.Rehydrate(this, JobId, cancellationToken.ToRequestOptions());
     }
 
     /// <summary>
@@ -141,11 +141,11 @@ public partial class FineTuningClient
     ///
     /// [Learn more about fine-tuning](/docs/guides/fine-tuning)
     /// </summary>
-    /// <param name="fineTuningJobId"> The ID of the fine-tuning job. </param>
+    /// <param name="JobId"> The ID of the fine-tuning job. </param>
     /// <param name="cancellationToken"> The cancellation token. </param>
-    internal async Task<FineTuningOperation> GetOperationAsync(string fineTuningJobId, CancellationToken cancellationToken = default)
+    internal async Task<FineTuningOperation> GetOperationAsync(string JobId, CancellationToken cancellationToken = default)
     {
-        return await FineTuningOperation.RehydrateAsync(this, fineTuningJobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
+        return await FineTuningOperation.RehydrateAsync(this, JobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
 
     /// <summary>

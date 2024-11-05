@@ -172,18 +172,18 @@ public partial class FineTuningOperation : OperationResult
     /// Recreates a <see cref="FineTuningOperation"/> from a fine tuning job id.
     /// </summary>
     /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the operation status from the service. </param>
-    /// <param name="fineTuningJobId"> The id of the fine tuning job to rehydrate.</param>
+    /// <param name="JobId"> The id of the fine tuning job to rehydrate.</param>
     /// <param name="cancellationToken"> A token that can be used to cancel the request. </param>
     /// <returns> The rehydrated operation <see cref="FineTuningOperation"/>. </returns>
-    public static FineTuningOperation Rehydrate(FineTuningClient client, string fineTuningJobId, CancellationToken cancellationToken = default)
+    public static FineTuningOperation Rehydrate(FineTuningClient client, string JobId, CancellationToken cancellationToken = default)
     {
-        return Rehydrate(client, fineTuningJobId, cancellationToken.ToRequestOptions());
+        return Rehydrate(client, JobId, cancellationToken.ToRequestOptions());
     }
 
     /// <inheritdoc cref="Rehydrate(FineTuningClient, string, CancellationToken)" />
-    public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, string fineTuningJobId, CancellationToken cancellationToken = default)
+    public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, string JobId, CancellationToken cancellationToken = default)
     {
-        return await RehydrateAsync(client, fineTuningJobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
+        return await RehydrateAsync(client, JobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

@@ -62,28 +62,28 @@ public partial class FineTuningOperation : OperationResult
     /// Recreates a <see cref="FineTuningOperation"/> from a fine tuning job id.
     /// </summary>
     /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the operation status from the service. </param>
-    /// <param name="fineTuningJobId"> The id of the fine tuning job to rehydrate.</param>
+    /// <param name="JobId"> The id of the fine tuning job to rehydrate.</param>
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <returns> The rehydrated operation <see cref="FineTuningOperation"/>. </returns>
-    /// <exception cref="ArgumentNullException"> <paramref name="client"/> or <paramref name="fineTuningJobId"/> is null. </exception>
-    public static FineTuningOperation Rehydrate(FineTuningClient client, string fineTuningJobId, RequestOptions options)
+    /// <exception cref="ArgumentNullException"> <paramref name="client"/> or <paramref name="JobId"/> is null. </exception>
+    public static FineTuningOperation Rehydrate(FineTuningClient client, string JobId, RequestOptions options)
     {
         Argument.AssertNotNull(client, nameof(client));
-        Argument.AssertNotNull(fineTuningJobId, nameof(fineTuningJobId));
+        Argument.AssertNotNull(JobId, nameof(JobId));
 
-        ClientResult result = client.GetJob(fineTuningJobId, options);
+        ClientResult result = client.GetJob(JobId, options);
         PipelineResponse response = result.GetRawResponse();
 
         return client.CreateOperationFromResponse(response);
     }
 
     /// <inheritdoc cref="Rehydrate(FineTuningClient, string, RequestOptions)"/>/>
-    public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, string fineTuningJobId, RequestOptions options)
+    public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, string JobId, RequestOptions options)
     {
         Argument.AssertNotNull(client, nameof(client));
-        Argument.AssertNotNull(fineTuningJobId, nameof(fineTuningJobId));
+        Argument.AssertNotNull(JobId, nameof(JobId));
 
-        ClientResult result = await client.GetJobAsync(fineTuningJobId, options).ConfigureAwait(false);
+        ClientResult result = await client.GetJobAsync(JobId, options).ConfigureAwait(false);
         PipelineResponse response = result.GetRawResponse();
 
         return client.CreateOperationFromResponse(response);
@@ -290,7 +290,7 @@ public partial class FineTuningOperation : OperationResult
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
-    internal virtual PipelineMessage CancelPipelineMessage(string fineTuningJobId, RequestOptions? options)
+    internal virtual PipelineMessage CancelPipelineMessage(string JobId, RequestOptions? options)
     {
         var message = _pipeline.CreateMessage();
         message.ResponseClassifier = PipelineMessageClassifier200;
@@ -299,7 +299,7 @@ public partial class FineTuningOperation : OperationResult
         var uri = new ClientUriBuilder();
         uri.Reset(_endpoint);
         uri.AppendPath("/fine_tuning/jobs/", false);
-        uri.AppendPath(fineTuningJobId, true);
+        uri.AppendPath(JobId, true);
         uri.AppendPath("/cancel", false);
         request.Uri = uri.ToUri();
         request.Headers.Set("Accept", "application/json");
@@ -307,7 +307,7 @@ public partial class FineTuningOperation : OperationResult
         return message;
     }
 
-    internal virtual PipelineMessage GetCheckpointsPipelineMessage(string fineTuningJobId, string? after, int? limit, RequestOptions? options)
+    internal virtual PipelineMessage GetCheckpointsPipelineMessage(string JobId, string? after, int? limit, RequestOptions? options)
     {
         var message = _pipeline.CreateMessage();
         message.ResponseClassifier = PipelineMessageClassifier200;
@@ -316,7 +316,7 @@ public partial class FineTuningOperation : OperationResult
         var uri = new ClientUriBuilder();
         uri.Reset(_endpoint);
         uri.AppendPath("/fine_tuning/jobs/", false);
-        uri.AppendPath(fineTuningJobId, true);
+        uri.AppendPath(JobId, true);
         uri.AppendPath("/checkpoints", false);
         if (after != null)
         {
