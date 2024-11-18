@@ -2,7 +2,7 @@
 
 public class ListOperationsOptions
 {
-    public string AfterJobId { get; set; }
+    public string AfterOperationId { get; set; }
 
     public int? PageSize { get; set; }
 

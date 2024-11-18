@@ -45,7 +45,7 @@ internal class FineTuningCheckpointCollectionResult : CollectionResult<FineTunin
     {
         Argument.AssertNotNull(page, nameof(page));
 
-        return FineTuningCheckpointCollectionPageToken.FromResponse(page, _operation.JobId, _limit);
+        return FineTuningCheckpointCollectionPageToken.FromResponse(page, _operation.OperationId, _limit);
     }
 
     public ClientResult GetFirstPage()

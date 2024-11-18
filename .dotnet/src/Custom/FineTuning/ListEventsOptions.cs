@@ -8,7 +8,7 @@ namespace OpenAI.FineTuning;
 public class ListEventsOptions
 {
     [CodeGenMember("JobId")]
-    internal string JobId { get; set; }
+    internal string OperationId { get; set; }
 
     [CodeGenMember("After")]
     public string After { get; set; }

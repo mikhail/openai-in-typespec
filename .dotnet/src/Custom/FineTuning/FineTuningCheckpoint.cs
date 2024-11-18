@@ -21,7 +21,7 @@ public partial class FineTuningCheckpoint
     public FineTuningCheckpointMetrics Metrics { get; }
 
     [CodeGenMember("FineTuningJobId")]
-    public string JobId { get; }
+    public string OperationId { get; }
 
     [CodeGenMember("Object")]
     private string _object { get; }

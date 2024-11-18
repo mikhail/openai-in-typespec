@@ -17,7 +17,6 @@ namespace OpenAI.Tests.FineTuning;
 [Category("Smoke")]
 public class FineTuningClientTests
 {
-
     public enum Method
     {
         Sync,
@@ -99,17 +98,17 @@ public class FineTuningClientTests
             Seed = 1234567
         };
 
-        FineTuningOperation jobOp = isAsync
+        FineTuningOperation ft = isAsync
             ? await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id, options)
             : client.FineTune("gpt-3.5-turbo", sampleFile.Id, options);
-        Assert.AreEqual(1, jobOp.Hyperparameters.CycleCount);
-        Assert.AreEqual(2, jobOp.Hyperparameters.BatchSize);
-        Assert.AreEqual(3, jobOp.Hyperparameters.LearningRateMultiplier);
-        Assert.AreEqual(jobOp.UserProvidedSuffix, "TestFTJob");
-        Assert.AreEqual(1234567, jobOp.Seed);
-        Assert.AreEqual(validationFile.Id, jobOp.ValidationFileId);
+        Assert.AreEqual(1, ft.Hyperparameters.CycleCount);
+        Assert.AreEqual(2, ft.Hyperparameters.BatchSize);
+        Assert.AreEqual(3, ft.Hyperparameters.LearningRateMultiplier);
+        Assert.AreEqual(ft.UserProvidedSuffix, "TestFTJob");
+        Assert.AreEqual(1234567, ft.Seed);
+        Assert.AreEqual(validationFile.Id, ft.ValidationFileId);
 
-        jobOp.CancelAndUpdate();
+        ft.CancelAndUpdate();
     }
 
     [Test]
@@ -117,23 +116,23 @@ public class FineTuningClientTests
     public async Task TestWaitForCompletion()
     {
         // Arrange
-        FineTuningOperation jobOp;
+        FineTuningOperation ft;
         try
         {
-            jobOp = client.ListOperations(options: new() { PageSize = 100 }).Where((job) => job.Status == "succeeded").First();
+            ft = client.ListOperations(options: new() { PageSize = 100 }).Where((ft) => ft.Status == "succeeded").First();
         }
         catch (InvalidOperationException)
         {
-            jobOp = await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id);
+            ft = await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id);
         }
 
         // Act
-        await jobOp.WaitForCompletionAsync();
+        await ft.WaitForCompletionAsync();
 
         // Assert
-        Assert.True(jobOp.HasCompleted);
-        Assert.NotNull(jobOp.Value);
-        Assert.True(jobOp.Value.StartsWith("ft:gpt-3.5-turbo-0125:"));
+        Assert.True(ft.HasCompleted);
+        Assert.NotNull(ft.Value);
+        Assert.True(ft.Value.StartsWith("ft:gpt-3.5-turbo-0125:"));
     }
 
 
@@ -142,7 +141,7 @@ public class FineTuningClientTests
     [Explicit("This test requires wandb.ai account and api key integration.")]
     public void WandBIntegrations()
     {
-        FineTuningOperation job = client.FineTune(
+        FineTuningOperation ft = client.FineTune(
             "gpt-3.5-turbo",
             sampleFile.Id,
             options: new()
@@ -150,7 +149,7 @@ public class FineTuningClientTests
                 Integrations = { new WeightsAndBiasesIntegration("ft-tests") },
             }
         );
-        job.CancelAndUpdate();
+        ft.CancelAndUpdate();
     }
 
     [Test]
@@ -204,23 +203,18 @@ public class FineTuningClientTests
     public void GetJobs([Values(Method.Sync, Method.Async)] Method method)
     {
         // Arrange
-        Console.WriteLine("Getting jobs");
-        var jobs = (method == Method.Async)
+        var fts = (method == Method.Async)
             ? client.ListOperationsAsync().Take(10).ToBlockingEnumerable()
             : client.ListOperations().Take(10);
 
-        Console.WriteLine("Got jobs");
 
         // Act
         var counter = 0;
-        foreach (var job in jobs)  // Network call will happen here on first iteration.
+        foreach (var ft in fts)  // Network call will happen here on first iteration.
         {
-            Console.WriteLine($"{counter} jobs");
-            Console.WriteLine($"Job: {job.JobId}");
-            Assert.IsTrue(job.JobId.StartsWith("ftjob"));
+            Assert.IsTrue(ft.OperationId.StartsWith("ftjob"));
             counter++;
         }
-        Console.WriteLine($"Got {counter} jobs");
 
         // Assert
         Assert.Greater(counter, 0);
@@ -228,24 +222,53 @@ public class FineTuningClientTests
     }
 
     [Test]
+    [Parallelizable(ParallelScope.All)]
+    public void GetJobById([Values(Method.Sync, Method.Async)] Method method)
+    {
+        // Arrange
+        var id = (method == Method.Async)
+            ? client.ListOperationsAsync().ToBlockingEnumerable().First().OperationId
+            : client.ListOperations().First().OperationId;
+
+
+        // Act
+
+        var ftOp = (method == Method.Async)
+            ? client.GetOperationAsync(id).Result
+            : client.GetOperation(id);
+
+        // Assert
+        Assert.AreEqual(ftOp.OperationId, id);
+    }
+
+
+    [Test]
     [Parallelizable]
     public void GetJobsWithAfter()
     {
-        var firstJob = client.ListOperations().First();
+        // Arrange
+        FineTuningOperation firstOp = client.ListOperations().First();
 
-        if (firstJob is null)
+        if (firstOp is null)
         {
             Assert.Fail("No jobs found. At least 2 jobs have to be found to run this test.");
         }
-        var secondJob = client.ListOperations(new() { AfterJobId = firstJob.JobId }).First();
 
-        Assert.AreNotEqual(firstJob.JobId, secondJob.JobId);
-        // Can't assert that one was created after the next because they might be created at the same second.
-        // Assert.Greater(secondJob.CreatedAt, firstJob.CreatedAt, $"{firstJob}, {secondJob}");
+        // Act
+        // DISCUSS: we say list operations but filter says AfterOperationId.
+        FineTuningOperation secondOp = client.ListOperations(new() { AfterOperationId = firstOp.OperationId }).First();
+
+        if (secondOp is null)
+        {
+            return; // No second ft found means the filter worked.
+        }
+
+        // Assert
+        Assert.AreNotEqual(firstOp.OperationId, secondOp.OperationId);
     }
 
     /// Manual experiments show that there are always at least 2 events:
-    /// First one is that the job is created
+    /// First one is that the ft is created
     /// Second one is "validating training file"
     /// If this test starts failing because of the wrong count, please first check if the above is still true
     [Test]
@@ -253,18 +276,18 @@ public class FineTuningClientTests
     public void GetJobEvents([Values(Method.Sync, Method.Async)] Method method)
     {
         // Arrange
-        FineTuningOperation job = client.FineTune("gpt-3.5-turbo", sampleFile.Id);
+        FineTuningOperation ft = client.FineTune("gpt-3.5-turbo", sampleFile.Id);
 
         ListEventsOptions options = new()
         {
             PageSize = 1
         };
-        job.CancelAndUpdate();
+        ft.CancelAndUpdate();
 
         // Act
         var events = (method == Method.Async)
-            ? job.GetJobEventsAsync(options).ToBlockingEnumerable()
-            : job.GetJobEvents(options);
+            ? ft.GetEventsAsync(options).ToBlockingEnumerable()
+            : ft.GetEvents(options);
 
         var first = events.FirstOrDefault();
 
@@ -280,7 +303,7 @@ public class FineTuningClientTests
     public void GetCheckpoints([Values(Method.Sync, Method.Async)] Method method)
     {
         // Arrange
-        // TODO: When `status` option becomes available, use it to get a succeeded job
+        // TODO: When `status` option becomes available, use it to get a succeeded ft
         FineTuningOperation job = client.ListOperations(new() { PageSize = 100 })
                                   .Where((job) => job.Status == "succeeded")
                                   .First();

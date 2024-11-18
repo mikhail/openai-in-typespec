@@ -45,7 +45,7 @@ internal class FineTuningEventCollectionResult : CollectionResult<FineTuningEven
     {
         Argument.AssertNotNull(page, nameof(page));
 
-        return FineTuningEventCollectionPageToken.FromResponse(page, _operation.JobId, _limit);
+        return FineTuningEventCollectionPageToken.FromResponse(page, _operation.OperationId, _limit);
     }
 
     public ClientResult GetFirstPage()

@@ -17,7 +17,7 @@ public partial class FineTuningOperation : OperationResult
 {
     public string? Value = null;
 
-    public string JobId { get; private set; } = null!;
+    public string OperationId { get; private set; } = null!;
     public string BaseModel { get; private set; } = null!;
     public DateTimeOffset? EstimatedFinishAt { get; private set; }
     public string ValidationFileId { get; private set; } = null!;
@@ -45,17 +45,13 @@ public partial class FineTuningOperation : OperationResult
         _pipeline = pipeline;
         _endpoint = endpoint;
         var job = InternalFineTuningJob.FromResponse(response);
-        CopyLocalParameters(response, job);
+        CopyParamsFromJob(job, response);
     }
 
     /// <summary>
     /// Creates a new <see cref="FineTuningOperation"/> from a <see cref="InternalFineTuningJob"/>.
     /// Pipeline response is saved but not used for inferring job data. Response could be a page of values.
     /// </summary>
-    /// <param name="pipeline"></param>
-    /// <param name="endpoint"></param>
-    /// <param name="job"></param>
-    /// <param name="response"></param>
     internal FineTuningOperation(
             ClientPipeline pipeline,
             Uri endpoint,
@@ -64,10 +60,10 @@ public partial class FineTuningOperation : OperationResult
     {
         _pipeline = pipeline;
         _endpoint = endpoint;
-        CopyLocalParameters(response, job);
+        CopyParamsFromJob(job, response);
     }
 
-    private void CopyLocalParameters(PipelineResponse response, InternalFineTuningJob job)
+    private void CopyParamsFromJob(InternalFineTuningJob job, PipelineResponse response)
     {
         Value = job.FineTunedModel;
 
@@ -75,7 +71,7 @@ public partial class FineTuningOperation : OperationResult
         EstimatedFinishAt = job.EstimatedFinishAt;
         Hyperparameters = job.Hyperparameters;
         Integrations = job.Integrations;
-        JobId = job.JobId;
+        OperationId = job.JobId;
         RehydrationToken = new FineTuningOperationToken(job.JobId);
         ResultFileIds = job.ResultFileIds;
         Seed = job.Seed;
@@ -96,33 +92,27 @@ public partial class FineTuningOperation : OperationResult
     }
 
     /// <summary>
-    /// Get status updates for a fine-tuning job.
+    /// Get status updates for a currently running fine-tuning operation.
     /// </summary>
     /// <param name="options"> Filter parameters via <see cref="ListEventsOptions"/>. </param>
     /// <param name="cancellationToken"> The cancellation token to use. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual AsyncCollectionResult<FineTuningEvent> GetJobEventsAsync(ListEventsOptions options, CancellationToken cancellationToken = default)
+    public virtual AsyncCollectionResult<FineTuningEvent> GetEventsAsync(ListEventsOptions options, CancellationToken cancellationToken = default)
     {
         options ??= new ListEventsOptions();
-        return (AsyncCollectionResult<FineTuningEvent>)GetJobEventsAsync(options.After, options.PageSize, cancellationToken.ToRequestOptions());
+        return (AsyncCollectionResult<FineTuningEvent>)GetEventsAsync(options.After, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
-    /// <summary>
-    /// Get status updates for a fine-tuning job.
-    /// </summary>
-    /// <param name="options"> Filter parameters via <see cref="ListEventsOptions"/>. </param>
-    /// <param name="cancellationToken"> The cancellation token to use. </param>
-    /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
-    /// <returns> The response returned from the service. </returns>
-    public virtual CollectionResult<FineTuningEvent> GetJobEvents(ListEventsOptions options, CancellationToken cancellationToken = default)
+    /// <inheritdoc cref="GetEventsAsync(ListEventsOptions, CancellationToken)"/>
+    public virtual CollectionResult<FineTuningEvent> GetEvents(ListEventsOptions options, CancellationToken cancellationToken = default)
     {
         options ??= new ListEventsOptions();
         return (CollectionResult<FineTuningEvent>)GetEvents(options.After, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
     /// <summary>
-    /// List the checkpoints for a fine-tuning job.
+    /// List the checkpoints for a fine-tuning operation.
     /// </summary>
     /// <param name="options"> Filter parameters via <see cref="ListCheckpointsOptions"/>. </param>
     /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -135,13 +125,7 @@ public partial class FineTuningOperation : OperationResult
 
     }
 
-    /// <summary>
-    /// List the checkpoints for a fine-tuning job.
-    /// </summary>
-    /// <param name="options"> Filter parameters via <see cref="ListCheckpointsOptions"/>. </param>
-    /// <param name="cancellationToken"> The cancellation token to use. </param>
-    /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
-    /// <returns> The response returned from the service. </returns>
+    
     public virtual CollectionResult<FineTuningCheckpoint> GetCheckpoints(ListCheckpointsOptions? options = null, CancellationToken cancellationToken = default)
     {
         options ??= new ListCheckpointsOptions();
@@ -149,7 +133,7 @@ public partial class FineTuningOperation : OperationResult
     }
 
     /// <summary>
-    /// Recreates a <see cref="FineTuningOperation"/> from a rehydration token.
+    /// Creates a <see cref="FineTuningOperation"/> from a rehydration token.
     /// </summary>
     /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the operation status from the service. </param>
     /// <param name="rehydrationToken"> The rehydration token corresponding to the operation to rehydrate. </param>
@@ -161,7 +145,6 @@ public partial class FineTuningOperation : OperationResult
         return Rehydrate(client, rehydrationToken, cancellationToken.ToRequestOptions());
     }
 
-
     /// <inheritdoc cref="Rehydrate(FineTuningClient, ContinuationToken, CancellationToken)"/>"
     public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, ContinuationToken rehydrationToken, CancellationToken cancellationToken = default)
     {
@@ -169,21 +152,21 @@ public partial class FineTuningOperation : OperationResult
     }
 
     /// <summary>
-    /// Recreates a <see cref="FineTuningOperation"/> from a fine tuning job id.
+    /// Creates a <see cref="FineTuningOperation" /> from its unique id.
     /// </summary>
     /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the operation status from the service. </param>
-    /// <param name="JobId"> The id of the fine tuning job to rehydrate.</param>
+    /// <param name="operationId"> The id of the fine tuning operation to rehydrate.</param>
     /// <param name="cancellationToken"> A token that can be used to cancel the request. </param>
     /// <returns> The rehydrated operation <see cref="FineTuningOperation"/>. </returns>
-    public static FineTuningOperation Rehydrate(FineTuningClient client, string JobId, CancellationToken cancellationToken = default)
+    public static FineTuningOperation Rehydrate(FineTuningClient client, string operationId, CancellationToken cancellationToken = default)
     {
-        return Rehydrate(client, JobId, cancellationToken.ToRequestOptions());
+        return Rehydrate(client, operationId, cancellationToken.ToRequestOptions());
     }
 
     /// <inheritdoc cref="Rehydrate(FineTuningClient, string, CancellationToken)" />
-    public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, string JobId, CancellationToken cancellationToken = default)
+    public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, string operationId, CancellationToken cancellationToken = default)
     {
-        return await RehydrateAsync(client, JobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
+        return await RehydrateAsync(client, operationId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -191,7 +174,7 @@ public partial class FineTuningOperation : OperationResult
     {
         ClientResult result = await GetJobAsync(cancellationToken.ToRequestOptions()).ConfigureAwait(false);
         var response = result.GetRawResponse();
-        CopyLocalParameters(response, InternalFineTuningJob.FromResponse(response));
+        CopyParamsFromJob(InternalFineTuningJob.FromResponse(response), response);
         return result;
     }
 
@@ -200,7 +183,7 @@ public partial class FineTuningOperation : OperationResult
     {
         ClientResult result = GetJob(cancellationToken.ToRequestOptions());
         var response = result.GetRawResponse();
-        CopyLocalParameters(response, InternalFineTuningJob.FromResponse(response));
+        CopyParamsFromJob(InternalFineTuningJob.FromResponse(response), response);
         return result;
     }
 
@@ -212,23 +195,23 @@ public partial class FineTuningOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual ClientResult CancelAndUpdate(CancellationToken cancellationToken = default)
     {
-        using PipelineMessage message = CancelPipelineMessage(JobId, cancellationToken.ToRequestOptions());
+        using PipelineMessage message = CancelPipelineMessage(OperationId, cancellationToken.ToRequestOptions());
         PipelineResponse response = _pipeline.ProcessMessage(message, cancellationToken.ToRequestOptions());
-        CopyLocalParameters(response, InternalFineTuningJob.FromResponse(response));
+        CopyParamsFromJob(InternalFineTuningJob.FromResponse(response), response);
         return ClientResult.FromResponse(response);
     }
 
     /// <summary>
     /// [Protocol Method] Immediately cancel a fine-tune job.
     /// </summary>
-    /// <param name="cancellationToken"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
+    /// <param name="cancellationToken"> The cancellation token. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
     public virtual async Task<ClientResult> CancelAndUpdateAsync(CancellationToken cancellationToken = default)
     {
-        using PipelineMessage message = CancelPipelineMessage(JobId, cancellationToken.ToRequestOptions());
+        using PipelineMessage message = CancelPipelineMessage(OperationId, cancellationToken.ToRequestOptions());
         PipelineResponse response = await _pipeline.ProcessMessageAsync(message, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
-        CopyLocalParameters(response, InternalFineTuningJob.FromResponse(response));
+        CopyParamsFromJob(InternalFineTuningJob.FromResponse(response), response);
         return ClientResult.FromResponse(response);
     }
 
@@ -272,5 +255,4 @@ public partial class FineTuningOperation : OperationResult
             ? TimeSpan.FromSeconds(30)
             : TimeSpan.FromSeconds(1);
     }
-
 }

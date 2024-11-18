@@ -49,7 +49,7 @@ namespace OpenAI.FineTuning
             if (SerializedAdditionalRawData?.ContainsKey("fine_tuning_job_id") != true)
             {
                 writer.WritePropertyName("fine_tuning_job_id"u8);
-                writer.WriteStringValue(JobId);
+                writer.WriteStringValue(OperationId);
             }
             if (SerializedAdditionalRawData?.ContainsKey("object") != true)
             {

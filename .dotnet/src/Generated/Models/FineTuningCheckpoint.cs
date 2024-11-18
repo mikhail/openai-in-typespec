@@ -22,7 +22,7 @@ namespace OpenAI.FineTuning
             FineTunedModelCheckpointId = fineTunedModelCheckpointId;
             StepNumber = stepNumber;
             Metrics = metrics;
-            JobId = jobId;
+            OperationId = jobId;
         }
 
         internal FineTuningCheckpoint(string id, DateTimeOffset createdAt, string fineTunedModelCheckpointId, int stepNumber, FineTuningCheckpointMetrics metrics, string jobId, string @object, IDictionary<string, BinaryData> serializedAdditionalRawData)
@@ -32,7 +32,7 @@ namespace OpenAI.FineTuning
             FineTunedModelCheckpointId = fineTunedModelCheckpointId;
             StepNumber = stepNumber;
             Metrics = metrics;
-            JobId = jobId;
+            OperationId = jobId;
             _object = @object;
             SerializedAdditionalRawData = serializedAdditionalRawData;
         }

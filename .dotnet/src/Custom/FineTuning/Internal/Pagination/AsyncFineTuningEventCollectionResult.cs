@@ -49,7 +49,7 @@ internal class AsyncFineTuningEventCollectionResult : AsyncCollectionResult<Fine
     {
         Argument.AssertNotNull(page, nameof(page));
 
-        return FineTuningEventCollectionPageToken.FromResponse(page, _operation.JobId, _limit);
+        return FineTuningEventCollectionPageToken.FromResponse(page, _operation.OperationId, _limit);
     }
 
     public async Task<ClientResult> GetFirstPageAsync()

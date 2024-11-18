@@ -38,7 +38,7 @@ public partial class FineTuningOperation : OperationResult
 
         FineTuningOperationToken token = FineTuningOperationToken.FromToken(rehydrationToken);
 
-        ClientResult result = client.GetJob(token.JobId, options);
+        ClientResult result = client.GetOperation(token.JobId, options);
         PipelineResponse response = result.GetRawResponse();
 
         return client.CreateOperationFromResponse(response);
@@ -52,38 +52,38 @@ public partial class FineTuningOperation : OperationResult
 
         FineTuningOperationToken token = FineTuningOperationToken.FromToken(rehydrationToken);
 
-        ClientResult result = await client.GetJobAsync(token.JobId, options).ConfigureAwait(false);
+        ClientResult result = await client.GetOperationAsync(token.JobId, options).ConfigureAwait(false);
         PipelineResponse response = result.GetRawResponse();
 
         return client.CreateOperationFromResponse(response);
     }
 
     /// <summary>
-    /// Recreates a <see cref="FineTuningOperation"/> from a fine tuning job id.
+    /// Recreates a <see cref="FineTuningOperation"/> from a fine tuning operation id.
     /// </summary>
     /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the operation status from the service. </param>
-    /// <param name="JobId"> The id of the fine tuning job to rehydrate.</param>
+    /// <param name="operationId"> The id of the fine tuning operation to rehydrate.</param>
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <returns> The rehydrated operation <see cref="FineTuningOperation"/>. </returns>
-    /// <exception cref="ArgumentNullException"> <paramref name="client"/> or <paramref name="JobId"/> is null. </exception>
-    public static FineTuningOperation Rehydrate(FineTuningClient client, string JobId, RequestOptions options)
+    /// <exception cref="ArgumentNullException"> <paramref name="client"/> or <paramref name="operationId"/> is null. </exception>
+    public static FineTuningOperation Rehydrate(FineTuningClient client, string operationId, RequestOptions options)
     {
         Argument.AssertNotNull(client, nameof(client));
-        Argument.AssertNotNull(JobId, nameof(JobId));
+        Argument.AssertNotNull(operationId, nameof(operationId));
 
-        ClientResult result = client.GetJob(JobId, options);
+        ClientResult result = client.GetOperation(operationId, options);
         PipelineResponse response = result.GetRawResponse();
 
         return client.CreateOperationFromResponse(response);
     }
 
     /// <inheritdoc cref="Rehydrate(FineTuningClient, string, RequestOptions)"/>/>
-    public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, string JobId, RequestOptions options)
+    public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, string operationId, RequestOptions options)
     {
         Argument.AssertNotNull(client, nameof(client));
-        Argument.AssertNotNull(JobId, nameof(JobId));
+        Argument.AssertNotNull(operationId, nameof(operationId));
 
-        ClientResult result = await client.GetJobAsync(JobId, options).ConfigureAwait(false);
+        ClientResult result = await client.GetOperationAsync(operationId, options).ConfigureAwait(false);
         PipelineResponse response = result.GetRawResponse();
 
         return client.CreateOperationFromResponse(response);
@@ -138,7 +138,7 @@ public partial class FineTuningOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     internal virtual async Task<ClientResult> GetJobAsync(RequestOptions? options)
     {
-        using PipelineMessage message = FineTuningClient.GetJobPipelineMessage(_pipeline, _endpoint, JobId, options);
+        using PipelineMessage message = FineTuningClient.GetJobPipelineMessage(_pipeline, _endpoint, OperationId, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
     }
 
@@ -155,7 +155,7 @@ public partial class FineTuningOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     internal virtual ClientResult GetJob(RequestOptions? options)
     {
-        using PipelineMessage message = FineTuningClient.GetJobPipelineMessage(_pipeline, _endpoint, JobId, options);
+        using PipelineMessage message = FineTuningClient.GetJobPipelineMessage(_pipeline, _endpoint, OperationId, options);
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
@@ -167,7 +167,7 @@ public partial class FineTuningOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual async Task<ClientResult> CancelAsync(RequestOptions options)
     {
-        using PipelineMessage message = CancelPipelineMessage(JobId, options);
+        using PipelineMessage message = CancelPipelineMessage(OperationId, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
     }
 
@@ -179,7 +179,7 @@ public partial class FineTuningOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual ClientResult Cancel(RequestOptions options)
     {
-        using PipelineMessage message = CancelPipelineMessage(JobId, options);
+        using PipelineMessage message = CancelPipelineMessage(OperationId, options);
         PipelineResponse response = _pipeline.ProcessMessage(message, options);
         return ClientResult.FromResponse(response);
     }
@@ -192,7 +192,7 @@ public partial class FineTuningOperation : OperationResult
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual AsyncCollectionResult GetJobEventsAsync(string? after, int? limit, RequestOptions options)
+    public virtual AsyncCollectionResult GetEventsAsync(string? after, int? limit, RequestOptions options)
     {
         return new AsyncFineTuningEventCollectionResult(this, options, limit, after);
     }
@@ -246,7 +246,7 @@ public partial class FineTuningOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     internal virtual async Task<ClientResult> GetCheckpointsPageAsync(string? after, int? limit, RequestOptions? options)
     {
-        using PipelineMessage message = GetCheckpointsPipelineMessage(JobId, after, limit, options);
+        using PipelineMessage message = GetCheckpointsPipelineMessage(OperationId, after, limit, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
     }
 
@@ -260,7 +260,7 @@ public partial class FineTuningOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     internal virtual ClientResult GetPageCheckpoints(string? after, int? limit, RequestOptions? options)
     {
-        using PipelineMessage message = GetCheckpointsPipelineMessage(JobId, after, limit, options);
+        using PipelineMessage message = GetCheckpointsPipelineMessage(OperationId, after, limit, options);
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
@@ -274,23 +274,23 @@ public partial class FineTuningOperation : OperationResult
     /// <returns> The response returned from the service. </returns>
     internal virtual ClientResult GetCheckpointsPage(string? after, int? limit, RequestOptions? options)
     {
-        using PipelineMessage message = GetCheckpointsPipelineMessage(JobId, after, limit, options);
+        using PipelineMessage message = GetCheckpointsPipelineMessage(OperationId, after, limit, options);
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
     internal virtual async Task<ClientResult> GetEventsPageAsync(string? after, int? limit, RequestOptions? options)
     {
-        using PipelineMessage message = GetEventsPipelineMessage(JobId, after, limit, options);
+        using PipelineMessage message = GetEventsPipelineMessage(OperationId, after, limit, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
     }
 
     internal virtual ClientResult GetEventsPage(string? after, int? limit, RequestOptions? options)
     {
-        using PipelineMessage message = GetEventsPipelineMessage(JobId, after, limit, options);
+        using PipelineMessage message = GetEventsPipelineMessage(OperationId, after, limit, options);
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
-    internal virtual PipelineMessage CancelPipelineMessage(string JobId, RequestOptions? options)
+    internal virtual PipelineMessage CancelPipelineMessage(string operationId, RequestOptions? options)
     {
         var message = _pipeline.CreateMessage();
         message.ResponseClassifier = PipelineMessageClassifier200;
@@ -299,7 +299,7 @@ public partial class FineTuningOperation : OperationResult
         var uri = new ClientUriBuilder();
         uri.Reset(_endpoint);
         uri.AppendPath("/fine_tuning/jobs/", false);
-        uri.AppendPath(JobId, true);
+        uri.AppendPath(operationId, true);
         uri.AppendPath("/cancel", false);
         request.Uri = uri.ToUri();
         request.Headers.Set("Accept", "application/json");
@@ -307,7 +307,7 @@ public partial class FineTuningOperation : OperationResult
         return message;
     }
 
-    internal virtual PipelineMessage GetCheckpointsPipelineMessage(string JobId, string? after, int? limit, RequestOptions? options)
+    internal virtual PipelineMessage GetCheckpointsPipelineMessage(string operationId, string? after, int? limit, RequestOptions? options)
     {
         var message = _pipeline.CreateMessage();
         message.ResponseClassifier = PipelineMessageClassifier200;
@@ -316,7 +316,7 @@ public partial class FineTuningOperation : OperationResult
         var uri = new ClientUriBuilder();
         uri.Reset(_endpoint);
         uri.AppendPath("/fine_tuning/jobs/", false);
-        uri.AppendPath(JobId, true);
+        uri.AppendPath(operationId, true);
         uri.AppendPath("/checkpoints", false);
         if (after != null)
         {
