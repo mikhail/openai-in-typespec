@@ -10,7 +10,7 @@ namespace OpenAI.FineTuning;
 
 internal class FineTuningEventCollectionResult : CollectionResult<FineTuningEvent>
 {
-    private readonly FineTuningOperation _operation;
+    private readonly FineTuningJob _job;
     private readonly RequestOptions? _options;
 
     // Initial values
@@ -18,11 +18,11 @@ internal class FineTuningEventCollectionResult : CollectionResult<FineTuningEven
     private readonly string? _after;
 
     public FineTuningEventCollectionResult(
-        FineTuningOperation fineTuningJobOperation,
+        FineTuningJob job,
         RequestOptions? options,
         int? limit, string? after)
     {
-        _operation = fineTuningJobOperation;
+        _job = job;
         _options = options;
 
         _limit = limit;
@@ -45,11 +45,11 @@ internal class FineTuningEventCollectionResult : CollectionResult<FineTuningEven
     {
         Argument.AssertNotNull(page, nameof(page));
 
-        return FineTuningEventCollectionPageToken.FromResponse(page, _operation.JobId, _limit);
+        return FineTuningEventCollectionPageToken.FromResponse(page, _job.JobId, _limit);
     }
 
     public ClientResult GetFirstPage()
-        => _operation.GetEventsPage(_after, _limit, _options);
+        => _job.GetEventsPage(_after, _limit, _options);
 
     public ClientResult GetNextPage(ClientResult result)
     {
@@ -64,7 +64,7 @@ internal class FineTuningEventCollectionResult : CollectionResult<FineTuningEven
         string? lastId = lastItem.TryGetProperty("id", out JsonElement idElement) ?
             idElement.GetString() : null;
 
-        return _operation.GetEventsPage(lastId, _limit, _options);
+        return _job.GetEventsPage(lastId, _limit, _options);
     }
 
     public static bool HasNextPage(ClientResult result)

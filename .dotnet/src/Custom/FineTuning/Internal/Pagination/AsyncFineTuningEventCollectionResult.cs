@@ -12,7 +12,7 @@ namespace OpenAI.FineTuning;
 
 internal class AsyncFineTuningEventCollectionResult : AsyncCollectionResult<FineTuningEvent>
 {
-    private readonly FineTuningOperation _operation;
+    private readonly FineTuningJob _job;
     private readonly RequestOptions? _options;
     private readonly CancellationToken _cancellationToken;
 
@@ -21,11 +21,11 @@ internal class AsyncFineTuningEventCollectionResult : AsyncCollectionResult<Fine
     private readonly string? _after;
 
     public AsyncFineTuningEventCollectionResult(
-        FineTuningOperation fineTuningJobOperation,
+        FineTuningJob job,
         RequestOptions? options,
         int? limit, string? after)
     {
-        _operation = fineTuningJobOperation;
+        _job = job;
         _options = options;
 
         _limit = limit;
@@ -49,11 +49,11 @@ internal class AsyncFineTuningEventCollectionResult : AsyncCollectionResult<Fine
     {
         Argument.AssertNotNull(page, nameof(page));
 
-        return FineTuningEventCollectionPageToken.FromResponse(page, _operation.JobId, _limit);
+        return FineTuningEventCollectionPageToken.FromResponse(page, _job.JobId, _limit);
     }
 
     public async Task<ClientResult> GetFirstPageAsync()
-        => await _operation.GetEventsPageAsync(_after, _limit, _options).ConfigureAwait(false);
+        => await _job.GetEventsPageAsync(_after, _limit, _options).ConfigureAwait(false);
 
     public async Task<ClientResult> GetNextPageAsync(ClientResult result)
     {
@@ -68,7 +68,7 @@ internal class AsyncFineTuningEventCollectionResult : AsyncCollectionResult<Fine
         string? lastId = lastItem.TryGetProperty("id", out JsonElement idElement) ?
             idElement.GetString() : null;
 
-        return await _operation.GetEventsPageAsync(lastId, _limit, _options).ConfigureAwait(false);
+        return await _job.GetEventsPageAsync(lastId, _limit, _options).ConfigureAwait(false);
     }
 
     public static bool HasNextPage(ClientResult result)

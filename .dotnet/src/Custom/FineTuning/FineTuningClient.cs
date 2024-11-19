@@ -15,7 +15,7 @@ namespace OpenAI.FineTuning;
 // - Renamed.
 // - Suppressed constructor that takes endpoint parameter; endpoint is now a property in the options class.
 // - Suppressed convenience methods for now.
-/// <summary> The service client for OpenAI fine-tuning operations. </summary>
+/// <summary> The service client for OpenAI fine-tuning jobs. </summary>
 [Experimental("OPENAI001")]
 [CodeGenClient("FineTuning")]
 [CodeGenSuppress("FineTuningClient", typeof(ClientPipeline), typeof(ApiKeyCredential), typeof(Uri))]
@@ -95,7 +95,7 @@ public partial class FineTuningClient
     /// <param name="options"> Additional options (<see cref="FineTuningOptions"/>) to customize the request. </param>
     /// <param name="cancellationToken"> The cancellation token. </param>
     /// <returns>A <see cref="ClientResult{FineTuningJob}"/> containing the newly started fine-tuning job.</returns>
-    public virtual FineTuningOperation FineTune(
+    public virtual FineTuningJob FineTune(
         string baseModel,
         string trainingFileId,
         FineTuningOptions options = default,
@@ -110,7 +110,7 @@ public partial class FineTuningClient
     }
 
     /// <inheritdoc cref="FineTune(string, string, FineTuningOptions, CancellationToken)"/>
-    public virtual async Task<FineTuningOperation> FineTuneAsync(
+    public virtual async Task<FineTuningJob> FineTuneAsync(
         string baseModel,
         string trainingFileId,
         FineTuningOptions options = default,
@@ -125,60 +125,60 @@ public partial class FineTuningClient
         return await FineTuneAsync(options.ToBinaryContent(), false, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
     /// <summary>
-    /// Get FineTuningOperation for a previously started fine-tuning job.
+    /// Get FineTuningJob for a previously started fine-tuning job.
     ///
     /// [Learn more about fine-tuning](/docs/guides/fine-tuning)
     /// </summary>
     /// <param name="JobId"> The ID of the fine-tuning job. </param>
     /// <param name="cancellationToken"> The cancellation token. </param>
-    public FineTuningOperation GetOperation(string JobId, CancellationToken cancellationToken = default)
+    public FineTuningJob GetJob(string JobId, CancellationToken cancellationToken = default)
     {
-        return FineTuningOperation.Rehydrate(this, JobId, cancellationToken.ToRequestOptions());
+        return FineTuningJob.Rehydrate(this, JobId, cancellationToken.ToRequestOptions());
     }
 
     /// <summary>
-    /// Get FineTuningOperation for a previously started fine-tuning job.
+    /// Get FineTuningJob for a previously started fine-tuning job.
     ///
     /// [Learn more about fine-tuning](/docs/guides/fine-tuning)
     /// </summary>
     /// <param name="JobId"> The ID of the fine-tuning job. </param>
     /// <param name="cancellationToken"> The cancellation token. </param>
-    internal async Task<FineTuningOperation> GetOperationAsync(string JobId, CancellationToken cancellationToken = default)
+    public async Task<FineTuningJob> GetJobAsync(string JobId, CancellationToken cancellationToken = default)
     {
-        return await FineTuningOperation.RehydrateAsync(this, JobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
+        return await FineTuningJob.RehydrateAsync(this, JobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
 
     /// <summary>
     /// Retrieves a list of fine-tuning jobs.
     /// </summary>
-    /// <param name="options"> Additional options: <see cref="ListOperationsOptions"/> to customize the request. </param>
+    /// <param name="options"> Additional options: <see cref="ListJobsOptions"/> to customize the request. </param>
     /// <param name="cancellationToken"> The cancellation token. </param>
-    /// <returns> A <see cref="CollectionResult{FineTuningOperation}"/> containing the list of fine-tuning jobs. </returns>
-    public virtual CollectionResult<FineTuningOperation> ListOperations(ListOperationsOptions options = default, CancellationToken cancellationToken = default)
+    /// <returns> A <see cref="CollectionResult{FineTuningJob}"/> containing the list of fine-tuning jobs. </returns>
+    public virtual CollectionResult<FineTuningJob> ListJobs(ListJobsOptions options = default, CancellationToken cancellationToken = default)
     {
-        options ??= new ListOperationsOptions();
-        return ListOperations(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions()) as CollectionResult<FineTuningOperation>;
+        options ??= new ListJobsOptions();
+        return ListJobs(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions()) as CollectionResult<FineTuningJob>;
     }
 
-    /// <inheritdoc cref="ListOperations(ListOperationsOptions, CancellationToken)"/>
-    /// <returns> A <see cref="AsyncCollectionResult{FineTuningOperation}"/> containing the list of fine-tuning jobs. </returns>
-    public virtual  AsyncCollectionResult<FineTuningOperation> ListOperationsAsync(
-    ListOperationsOptions options = default,
+    /// <inheritdoc cref="ListJobs(ListJobsOptions, CancellationToken)"/>
+    /// <returns> A <see cref="AsyncCollectionResult{FineTuningJob}"/> containing the list of fine-tuning jobs. </returns>
+    public virtual AsyncCollectionResult<FineTuningJob> ListJobsAsync(
+    ListJobsOptions options = default,
     CancellationToken cancellationToken = default)
     {
-        options ??= new ListOperationsOptions();
-        AsyncCollectionResult jobs = ListOperationsAsync(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
-        return (AsyncCollectionResult<FineTuningOperation>)jobs;
+        options ??= new ListJobsOptions();
+        AsyncCollectionResult jobs = ListJobsAsync(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
+        return (AsyncCollectionResult<FineTuningJob>)jobs;
     }
 
-    internal virtual FineTuningOperation CreateOperationFromResponse(PipelineResponse response)
+    internal virtual FineTuningJob CreateJobFromResponse(PipelineResponse response)
     {
-        return new FineTuningOperation(_pipeline, _endpoint, response);
+        return new FineTuningJob(_pipeline, _endpoint, response);
     }
 
-    internal virtual IEnumerable<FineTuningOperation> CreateOperationsFromPageResponse(PipelineResponse response)
+    internal virtual IEnumerable<FineTuningJob> CreateJobsFromPageResponse(PipelineResponse response)
     {
         InternalListPaginatedFineTuningJobsResponse jobs = ModelReaderWriter.Read<InternalListPaginatedFineTuningJobsResponse>(response.Content)!;
-        return jobs.Data.Select(job => new FineTuningOperation(_pipeline, _endpoint, job, response));
+        return jobs.Data.Select(job => new FineTuningJob(_pipeline, _endpoint, job, response));
     }
 }

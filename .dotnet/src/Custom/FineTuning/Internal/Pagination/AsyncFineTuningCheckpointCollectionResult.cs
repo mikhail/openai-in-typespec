@@ -12,7 +12,7 @@ namespace OpenAI.FineTuning;
 
 internal class AsyncFineTuningCheckpointCollectionResult : AsyncCollectionResult<FineTuningCheckpoint>
 {
-    private readonly FineTuningOperation _operation;
+    private readonly FineTuningJob _job;
     private readonly RequestOptions? _options;
     private readonly CancellationToken _cancellationToken;
 
@@ -21,11 +21,11 @@ internal class AsyncFineTuningCheckpointCollectionResult : AsyncCollectionResult
     private readonly string? _after;
 
     public AsyncFineTuningCheckpointCollectionResult(
-        FineTuningOperation fineTuningJobOperation,
+        FineTuningJob job,
         RequestOptions? options,
         int? limit, string? after, CancellationToken cancellationToken = default)
     {
-        _operation = fineTuningJobOperation;
+        _job = job;
         _options = options;
 
         _limit = limit;
@@ -49,11 +49,11 @@ internal class AsyncFineTuningCheckpointCollectionResult : AsyncCollectionResult
     {
         Argument.AssertNotNull(page, nameof(page));
 
-        return FineTuningEventCollectionPageToken.FromResponse(page, _operation.JobId, _limit);
+        return FineTuningEventCollectionPageToken.FromResponse(page, _job.JobId, _limit);
     }
 
     public async Task<ClientResult> GetFirstPageAsync()
-        => await _operation.GetCheckpointsPageAsync(_after, _limit, _options).ConfigureAwait(false);
+        => await _job.GetCheckpointsPageAsync(_after, _limit, _options).ConfigureAwait(false);
 
     public async Task<ClientResult> GetNextPageAsync(ClientResult result)
     {
@@ -68,7 +68,7 @@ internal class AsyncFineTuningCheckpointCollectionResult : AsyncCollectionResult
         string? lastId = lastItem.TryGetProperty("id", out JsonElement idElement) ?
             idElement.GetString() : null;
 
-        return await _operation.GetCheckpointsPageAsync(lastId, _limit, _options).ConfigureAwait(false);
+        return await _job.GetCheckpointsPageAsync(lastId, _limit, _options).ConfigureAwait(false);
     }
 
     public static bool HasNextPage(ClientResult result)

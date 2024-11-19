@@ -61,7 +61,7 @@ public class FineTuningClientTests
     public async Task MinimalRequiredParams([Values] bool isAsync)
     {
 
-        FineTuningOperation ftOp = isAsync
+        FineTuningJob ftOp = isAsync
             ? await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id)
             : client.FineTune("gpt-3.5-turbo", sampleFile.Id);
 
@@ -99,7 +99,7 @@ public class FineTuningClientTests
             Seed = 1234567
         };
 
-        FineTuningOperation jobOp = isAsync
+        FineTuningJob jobOp = isAsync
             ? await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id, options)
             : client.FineTune("gpt-3.5-turbo", sampleFile.Id, options);
         Assert.AreEqual(1, jobOp.Hyperparameters.CycleCount);
@@ -117,10 +117,10 @@ public class FineTuningClientTests
     public async Task TestWaitForCompletion()
     {
         // Arrange
-        FineTuningOperation jobOp;
+        FineTuningJob jobOp;
         try
         {
-            jobOp = client.ListOperations(options: new() { PageSize = 100 }).Where((job) => job.Status == "succeeded").First();
+            jobOp = client.ListJobs(options: new() { PageSize = 100 }).Where((job) => job.Status == "succeeded").First();
         }
         catch (InvalidOperationException)
         {
@@ -142,7 +142,7 @@ public class FineTuningClientTests
     [Explicit("This test requires wandb.ai account and api key integration.")]
     public void WandBIntegrations()
     {
-        FineTuningOperation job = client.FineTune(
+        FineTuningJob job = client.FineTune(
             "gpt-3.5-turbo",
             sampleFile.Id,
             options: new()
@@ -206,8 +206,8 @@ public class FineTuningClientTests
         // Arrange
         Console.WriteLine("Getting jobs");
         var jobs = (method == Method.Async)
-            ? client.ListOperationsAsync().Take(10).ToBlockingEnumerable()
-            : client.ListOperations().Take(10);
+            ? client.ListJobsAsync().Take(10).ToBlockingEnumerable()
+            : client.ListJobs().Take(10);
 
         Console.WriteLine("Got jobs");
 
@@ -231,13 +231,13 @@ public class FineTuningClientTests
     [Parallelizable]
     public void GetJobsWithAfter()
     {
-        var firstJob = client.ListOperations().First();
+        var firstJob = client.ListJobs().First();
 
         if (firstJob is null)
         {
             Assert.Fail("No jobs found. At least 2 jobs have to be found to run this test.");
         }
-        var secondJob = client.ListOperations(new() { AfterJobId = firstJob.JobId }).First();
+        var secondJob = client.ListJobs(new() { AfterJobId = firstJob.JobId }).First();
 
         Assert.AreNotEqual(firstJob.JobId, secondJob.JobId);
         // Can't assert that one was created after the next because they might be created at the same second.
@@ -253,7 +253,7 @@ public class FineTuningClientTests
     public void GetJobEvents([Values(Method.Sync, Method.Async)] Method method)
     {
         // Arrange
-        FineTuningOperation job = client.FineTune("gpt-3.5-turbo", sampleFile.Id);
+        FineTuningJob job = client.FineTune("gpt-3.5-turbo", sampleFile.Id);
 
         ListEventsOptions options = new()
         {
@@ -281,7 +281,7 @@ public class FineTuningClientTests
     {
         // Arrange
         // TODO: When `status` option becomes available, use it to get a succeeded job
-        FineTuningOperation job = client.ListOperations(new() { PageSize = 100 })
+        FineTuningJob job = client.ListJobs(new() { PageSize = 100 })
                                   .Where((job) => job.Status == "succeeded")
                                   .First();
 

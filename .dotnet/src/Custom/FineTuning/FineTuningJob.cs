@@ -13,7 +13,7 @@ namespace OpenAI.FineTuning;
 /// <summary>
 /// A long-running operation for creating a new model from a given dataset.
 /// </summary>
-public partial class FineTuningOperation : OperationResult
+public partial class FineTuningJob : OperationResult
 {
     public string? Value = null;
 
@@ -32,12 +32,12 @@ public partial class FineTuningOperation : OperationResult
     public int? Seed { get; private set; }
 
     /// <summary>
-    /// Creates a new <see cref="FineTuningOperation"/> from a <see cref="PipelineResponse"/>.
+    /// Creates a new <see cref="FineTuningJob"/> from a <see cref="PipelineResponse"/>.
     /// </summary>
     /// <param name="pipeline"></param>
     /// <param name="endpoint"></param>
     /// <param name="response"></param>
-    internal FineTuningOperation(
+    internal FineTuningJob(
             ClientPipeline pipeline,
             Uri endpoint,
             PipelineResponse response) : base(response)
@@ -49,14 +49,14 @@ public partial class FineTuningOperation : OperationResult
     }
 
     /// <summary>
-    /// Creates a new <see cref="FineTuningOperation"/> from a <see cref="InternalFineTuningJob"/>.
+    /// Creates a new <see cref="FineTuningJob"/> from a <see cref="InternalFineTuningJob"/>.
     /// Pipeline response is saved but not used for inferring job data. Response could be a page of values.
     /// </summary>
     /// <param name="pipeline"></param>
     /// <param name="endpoint"></param>
     /// <param name="job"></param>
     /// <param name="response"></param>
-    internal FineTuningOperation(
+    internal FineTuningJob(
             ClientPipeline pipeline,
             Uri endpoint,
             InternalFineTuningJob job,
@@ -76,7 +76,7 @@ public partial class FineTuningOperation : OperationResult
         Hyperparameters = job.Hyperparameters;
         Integrations = job.Integrations;
         JobId = job.JobId;
-        RehydrationToken = new FineTuningOperationToken(job.JobId);
+        RehydrationToken = new FineTuningJobToken(job.JobId);
         ResultFileIds = job.ResultFileIds;
         Seed = job.Seed;
         Status = job.Status;
@@ -149,39 +149,39 @@ public partial class FineTuningOperation : OperationResult
     }
 
     /// <summary>
-    /// Recreates a <see cref="FineTuningOperation"/> from a rehydration token.
+    /// Recreates a <see cref="FineTuningJob"/> from a rehydration token.
     /// </summary>
-    /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the operation status from the service. </param>
-    /// <param name="rehydrationToken"> The rehydration token corresponding to the operation to rehydrate. </param>
+    /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the LRO status from the service. </param>
+    /// <param name="rehydrationToken"> The rehydration token corresponding to the job to rehydrate. </param>
     /// <param name="cancellationToken"> A token that can be used to cancel the request. </param>
-    /// <returns> The rehydrated operation <see cref="FineTuningOperation"/>. </returns>
+    /// <returns> The rehydrated LRO <see cref="FineTuningJob"/>. </returns>
     /// <exception cref="ArgumentNullException"> <paramref name="client"/> or <paramref name="rehydrationToken"/> is null. </exception>
-    public static FineTuningOperation Rehydrate(FineTuningClient client, ContinuationToken rehydrationToken, CancellationToken cancellationToken = default)
+    public static FineTuningJob Rehydrate(FineTuningClient client, ContinuationToken rehydrationToken, CancellationToken cancellationToken = default)
     {
         return Rehydrate(client, rehydrationToken, cancellationToken.ToRequestOptions());
     }
 
 
     /// <inheritdoc cref="Rehydrate(FineTuningClient, ContinuationToken, CancellationToken)"/>"
-    public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, ContinuationToken rehydrationToken, CancellationToken cancellationToken = default)
+    public static async Task<FineTuningJob> RehydrateAsync(FineTuningClient client, ContinuationToken rehydrationToken, CancellationToken cancellationToken = default)
     {
         return await RehydrateAsync(client, rehydrationToken, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Recreates a <see cref="FineTuningOperation"/> from a fine tuning job id.
+    /// Recreates a <see cref="FineTuningJob"/> from a fine tuning job id.
     /// </summary>
-    /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the operation status from the service. </param>
+    /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the LRO status from the service. </param>
     /// <param name="JobId"> The id of the fine tuning job to rehydrate.</param>
     /// <param name="cancellationToken"> A token that can be used to cancel the request. </param>
-    /// <returns> The rehydrated operation <see cref="FineTuningOperation"/>. </returns>
-    public static FineTuningOperation Rehydrate(FineTuningClient client, string JobId, CancellationToken cancellationToken = default)
+    /// <returns> The rehydrated LRO <see cref="FineTuningJob"/>. </returns>
+    public static FineTuningJob Rehydrate(FineTuningClient client, string JobId, CancellationToken cancellationToken = default)
     {
         return Rehydrate(client, JobId, cancellationToken.ToRequestOptions());
     }
 
     /// <inheritdoc cref="Rehydrate(FineTuningClient, string, CancellationToken)" />
-    public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, string JobId, CancellationToken cancellationToken = default)
+    public static async Task<FineTuningJob> RehydrateAsync(FineTuningClient client, string JobId, CancellationToken cancellationToken = default)
     {
         return await RehydrateAsync(client, JobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
@@ -205,7 +205,7 @@ public partial class FineTuningOperation : OperationResult
     }
 
     /// <summary>
-    /// [Protocol Method] Immediately cancel a fine-tune job, and update parameters (such as status) of the operation.
+    /// [Protocol Method] Immediately cancel a fine-tune job, and update parameters (such as status) of the LRO.
     /// </summary>
     /// <param name="cancellationToken"> The cancellation token. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>

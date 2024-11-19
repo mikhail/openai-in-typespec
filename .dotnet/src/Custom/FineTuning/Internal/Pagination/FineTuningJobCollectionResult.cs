@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning;
 
-internal class FineTuningOperationCollectionResult : CollectionResult<FineTuningOperation>
+internal class FineTuningJobCollectionResult : CollectionResult<FineTuningJob>
 {
     private readonly FineTuningClient _fineTuningClient;
     private readonly ClientPipeline _pipeline;
@@ -18,7 +18,7 @@ internal class FineTuningOperationCollectionResult : CollectionResult<FineTuning
     private readonly int? _limit;
     private readonly string _after;
 
-    public FineTuningOperationCollectionResult(FineTuningClient fineTuningClient,
+    public FineTuningJobCollectionResult(FineTuningClient fineTuningClient,
         ClientPipeline pipeline, RequestOptions? options,
         int? limit, string after)
     {
@@ -86,11 +86,11 @@ internal class FineTuningOperationCollectionResult : CollectionResult<FineTuning
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
-    protected override IEnumerable<FineTuningOperation> GetValuesFromPage(ClientResult page)
+    protected override IEnumerable<FineTuningJob> GetValuesFromPage(ClientResult page)
     {
         Argument.AssertNotNull(page, nameof(page));
 
         PipelineResponse response = page.GetRawResponse();
-        return _fineTuningClient.CreateOperationsFromPageResponse(response);
+        return _fineTuningClient.CreateJobsFromPageResponse(response);
     }
 }

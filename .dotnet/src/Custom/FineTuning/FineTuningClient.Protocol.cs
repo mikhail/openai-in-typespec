@@ -23,9 +23,6 @@ namespace OpenAI.FineTuning;
 [CodeGenSuppress("GetFineTuningJobCheckpoints", typeof(string), typeof(string), typeof(int?), typeof(RequestOptions))]
 public partial class FineTuningClient
 {
-    // CUSTOM:
-    // - Renamed.
-    // - Edited doc comment.
     /// <summary>
     /// [Protocol Method] Creates a fine-tuning job which begins the process of creating a new model from a given dataset.
     ///
@@ -34,17 +31,17 @@ public partial class FineTuningClient
     /// [Learn more about fine-tuning](/docs/guides/fine-tuning)
     /// </summary>
     /// <param name="waitUntilCompleted"> Value indicating whether the method
-    /// should return after the operation has been started and is still running
-    /// on the service, or wait until the operation has completed to return.
+    /// should return after the LRO has been started and is still running
+    /// on the service, or wait until the job has completed to return.
     /// </param>
     /// <param name="content"> The content to send as the body of the request. </param>
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
-    /// <returns> A <see cref="FineTuningOperation"/> that can be used to wait for 
-    /// the operation to complete, get information about the fine tuning job, or 
-    /// cancel the operation. </returns>
-    public virtual async Task<FineTuningOperation> FineTuneAsync(
+    /// <returns> A <see cref="FineTuningJob"/> that can be used to wait for 
+    /// the LRO to complete, get information about the fine tuning job, or 
+    /// cancel the job. </returns>
+    public virtual async Task<FineTuningJob> FineTuneAsync(
         BinaryContent content,
         bool waitUntilCompleted,
         RequestOptions options)
@@ -54,32 +51,12 @@ public partial class FineTuningClient
         using PipelineMessage message = PostJobPipelineMessage(content, options);
         PipelineResponse response = await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false);
 
-        FineTuningOperation operation = this.CreateOperationFromResponse(response);
-        return await operation.WaitUntilAsync(waitUntilCompleted, options).ConfigureAwait(false);
+        FineTuningJob job = this.CreateJobFromResponse(response);
+        return await job.WaitUntilAsync(waitUntilCompleted, options).ConfigureAwait(false);
     }
 
-    // CUSTOM:
-    // - Renamed.
-    // - Edited doc comment.
-    /// <summary>
-    /// [Protocol Method] Creates a fine-tuning job which begins the process of creating a new model from a given dataset.
-    ///
-    /// Response includes details of the enqueued job including job status and the name of the fine-tuned models once complete.
-    ///
-    /// [Learn more about fine-tuning](/docs/guides/fine-tuning)
-    /// </summary>
-    /// <param name="waitUntilCompleted"> Value indicating whether the method
-    /// should return after the operation has been started and is still running
-    /// on the service, or wait until the operation has completed to return.
-    /// </param>
-    /// <param name="content"> The content to send as the body of the request. </param>
-    /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
-    /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
-    /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
-    /// <returns> A <see cref="FineTuningOperation"/> that can be used to wait for 
-    /// the operation to complete, get information about the fine tuning job, or 
-    /// cancel the operation. </returns>
-    public virtual FineTuningOperation FineTune(
+    /// <inheritdoc cref="FineTuneAsync(BinaryContent, bool, RequestOptions)"/>
+    public virtual FineTuningJob FineTune(
         BinaryContent content,
         bool waitUntilCompleted,
         RequestOptions options)
@@ -89,8 +66,8 @@ public partial class FineTuningClient
         using PipelineMessage message = PostJobPipelineMessage(content, options);
         PipelineResponse response = _pipeline.ProcessMessage(message, options);
 
-        FineTuningOperation operation = this.CreateOperationFromResponse(response);
-        return operation.WaitUntil(waitUntilCompleted, options);
+        FineTuningJob job = this.CreateJobFromResponse(response);
+        return job.WaitUntil(waitUntilCompleted, options);
     }
 
     // CUSTOM:
@@ -104,9 +81,9 @@ public partial class FineTuningClient
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    private AsyncCollectionResult ListOperationsAsync(string afterJobId, int? pageSize, RequestOptions options)
+    private AsyncCollectionResult ListJobsAsync(string afterJobId, int? pageSize, RequestOptions options)
     {
-        return new AsyncFineTuningOperationCollectionResult(this, _pipeline, options, pageSize, afterJobId);
+        return new AsyncFineTuningJobCollectionResult(this, _pipeline, options, pageSize, afterJobId);
     }
 
 
@@ -121,9 +98,9 @@ public partial class FineTuningClient
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    private CollectionResult ListOperations(string after, int? pageSize, RequestOptions options)
+    private CollectionResult ListJobs(string after, int? pageSize, RequestOptions options)
     {
-        return new FineTuningOperationCollectionResult(this, _pipeline, options, pageSize, after);
+        return new FineTuningJobCollectionResult(this, _pipeline, options, pageSize, after);
     }
 
     /// <summary>
@@ -206,8 +183,8 @@ public partial class FineTuningClient
 
     internal static PipelineMessage GetJobPipelineMessage(ClientPipeline clientPipeline, Uri endpoint, string JobId, RequestOptions options)
     {
-        // This is referenced by client.GetJobAsync and client.GetJob, and operation.GetJobAsync and operation.GetJob.
-        // It is static so that FineTuningOperation can use it as well.
+        // This is referenced by client.GetJobAsync and client.GetJob, and job.GetJobAsync and job.GetJob.
+        // It is static so that FineTuningJob can use it as well.
         var message = clientPipeline.CreateMessage();
         message.ResponseClassifier = PipelineMessageClassifier200;
         var request = message.Request;

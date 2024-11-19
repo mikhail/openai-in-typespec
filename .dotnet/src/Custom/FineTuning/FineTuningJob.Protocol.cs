@@ -15,7 +15,7 @@ namespace OpenAI.FineTuning;
 /// A long-running operation for creating a new model from a given dataset.
 /// </summary>
 [Experimental("OPENAI001")]
-public partial class FineTuningOperation : OperationResult
+public partial class FineTuningJob : OperationResult
 {
     private readonly ClientPipeline _pipeline;
     private readonly Uri _endpoint;
@@ -24,49 +24,49 @@ public partial class FineTuningOperation : OperationResult
     public override ContinuationToken? RehydrationToken { get; protected set; }
 
     /// <summary>
-    /// Recreates a <see cref="FineTuningOperation"/> from a rehydration token.
+    /// Recreates a <see cref="FineTuningJob"/> from a rehydration token.
     /// </summary>
-    /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the operation status from the service. </param>
-    /// <param name="rehydrationToken"> The rehydration token corresponding to the operation to rehydrate. </param>
+    /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the job status from the service. </param>
+    /// <param name="rehydrationToken"> The rehydration token corresponding to the job to rehydrate. </param>
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
-    /// <returns> The rehydrated operation <see cref="FineTuningOperation"/>. </returns>
+    /// <returns> The rehydrated LRO <see cref="FineTuningJob"/>. </returns>
     /// <exception cref="ArgumentNullException"> <paramref name="client"/> or <paramref name="rehydrationToken"/> is null. </exception>
-    public static FineTuningOperation Rehydrate(FineTuningClient client, ContinuationToken rehydrationToken, RequestOptions options)
+    public static FineTuningJob Rehydrate(FineTuningClient client, ContinuationToken rehydrationToken, RequestOptions options)
     {
         Argument.AssertNotNull(client, nameof(client));
         Argument.AssertNotNull(rehydrationToken, nameof(rehydrationToken));
 
-        FineTuningOperationToken token = FineTuningOperationToken.FromToken(rehydrationToken);
+        FineTuningJobToken token = FineTuningJobToken.FromToken(rehydrationToken);
 
         ClientResult result = client.GetJob(token.JobId, options);
         PipelineResponse response = result.GetRawResponse();
 
-        return client.CreateOperationFromResponse(response);
+        return client.CreateJobFromResponse(response);
     }
 
     /// <inheritdoc cref="Rehydrate(FineTuningClient, ContinuationToken, RequestOptions)"/>
-    public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, ContinuationToken rehydrationToken, RequestOptions options)
+    public static async Task<FineTuningJob> RehydrateAsync(FineTuningClient client, ContinuationToken rehydrationToken, RequestOptions options)
     {
         Argument.AssertNotNull(client, nameof(client));
         Argument.AssertNotNull(rehydrationToken, nameof(rehydrationToken));
 
-        FineTuningOperationToken token = FineTuningOperationToken.FromToken(rehydrationToken);
+        FineTuningJobToken token = FineTuningJobToken.FromToken(rehydrationToken);
 
         ClientResult result = await client.GetJobAsync(token.JobId, options).ConfigureAwait(false);
         PipelineResponse response = result.GetRawResponse();
 
-        return client.CreateOperationFromResponse(response);
+        return client.CreateJobFromResponse(response);
     }
 
     /// <summary>
-    /// Recreates a <see cref="FineTuningOperation"/> from a fine tuning job id.
+    /// Recreates a <see cref="FineTuningJob"/> from a fine tuning job id.
     /// </summary>
-    /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the operation status from the service. </param>
+    /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the job status from the service. </param>
     /// <param name="JobId"> The id of the fine tuning job to rehydrate.</param>
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
-    /// <returns> The rehydrated operation <see cref="FineTuningOperation"/>. </returns>
+    /// <returns> The rehydrated LRO <see cref="FineTuningJob"/>. </returns>
     /// <exception cref="ArgumentNullException"> <paramref name="client"/> or <paramref name="JobId"/> is null. </exception>
-    public static FineTuningOperation Rehydrate(FineTuningClient client, string JobId, RequestOptions options)
+    public static FineTuningJob Rehydrate(FineTuningClient client, string JobId, RequestOptions options)
     {
         Argument.AssertNotNull(client, nameof(client));
         Argument.AssertNotNull(JobId, nameof(JobId));
@@ -74,11 +74,11 @@ public partial class FineTuningOperation : OperationResult
         ClientResult result = client.GetJob(JobId, options);
         PipelineResponse response = result.GetRawResponse();
 
-        return client.CreateOperationFromResponse(response);
+        return client.CreateJobFromResponse(response);
     }
 
     /// <inheritdoc cref="Rehydrate(FineTuningClient, string, RequestOptions)"/>/>
-    public static async Task<FineTuningOperation> RehydrateAsync(FineTuningClient client, string JobId, RequestOptions options)
+    public static async Task<FineTuningJob> RehydrateAsync(FineTuningClient client, string JobId, RequestOptions options)
     {
         Argument.AssertNotNull(client, nameof(client));
         Argument.AssertNotNull(JobId, nameof(JobId));
@@ -86,7 +86,7 @@ public partial class FineTuningOperation : OperationResult
         ClientResult result = await client.GetJobAsync(JobId, options).ConfigureAwait(false);
         PipelineResponse response = result.GetRawResponse();
 
-        return client.CreateOperationFromResponse(response);
+        return client.CreateJobFromResponse(response);
     }
 
 
@@ -114,14 +114,14 @@ public partial class FineTuningOperation : OperationResult
         return result;
     }
 
-    internal async Task<FineTuningOperation> WaitUntilAsync(bool waitUntilCompleted, RequestOptions? options)
+    internal async Task<FineTuningJob> WaitUntilAsync(bool waitUntilCompleted, RequestOptions? options)
     {
         if (!waitUntilCompleted) return this;
         await WaitForCompletionAsync(options?.CancellationToken ?? default).ConfigureAwait(false);
         return this;
     }
 
-    internal FineTuningOperation WaitUntil(bool waitUntilCompleted, RequestOptions? options)
+    internal FineTuningJob WaitUntil(bool waitUntilCompleted, RequestOptions? options)
     {
         if (!waitUntilCompleted) return this;
         WaitForCompletion(options?.CancellationToken ?? default);

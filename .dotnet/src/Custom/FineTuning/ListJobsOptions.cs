@@ -1,6 +1,6 @@
 ﻿namespace OpenAI.FineTuning;
 
-public class ListOperationsOptions
+public class ListJobsOptions
 {
     public string AfterJobId { get; set; }
 

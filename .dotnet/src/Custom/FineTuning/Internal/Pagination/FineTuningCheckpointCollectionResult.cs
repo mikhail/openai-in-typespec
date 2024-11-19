@@ -10,7 +10,7 @@ namespace OpenAI.FineTuning;
 
 internal class FineTuningCheckpointCollectionResult : CollectionResult<FineTuningCheckpoint>
 {
-    private readonly FineTuningOperation _operation;
+    private readonly FineTuningJob _job;
     private readonly RequestOptions? _options;
 
     // Initial values
@@ -18,11 +18,11 @@ internal class FineTuningCheckpointCollectionResult : CollectionResult<FineTunin
     private readonly string? _after;
 
     public FineTuningCheckpointCollectionResult(
-        FineTuningOperation fineTuningJobOperation,
+        FineTuningJob job,
         RequestOptions? options,
         int? limit, string? after)
     {
-        _operation = fineTuningJobOperation;
+        _job = job;
         _options = options;
 
         _limit = limit;
@@ -45,11 +45,11 @@ internal class FineTuningCheckpointCollectionResult : CollectionResult<FineTunin
     {
         Argument.AssertNotNull(page, nameof(page));
 
-        return FineTuningCheckpointCollectionPageToken.FromResponse(page, _operation.JobId, _limit);
+        return FineTuningCheckpointCollectionPageToken.FromResponse(page, _job.JobId, _limit);
     }
 
     public ClientResult GetFirstPage()
-        => _operation.GetCheckpointsPage(_after, _limit, _options);
+        => _job.GetCheckpointsPage(_after, _limit, _options);
 
     public ClientResult GetNextPage(ClientResult result)
     {
@@ -64,7 +64,7 @@ internal class FineTuningCheckpointCollectionResult : CollectionResult<FineTunin
         string? lastId = lastItem.TryGetProperty("id", out JsonElement idElement) ?
             idElement.GetString() : null;
 
-        return _operation.GetCheckpointsPage(lastId, _limit, _options);
+        return _job.GetCheckpointsPage(lastId, _limit, _options);
     }
 
     public static bool HasNextPage(ClientResult result)
