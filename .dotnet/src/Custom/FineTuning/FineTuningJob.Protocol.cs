@@ -185,26 +185,19 @@ public partial class FineTuningJob : OperationResult
     }
 
     /// <summary>
-    /// [Protocol Method] Get status updates for a fine-tuning job.
+    /// [Protocol Method] Get status updates (events) for a fine-tuning job.
     /// </summary>
     /// <param name="after"> Identifier for the last event from the previous pagination request. </param>
     /// <param name="limit"> Number of events to retrieve. </param>
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual AsyncCollectionResult GetJobEventsAsync(string? after, int? limit, RequestOptions options)
+    public virtual AsyncCollectionResult GetEventsAsync(string? after, int? limit, RequestOptions options)
     {
         return new AsyncFineTuningEventCollectionResult(this, options, limit, after);
     }
 
-    /// <summary>
-    /// [Protocol Method] Get status updates for a fine-tuning job.
-    /// </summary>
-    /// <param name="after"> Identifier for the last event from the previous pagination request. </param>
-    /// <param name="limit"> Number of events to retrieve. </param>
-    /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
-    /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
-    /// <returns> The response returned from the service. </returns>
+    /// <inheritdoc cref="GetEventsAsync(string?, int?, RequestOptions)"/>
     public virtual CollectionResult GetEvents(string? after, int? limit, RequestOptions options)
     {
         return new FineTuningEventCollectionResult(this, options, limit, after);

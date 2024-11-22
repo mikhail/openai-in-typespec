@@ -23,13 +23,13 @@ namespace OpenAI.FineTuning
             Message = message;
         }
 
-        internal FineTuningEvent(string id, DateTimeOffset createdAt, string level, string message, FineTuningJobEventObject @object, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal FineTuningEvent(string id, DateTimeOffset createdAt, string level, string message, string @object, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Id = id;
             CreatedAt = createdAt;
             Level = level;
             Message = message;
-            Object = @object;
+            _object = @object;
             SerializedAdditionalRawData = serializedAdditionalRawData;
         }
 
@@ -40,6 +40,5 @@ namespace OpenAI.FineTuning
         public string Id { get; }
         public DateTimeOffset CreatedAt { get; }
         public string Message { get; }
-        public FineTuningJobEventObject Object { get; } = FineTuningJobEventObject.FineTuningJobEvent;
     }
 }

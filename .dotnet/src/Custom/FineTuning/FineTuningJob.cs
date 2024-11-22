@@ -96,26 +96,20 @@ public partial class FineTuningJob : OperationResult
     }
 
     /// <summary>
-    /// Get status updates for a fine-tuning job.
+    /// Get status updates (events) for a fine-tuning job.
     /// </summary>
     /// <param name="options"> Filter parameters via <see cref="ListEventsOptions"/>. </param>
     /// <param name="cancellationToken"> The cancellation token to use. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual AsyncCollectionResult<FineTuningEvent> GetJobEventsAsync(ListEventsOptions options, CancellationToken cancellationToken = default)
+    public virtual AsyncCollectionResult<FineTuningEvent> GetEventsAsync(ListEventsOptions options, CancellationToken cancellationToken = default)
     {
         options ??= new ListEventsOptions();
-        return (AsyncCollectionResult<FineTuningEvent>)GetJobEventsAsync(options.After, options.PageSize, cancellationToken.ToRequestOptions());
+        return (AsyncCollectionResult<FineTuningEvent>)GetEventsAsync(options.After, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
-    /// <summary>
-    /// Get status updates for a fine-tuning job.
-    /// </summary>
-    /// <param name="options"> Filter parameters via <see cref="ListEventsOptions"/>. </param>
-    /// <param name="cancellationToken"> The cancellation token to use. </param>
-    /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
-    /// <returns> The response returned from the service. </returns>
-    public virtual CollectionResult<FineTuningEvent> GetJobEvents(ListEventsOptions options, CancellationToken cancellationToken = default)
+    /// <inheritdoc cref="GetEventsAsync(ListEventsOptions, CancellationToken)"/>
+    public virtual CollectionResult<FineTuningEvent> GetEvents(ListEventsOptions options, CancellationToken cancellationToken = default)
     {
         options ??= new ListEventsOptions();
         return (CollectionResult<FineTuningEvent>)GetEvents(options.After, options.PageSize, cancellationToken.ToRequestOptions());

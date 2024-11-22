@@ -10,16 +10,16 @@ namespace OpenAI.FineTuning
     public partial class FineTuningCheckpointMetrics
     {
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
-        internal FineTuningCheckpointMetrics(int step, float trainLoss, float trainMeanTokenAccuracy)
+        internal FineTuningCheckpointMetrics(int stepNumber, float trainLoss, float trainMeanTokenAccuracy)
         {
-            Step = step;
+            StepNumber = stepNumber;
             TrainLoss = trainLoss;
             TrainMeanTokenAccuracy = trainMeanTokenAccuracy;
         }
 
-        internal FineTuningCheckpointMetrics(int step, float trainLoss, float trainMeanTokenAccuracy, float? validLoss, float? validMeanTokenAccuracy, float? fullValidLoss, float? fullValidMeanTokenAccuracy, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal FineTuningCheckpointMetrics(int stepNumber, float trainLoss, float trainMeanTokenAccuracy, float? validLoss, float? validMeanTokenAccuracy, float? fullValidLoss, float? fullValidMeanTokenAccuracy, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
-            Step = step;
+            StepNumber = stepNumber;
             TrainLoss = trainLoss;
             TrainMeanTokenAccuracy = trainMeanTokenAccuracy;
             ValidLoss = validLoss;
@@ -32,8 +32,6 @@ namespace OpenAI.FineTuning
         internal FineTuningCheckpointMetrics()
         {
         }
-
-        public int Step { get; }
         public float TrainLoss { get; }
         public float TrainMeanTokenAccuracy { get; }
         public float? ValidLoss { get; }

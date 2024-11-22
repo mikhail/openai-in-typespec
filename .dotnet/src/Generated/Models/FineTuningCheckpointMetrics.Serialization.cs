@@ -24,7 +24,7 @@ namespace OpenAI.FineTuning
             if (SerializedAdditionalRawData?.ContainsKey("step") != true)
             {
                 writer.WritePropertyName("step"u8);
-                writer.WriteNumberValue(Step);
+                writer.WriteNumberValue(StepNumber);
             }
             if (SerializedAdditionalRawData?.ContainsKey("train_loss") != true)
             {

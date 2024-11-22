@@ -270,8 +270,8 @@ public class FineTuningClientTests
 
         // Act
         var events = method.IsAsync()
-            ? job.GetJobEventsAsync(options).ToBlockingEnumerable()
-            : job.GetJobEvents(options);
+            ? job.GetEventsAsync(options).ToBlockingEnumerable()
+            : job.GetEvents(options);
 
         var first = events.FirstOrDefault();
 
@@ -307,7 +307,7 @@ public class FineTuningClientTests
 
         FineTuningCheckpointMetrics metrics = first.Metrics;
         Assert.NotNull(metrics);
-        Assert.Greater(metrics.Step, 0);
+        Assert.Greater(metrics.StepNumber, 0);
     }
 
     private static FineTuningClient GetTestClient() => GetTestClient<FineTuningClient>(TestScenario.FineTuning);

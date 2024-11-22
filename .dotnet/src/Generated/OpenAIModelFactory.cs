@@ -11,7 +11,6 @@ using OpenAI.Chat;
 using OpenAI.Embeddings;
 using OpenAI.FineTuning;
 using OpenAI.Images;
-using OpenAI.Models;
 using OpenAI.Moderations;
 using OpenAI.RealtimeConversation;
 using OpenAI.VectorStores;
@@ -203,27 +202,16 @@ namespace OpenAI
             return new FineTuningError(code, message, invalidParameter, serializedAdditionalRawData: null);
         }
 
-        public static FineTuningCheckpointMetrics FineTuningCheckpointMetrics(int step = default, float trainLoss = default, float trainMeanTokenAccuracy = default, float? validLoss = null, float? validMeanTokenAccuracy = null, float? fullValidLoss = null, float? fullValidMeanTokenAccuracy = null)
+        public static FineTuningCheckpointMetrics FineTuningCheckpointMetrics(int stepNumber = default, float trainLoss = default, float trainMeanTokenAccuracy = default, float? validLoss = null, float? validMeanTokenAccuracy = null, float? fullValidLoss = null, float? fullValidMeanTokenAccuracy = null)
         {
             return new FineTuningCheckpointMetrics(
-                step,
+                stepNumber,
                 trainLoss,
                 trainMeanTokenAccuracy,
                 validLoss,
                 validMeanTokenAccuracy,
                 fullValidLoss,
                 fullValidMeanTokenAccuracy,
-                serializedAdditionalRawData: null);
-        }
-
-        public static FineTuningEvent FineTuningEvent(string id = null, DateTimeOffset createdAt = default, string level = null, string message = null, FineTuningJobEventObject @object = default)
-        {
-            return new FineTuningEvent(
-                id,
-                createdAt,
-                level,
-                message,
-                @object,
                 serializedAdditionalRawData: null);
         }
 

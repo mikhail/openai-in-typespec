@@ -10,6 +10,6 @@ public partial class FineTuningEvent
     [CodeGenMember("FineTuningJobEventLevel")]
     public string Level;
 
-    [CodeGenMember("FineTuningJobEventObject")]
+    [CodeGenMember("Object")]
     private string _object;
 }

@@ -7,7 +7,6 @@ using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using OpenAI.Models;
 
 namespace OpenAI.FineTuning
 {
@@ -45,7 +44,7 @@ namespace OpenAI.FineTuning
             if (SerializedAdditionalRawData?.ContainsKey("object") != true)
             {
                 writer.WritePropertyName("object"u8);
-                writer.WriteStringValue(Object.ToString());
+                writer.WriteStringValue(_object);
             }
             if (SerializedAdditionalRawData != null)
             {
@@ -93,7 +92,7 @@ namespace OpenAI.FineTuning
             DateTimeOffset createdAt = default;
             string level = default;
             string message = default;
-            FineTuningJobEventObject @object = default;
+            string @object = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -120,7 +119,7 @@ namespace OpenAI.FineTuning
                 }
                 if (property.NameEquals("object"u8))
                 {
-                    @object = new FineTuningJobEventObject(property.Value.GetString());
+                    @object = property.Value.GetString();
                     continue;
                 }
                 if (true)

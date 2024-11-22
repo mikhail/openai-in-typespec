@@ -7,4 +7,7 @@ namespace OpenAI.FineTuning;
 [CodeGenModel("FineTuningJobCheckpointMetrics")]
 public partial class FineTuningCheckpointMetrics
 {
+    [CodeGenMember("Step")]
+    public int StepNumber { get; }
+
 }
