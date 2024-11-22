@@ -105,14 +105,14 @@ public partial class FineTuningJob : OperationResult
     public virtual AsyncCollectionResult<FineTuningEvent> GetEventsAsync(ListEventsOptions options, CancellationToken cancellationToken = default)
     {
         options ??= new ListEventsOptions();
-        return (AsyncCollectionResult<FineTuningEvent>)GetEventsAsync(options.After, options.PageSize, cancellationToken.ToRequestOptions());
+        return (AsyncCollectionResult<FineTuningEvent>)GetEventsAsync(options.AfterEventId, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
     /// <inheritdoc cref="GetEventsAsync(ListEventsOptions, CancellationToken)"/>
     public virtual CollectionResult<FineTuningEvent> GetEvents(ListEventsOptions options, CancellationToken cancellationToken = default)
     {
         options ??= new ListEventsOptions();
-        return (CollectionResult<FineTuningEvent>)GetEvents(options.After, options.PageSize, cancellationToken.ToRequestOptions());
+        return (CollectionResult<FineTuningEvent>)GetEvents(options.AfterEventId, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
     /// <summary>
