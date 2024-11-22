@@ -24,7 +24,7 @@ namespace OpenAI.FineTuning
             if (SerializedAdditionalRawData?.ContainsKey("id") != true)
             {
                 writer.WritePropertyName("id"u8);
-                writer.WriteStringValue(Id);
+                writer.WriteStringValue(CheckpointId);
             }
             if (SerializedAdditionalRawData?.ContainsKey("created_at") != true)
             {

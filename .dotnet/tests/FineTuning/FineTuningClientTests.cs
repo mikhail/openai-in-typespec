@@ -11,6 +11,18 @@ using static OpenAI.Tests.TestHelpers;
 
 namespace OpenAI.Tests.FineTuning;
 
+public static class Extensions
+{
+    public static bool IsAsync(this Method method) => method == Method.Async;
+}
+
+public enum Method
+{
+    Sync,
+    Async
+}
+
+
 [TestFixture]
 [Parallelizable(ParallelScope.Fixtures)]
 [Category("FineTuning")]
@@ -18,11 +30,6 @@ namespace OpenAI.Tests.FineTuning;
 public class FineTuningClientTests
 {
 
-    public enum Method
-    {
-        Sync,
-        Async
-    }
 
     FineTuningClient client;
     OpenAIFileClient fileClient;
@@ -58,31 +65,31 @@ public class FineTuningClientTests
 
     [Test]
     [Parallelizable(ParallelScope.All)]
-    public async Task MinimalRequiredParams([Values] bool isAsync)
+    public async Task MinimalRequiredParams([Values(Method.Sync, Method.Async)] Method method)
     {
 
-        FineTuningJob ftOp = isAsync
+        FineTuningJob ft = method.IsAsync()
             ? await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id)
             : client.FineTune("gpt-3.5-turbo", sampleFile.Id);
 
-        Assert.AreEqual(0, ftOp.Hyperparameters.CycleCount);
-        Assert.True(ftOp.Status.InProgress);
-        Assert.False(ftOp.HasCompleted);
+        Assert.AreEqual(0, ft.Hyperparameters.CycleCount);
+        Assert.True(ft.Status.InProgress);
+        Assert.False(ft.HasCompleted);
 
-        _ = isAsync
-            ? await ftOp.CancelAndUpdateAsync()
-            : ftOp.CancelAndUpdate();
+        _ = method.IsAsync()
+            ? await ft.CancelAndUpdateAsync()
+            : ft.CancelAndUpdate();
 
-        Assert.AreEqual(FineTuningStatus.Cancelled, ftOp.Status);
-        Assert.False(ftOp.Status.InProgress);
-        Assert.True(ftOp.HasCompleted);
+        Assert.AreEqual(FineTuningStatus.Cancelled, ft.Status);
+        Assert.False(ft.Status.InProgress);
+        Assert.True(ft.HasCompleted);
     }
 
 
 
     [Test]
     [Parallelizable(ParallelScope.All)]
-    public async Task AllParameters([Values] bool isAsync)
+    public async Task AllParameters([Values(Method.Sync, Method.Async)] Method method)
     {
         // This test does not check for Integrations because it requires a valid API key
 
@@ -99,17 +106,17 @@ public class FineTuningClientTests
             Seed = 1234567
         };
 
-        FineTuningJob jobOp = isAsync
+        FineTuningJob ft = method.IsAsync()
             ? await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id, options)
             : client.FineTune("gpt-3.5-turbo", sampleFile.Id, options);
-        Assert.AreEqual(1, jobOp.Hyperparameters.CycleCount);
-        Assert.AreEqual(2, jobOp.Hyperparameters.BatchSize);
-        Assert.AreEqual(3, jobOp.Hyperparameters.LearningRateMultiplier);
-        Assert.AreEqual(jobOp.UserProvidedSuffix, "TestFTJob");
-        Assert.AreEqual(1234567, jobOp.Seed);
-        Assert.AreEqual(validationFile.Id, jobOp.ValidationFileId);
+        Assert.AreEqual(1, ft.Hyperparameters.CycleCount);
+        Assert.AreEqual(2, ft.Hyperparameters.BatchSize);
+        Assert.AreEqual(3, ft.Hyperparameters.LearningRateMultiplier);
+        Assert.AreEqual(ft.UserProvidedSuffix, "TestFTJob");
+        Assert.AreEqual(1234567, ft.Seed);
+        Assert.AreEqual(validationFile.Id, ft.ValidationFileId);
 
-        jobOp.CancelAndUpdate();
+        ft.CancelAndUpdate();
     }
 
     [Test]
@@ -117,23 +124,23 @@ public class FineTuningClientTests
     public async Task TestWaitForCompletion()
     {
         // Arrange
-        FineTuningJob jobOp;
+        FineTuningJob ft;
         try
         {
-            jobOp = client.ListJobs(options: new() { PageSize = 100 }).Where((job) => job.Status == "succeeded").First();
+            ft = client.ListJobs(options: new() { PageSize = 100 }).Where((job) => job.Status == "succeeded").First();
         }
         catch (InvalidOperationException)
         {
-            jobOp = await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id);
+            ft = await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id);
         }
 
         // Act
-        await jobOp.WaitForCompletionAsync();
+        await ft.WaitForCompletionAsync();
 
         // Assert
-        Assert.True(jobOp.HasCompleted);
-        Assert.NotNull(jobOp.Value);
-        Assert.True(jobOp.Value.StartsWith("ft:gpt-3.5-turbo-0125:"));
+        Assert.True(ft.HasCompleted);
+        Assert.NotNull(ft.Value);
+        Assert.True(ft.Value.StartsWith("ft:gpt-3.5-turbo-0125:"));
     }
 
 
@@ -205,7 +212,7 @@ public class FineTuningClientTests
     {
         // Arrange
         Console.WriteLine("Getting jobs");
-        var jobs = (method == Method.Async)
+        var jobs = method.IsAsync()
             ? client.ListJobsAsync().Take(10).ToBlockingEnumerable()
             : client.ListJobs().Take(10);
 
@@ -262,7 +269,7 @@ public class FineTuningClientTests
         job.CancelAndUpdate();
 
         // Act
-        var events = (method == Method.Async)
+        var events = method.IsAsync()
             ? job.GetJobEventsAsync(options).ToBlockingEnumerable()
             : job.GetJobEvents(options);
 
@@ -287,7 +294,7 @@ public class FineTuningClientTests
 
 
         // Act
-        var checkpoints = (method == Method.Async)
+        var checkpoints = method.IsAsync()
             ? job.GetCheckpointsAsync().ToBlockingEnumerable()
             : job.GetCheckpoints();
         FineTuningCheckpoint first = checkpoints.FirstOrDefault();

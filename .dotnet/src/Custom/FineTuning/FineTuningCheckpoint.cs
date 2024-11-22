@@ -6,7 +6,7 @@ namespace OpenAI.FineTuning;
 public partial class FineTuningCheckpoint
 {
     [CodeGenMember("Id")]
-    public string Id { get; }
+    public string CheckpointId { get; }
 
     [CodeGenMember("CreatedAt")]
     public DateTimeOffset CreatedAt { get; }
@@ -20,7 +20,7 @@ public partial class FineTuningCheckpoint
     [CodeGenMember("FineTuningJobCheckpointMetrics")]
     public FineTuningCheckpointMetrics Metrics { get; }
 
-    [CodeGenMember("FineTuningJobId")]
+    [CodeGenMember("FineTuningJobId")]  
     public string JobId { get; }
 
     [CodeGenMember("Object")]
@@ -28,7 +28,7 @@ public partial class FineTuningCheckpoint
 
     public override string ToString()
     {
-        return $"FineTuningJobCheckpoint<{Id}, {StepNumber}, {FineTunedModelCheckpointId}>";
+        return $"FineTuningJobCheckpoint<{CheckpointId}, {StepNumber}, {FineTunedModelCheckpointId}>";
     }
 
 }

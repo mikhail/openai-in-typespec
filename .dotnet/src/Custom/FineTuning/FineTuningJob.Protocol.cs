@@ -28,7 +28,7 @@ public partial class FineTuningJob : OperationResult
     /// </summary>
     /// <param name="client"> The <see cref="FineTuningClient"/> used to obtain the job status from the service. </param>
     /// <param name="rehydrationToken"> The rehydration token corresponding to the job to rehydrate. </param>
-    /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
+    /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </         param>
     /// <returns> The rehydrated LRO <see cref="FineTuningJob"/>. </returns>
     /// <exception cref="ArgumentNullException"> <paramref name="client"/> or <paramref name="rehydrationToken"/> is null. </exception>
     public static FineTuningJob Rehydrate(FineTuningClient client, ContinuationToken rehydrationToken, RequestOptions options)

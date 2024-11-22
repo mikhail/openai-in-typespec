@@ -10,14 +10,14 @@ namespace OpenAI.FineTuning
     public partial class FineTuningCheckpoint
     {
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
-        internal FineTuningCheckpoint(string id, DateTimeOffset createdAt, string fineTunedModelCheckpointId, int stepNumber, FineTuningCheckpointMetrics metrics, string jobId)
+        internal FineTuningCheckpoint(string checkpointId, DateTimeOffset createdAt, string fineTunedModelCheckpointId, int stepNumber, FineTuningCheckpointMetrics metrics, string jobId)
         {
-            Argument.AssertNotNull(id, nameof(id));
+            Argument.AssertNotNull(checkpointId, nameof(checkpointId));
             Argument.AssertNotNull(fineTunedModelCheckpointId, nameof(fineTunedModelCheckpointId));
             Argument.AssertNotNull(metrics, nameof(metrics));
             Argument.AssertNotNull(jobId, nameof(jobId));
 
-            Id = id;
+            CheckpointId = checkpointId;
             CreatedAt = createdAt;
             FineTunedModelCheckpointId = fineTunedModelCheckpointId;
             StepNumber = stepNumber;
@@ -25,9 +25,9 @@ namespace OpenAI.FineTuning
             JobId = jobId;
         }
 
-        internal FineTuningCheckpoint(string id, DateTimeOffset createdAt, string fineTunedModelCheckpointId, int stepNumber, FineTuningCheckpointMetrics metrics, string jobId, string @object, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal FineTuningCheckpoint(string checkpointId, DateTimeOffset createdAt, string fineTunedModelCheckpointId, int stepNumber, FineTuningCheckpointMetrics metrics, string jobId, string @object, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
-            Id = id;
+            CheckpointId = checkpointId;
             CreatedAt = createdAt;
             FineTunedModelCheckpointId = fineTunedModelCheckpointId;
             StepNumber = stepNumber;
