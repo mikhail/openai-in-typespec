@@ -11,16 +11,16 @@ namespace OpenAI.FineTuning;
 
 [CodeGenSuppress("CreateFineTuningJobAsync", typeof(BinaryContent), typeof(RequestOptions))]
 [CodeGenSuppress("CreateFineTuningJob", typeof(BinaryContent), typeof(RequestOptions))]
-[CodeGenSuppress("GetPaginatedFineTuningJobsAsync", typeof(string), typeof(int?), typeof(RequestOptions))]
-[CodeGenSuppress("GetPaginatedFineTuningJobs", typeof(string), typeof(int?), typeof(RequestOptions))]
+[CodeGenSuppress("ListPaginatedFineTuningJobsAsync", typeof(string), typeof(int?), typeof(RequestOptions))]
+[CodeGenSuppress("ListPaginatedFineTuningJobs", typeof(string), typeof(int?), typeof(RequestOptions))]
 [CodeGenSuppress("RetrieveFineTuningJobAsync", typeof(string), typeof(RequestOptions))]
 [CodeGenSuppress("RetrieveFineTuningJob", typeof(string), typeof(RequestOptions))]
 [CodeGenSuppress("CancelFineTuningJobAsync", typeof(string), typeof(RequestOptions))]
 [CodeGenSuppress("CancelFineTuningJob", typeof(string), typeof(RequestOptions))]
-[CodeGenSuppress("GetFineTuningEventsAsync", typeof(string), typeof(string), typeof(int?), typeof(RequestOptions))]
-[CodeGenSuppress("GetFineTuningEvents", typeof(string), typeof(string), typeof(int?), typeof(RequestOptions))]
-[CodeGenSuppress("GetFineTuningJobCheckpointsAsync", typeof(string), typeof(string), typeof(int?), typeof(RequestOptions))]
-[CodeGenSuppress("GetFineTuningJobCheckpoints", typeof(string), typeof(string), typeof(int?), typeof(RequestOptions))]
+[CodeGenSuppress("ListFineTuningEventsAsync", typeof(string), typeof(string), typeof(int?), typeof(RequestOptions))]
+[CodeGenSuppress("ListFineTuningEvents", typeof(string), typeof(string), typeof(int?), typeof(RequestOptions))]
+[CodeGenSuppress("ListFineTuningJobCheckpointsAsync", typeof(string), typeof(string), typeof(int?), typeof(RequestOptions))]
+[CodeGenSuppress("ListFineTuningJobCheckpoints", typeof(string), typeof(string), typeof(int?), typeof(RequestOptions))]
 public partial class FineTuningClient
 {
     /// <summary>
@@ -49,7 +49,7 @@ public partial class FineTuningClient
         Argument.AssertNotNull(content, nameof(content));
 
         using PipelineMessage message = PostJobPipelineMessage(content, options);
-        PipelineResponse response = await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false);
+        PipelineResponse response = await Pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false);
 
         FineTuningJob job = this.CreateJobFromResponse(response);
         return await job.WaitUntilAsync(waitUntilCompleted, options).ConfigureAwait(false);
@@ -64,7 +64,7 @@ public partial class FineTuningClient
         Argument.AssertNotNull(content, nameof(content));
 
         using PipelineMessage message = PostJobPipelineMessage(content, options);
-        PipelineResponse response = _pipeline.ProcessMessage(message, options);
+        PipelineResponse response = Pipeline.ProcessMessage(message, options);
 
         FineTuningJob job = this.CreateJobFromResponse(response);
         return job.WaitUntil(waitUntilCompleted, options);
@@ -83,7 +83,7 @@ public partial class FineTuningClient
     /// <returns> The response returned from the service. </returns>
     private AsyncCollectionResult ListJobsAsync(string afterJobId, int? pageSize, RequestOptions options)
     {
-        return new AsyncFineTuningJobCollectionResult(this, _pipeline, options, pageSize, afterJobId);
+        return new AsyncFineTuningJobCollectionResult(this, Pipeline, options, pageSize, afterJobId);
     }
 
 
@@ -100,7 +100,7 @@ public partial class FineTuningClient
     /// <returns> The response returned from the service. </returns>
     private CollectionResult ListJobs(string after, int? pageSize, RequestOptions options)
     {
-        return new FineTuningJobCollectionResult(this, _pipeline, options, pageSize, after);
+        return new FineTuningJobCollectionResult(this, Pipeline, options, pageSize, after);
     }
 
     /// <summary>
@@ -118,8 +118,8 @@ public partial class FineTuningClient
     {
         Argument.AssertNotNullOrEmpty(JobId, nameof(JobId));
 
-        using PipelineMessage message = GetJobPipelineMessage(_pipeline, _endpoint, JobId, options);
-        return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
+        using PipelineMessage message = GetJobPipelineMessage(Pipeline, _endpoint, JobId, options);
+        return ClientResult.FromResponse(await Pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
     }
 
     /// <summary>
@@ -137,13 +137,13 @@ public partial class FineTuningClient
     {
         Argument.AssertNotNullOrEmpty(JobId, nameof(JobId));
 
-        using PipelineMessage message = GetJobPipelineMessage(_pipeline, _endpoint, JobId, options);
-        return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
+        using PipelineMessage message = GetJobPipelineMessage(Pipeline, _endpoint, JobId, options);
+        return ClientResult.FromResponse(Pipeline.ProcessMessage(message, options));
     }
 
     internal virtual PipelineMessage PostJobPipelineMessage(BinaryContent content, RequestOptions options)
     {
-        var message = _pipeline.CreateMessage();
+        var message = Pipeline.CreateMessage();
         message.ResponseClassifier = PipelineMessageClassifier200;
         var request = message.Request;
         request.Method = "POST";
@@ -160,7 +160,7 @@ public partial class FineTuningClient
 
     internal virtual PipelineMessage GetJobsPipelineMessage(string after, int? limit, RequestOptions options)
     {
-        var message = _pipeline.CreateMessage();
+        var message = Pipeline.CreateMessage();
         message.ResponseClassifier = PipelineMessageClassifier200;
         var request = message.Request;
         request.Method = "GET";

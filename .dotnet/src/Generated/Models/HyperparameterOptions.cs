@@ -9,17 +9,24 @@ namespace OpenAI.FineTuning
 {
     public partial class HyperparameterOptions
     {
-        internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
+        private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
         public HyperparameterOptions()
         {
         }
 
-        internal HyperparameterOptions(HyperparameterCycleCount cycleCount, HyperparameterBatchSize batchSize, HyperparameterLearningRate learningRate, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal HyperparameterOptions(HyperparameterCycleCount cycleCount, HyperparameterBatchSize batchSize, HyperparameterLearningRate learningRate, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             CycleCount = cycleCount;
             BatchSize = batchSize;
             LearningRate = learningRate;
-            SerializedAdditionalRawData = serializedAdditionalRawData;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        internal IDictionary<string, BinaryData> SerializedAdditionalRawData
+        {
+            get => _additionalBinaryDataProperties;
+            set => _additionalBinaryDataProperties = value;
         }
     }
 }

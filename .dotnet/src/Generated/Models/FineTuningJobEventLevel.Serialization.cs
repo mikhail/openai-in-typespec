@@ -18,9 +18,18 @@ namespace OpenAI.Models
 
         public static FineTuningJobEventLevel ToFineTuningJobEventLevel(this string value)
         {
-            if (StringComparer.OrdinalIgnoreCase.Equals(value, "info")) return FineTuningJobEventLevel.Info;
-            if (StringComparer.OrdinalIgnoreCase.Equals(value, "warn")) return FineTuningJobEventLevel.Warn;
-            if (StringComparer.OrdinalIgnoreCase.Equals(value, "error")) return FineTuningJobEventLevel.Error;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "info"))
+            {
+                return FineTuningJobEventLevel.Info;
+            }
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "warn"))
+            {
+                return FineTuningJobEventLevel.Warn;
+            }
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "error"))
+            {
+                return FineTuningJobEventLevel.Error;
+            }
             throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown FineTuningJobEventLevel value.");
         }
     }

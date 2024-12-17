@@ -10,17 +10,21 @@ namespace OpenAI.FineTuning
     public readonly partial struct HyperparameterCycleCount : IEquatable<HyperparameterCycleCount>
     {
         private readonly string _value;
-
         private const string AutoValue = "auto";
 
         public static HyperparameterCycleCount Auto { get; } = new HyperparameterCycleCount(AutoValue);
+
         public static bool operator ==(HyperparameterCycleCount left, HyperparameterCycleCount right) => left.Equals(right);
+
         public static bool operator !=(HyperparameterCycleCount left, HyperparameterCycleCount right) => !left.Equals(right);
+
         public static implicit operator HyperparameterCycleCount(string value) => new HyperparameterCycleCount(value);
+
         public bool Equals(HyperparameterCycleCount other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
+
         public override string ToString() => _value;
     }
 }

@@ -9,34 +9,43 @@ namespace OpenAI.FineTuning
 {
     public partial class FineTuningCheckpointMetrics
     {
-        internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
-        internal FineTuningCheckpointMetrics(int stepNumber, float trainLoss, float trainMeanTokenAccuracy)
+        private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        internal FineTuningCheckpointMetrics(float trainLoss, float trainMeanTokenAccuracy, int stepNumber)
         {
-            StepNumber = stepNumber;
             TrainLoss = trainLoss;
             TrainMeanTokenAccuracy = trainMeanTokenAccuracy;
+            StepNumber = stepNumber;
         }
 
-        internal FineTuningCheckpointMetrics(int stepNumber, float trainLoss, float trainMeanTokenAccuracy, float? validLoss, float? validMeanTokenAccuracy, float? fullValidLoss, float? fullValidMeanTokenAccuracy, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal FineTuningCheckpointMetrics(float trainLoss, float trainMeanTokenAccuracy, float? validLoss, float? validMeanTokenAccuracy, float? fullValidLoss, float? fullValidMeanTokenAccuracy, int stepNumber, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            StepNumber = stepNumber;
             TrainLoss = trainLoss;
             TrainMeanTokenAccuracy = trainMeanTokenAccuracy;
             ValidLoss = validLoss;
             ValidMeanTokenAccuracy = validMeanTokenAccuracy;
             FullValidLoss = fullValidLoss;
             FullValidMeanTokenAccuracy = fullValidMeanTokenAccuracy;
-            SerializedAdditionalRawData = serializedAdditionalRawData;
+            StepNumber = stepNumber;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        internal FineTuningCheckpointMetrics()
-        {
-        }
         public float TrainLoss { get; }
+
         public float TrainMeanTokenAccuracy { get; }
+
         public float? ValidLoss { get; }
+
         public float? ValidMeanTokenAccuracy { get; }
+
         public float? FullValidLoss { get; }
+
         public float? FullValidMeanTokenAccuracy { get; }
+
+        internal IDictionary<string, BinaryData> SerializedAdditionalRawData
+        {
+            get => _additionalBinaryDataProperties;
+            set => _additionalBinaryDataProperties = value;
+        }
     }
 }

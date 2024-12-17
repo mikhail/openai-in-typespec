@@ -10,30 +10,32 @@ namespace OpenAI.FineTuning
 {
     internal partial class InternalListFineTuningJobEventsResponse
     {
-        internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
+        private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
         internal InternalListFineTuningJobEventsResponse(IEnumerable<FineTuningEvent> data, bool hasMore)
         {
-            Argument.AssertNotNull(data, nameof(data));
-
             Data = data.ToList();
             HasMore = hasMore;
         }
 
-        internal InternalListFineTuningJobEventsResponse(IReadOnlyList<FineTuningEvent> data, InternalListFineTuningJobEventsResponseObject @object, bool hasMore, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal InternalListFineTuningJobEventsResponse(IList<FineTuningEvent> data, InternalListFineTuningJobEventsResponseObject @object, bool hasMore, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Data = data;
             Object = @object;
             HasMore = hasMore;
-            SerializedAdditionalRawData = serializedAdditionalRawData;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        internal InternalListFineTuningJobEventsResponse()
-        {
-        }
+        public IList<FineTuningEvent> Data { get; }
 
-        public IReadOnlyList<FineTuningEvent> Data { get; }
-        public InternalListFineTuningJobEventsResponseObject Object { get; } = InternalListFineTuningJobEventsResponseObject.List;
+        public InternalListFineTuningJobEventsResponseObject Object { get; } = "list";
 
         public bool HasMore { get; }
+
+        internal IDictionary<string, BinaryData> SerializedAdditionalRawData
+        {
+            get => _additionalBinaryDataProperties;
+            set => _additionalBinaryDataProperties = value;
+        }
     }
 }

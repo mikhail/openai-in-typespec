@@ -7,58 +7,68 @@ using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
+using OpenAI;
 
 namespace OpenAI.FineTuning
 {
     public partial class FineTuningCheckpoint : IJsonModel<FineTuningCheckpoint>
     {
+        internal FineTuningCheckpoint()
+        {
+        }
+
         void IJsonModel<FineTuningCheckpoint>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<FineTuningCheckpoint>)this).GetFormatFromOptions(options) : options.Format;
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<FineTuningCheckpoint>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(FineTuningCheckpoint)} does not support writing '{format}' format.");
             }
-
-            writer.WriteStartObject();
-            if (SerializedAdditionalRawData?.ContainsKey("id") != true)
+            if (_additionalBinaryDataProperties?.ContainsKey("id") != true)
             {
                 writer.WritePropertyName("id"u8);
                 writer.WriteStringValue(CheckpointId);
             }
-            if (SerializedAdditionalRawData?.ContainsKey("created_at") != true)
+            if (_additionalBinaryDataProperties?.ContainsKey("created_at") != true)
             {
                 writer.WritePropertyName("created_at"u8);
                 writer.WriteNumberValue(CreatedAt, "U");
             }
-            if (SerializedAdditionalRawData?.ContainsKey("fine_tuned_model_checkpoint") != true)
+            if (_additionalBinaryDataProperties?.ContainsKey("fine_tuned_model_checkpoint") != true)
             {
                 writer.WritePropertyName("fine_tuned_model_checkpoint"u8);
                 writer.WriteStringValue(FineTunedModelCheckpointId);
             }
-            if (SerializedAdditionalRawData?.ContainsKey("step_number") != true)
+            if (_additionalBinaryDataProperties?.ContainsKey("step_number") != true)
             {
                 writer.WritePropertyName("step_number"u8);
                 writer.WriteNumberValue(StepNumber);
             }
-            if (SerializedAdditionalRawData?.ContainsKey("metrics") != true)
+            if (_additionalBinaryDataProperties?.ContainsKey("metrics") != true)
             {
                 writer.WritePropertyName("metrics"u8);
                 writer.WriteObjectValue<FineTuningCheckpointMetrics>(Metrics, options);
             }
-            if (SerializedAdditionalRawData?.ContainsKey("fine_tuning_job_id") != true)
+            if (_additionalBinaryDataProperties?.ContainsKey("fine_tuning_job_id") != true)
             {
                 writer.WritePropertyName("fine_tuning_job_id"u8);
                 writer.WriteStringValue(JobId);
             }
-            if (SerializedAdditionalRawData?.ContainsKey("object") != true)
+            if (_additionalBinaryDataProperties?.ContainsKey("object") != true)
             {
                 writer.WritePropertyName("object"u8);
                 writer.WriteStringValue(_object);
             }
-            if (SerializedAdditionalRawData != null)
+            if (true && _additionalBinaryDataProperties != null)
             {
-                foreach (var item in SerializedAdditionalRawData)
+                foreach (var item in _additionalBinaryDataProperties)
                 {
                     if (ModelSerializationExtensions.IsSentinelValue(item.Value))
                     {
@@ -66,7 +76,7 @@ namespace OpenAI.FineTuning
                     }
                     writer.WritePropertyName(item.Key);
 #if NET6_0_OR_GREATER
-				writer.WriteRawValue(item.Value);
+                    writer.WriteRawValue(item.Value);
 #else
                     using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
@@ -75,97 +85,93 @@ namespace OpenAI.FineTuning
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
-        FineTuningCheckpoint IJsonModel<FineTuningCheckpoint>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        FineTuningCheckpoint IJsonModel<FineTuningCheckpoint>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        protected virtual FineTuningCheckpoint JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<FineTuningCheckpoint>)this).GetFormatFromOptions(options) : options.Format;
+            string format = options.Format == "W" ? ((IPersistableModel<FineTuningCheckpoint>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(FineTuningCheckpoint)} does not support reading '{format}' format.");
             }
-
             using JsonDocument document = JsonDocument.ParseValue(ref reader);
             return DeserializeFineTuningCheckpoint(document.RootElement, options);
         }
 
-        internal static FineTuningCheckpoint DeserializeFineTuningCheckpoint(JsonElement element, ModelReaderWriterOptions options = null)
+        internal static FineTuningCheckpoint DeserializeFineTuningCheckpoint(JsonElement element, ModelReaderWriterOptions options)
         {
-            options ??= ModelSerializationExtensions.WireOptions;
-
             if (element.ValueKind == JsonValueKind.Null)
             {
                 return null;
             }
-            string id = default;
+            string checkpointId = default;
             DateTimeOffset createdAt = default;
-            string fineTunedModelCheckpoint = default;
+            string fineTunedModelCheckpointId = default;
             int stepNumber = default;
             FineTuningCheckpointMetrics metrics = default;
-            string fineTuningJobId = default;
+            string jobId = default;
             string @object = default;
-            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
-            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
-            foreach (var property in element.EnumerateObject())
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
             {
-                if (property.NameEquals("id"u8))
+                if (prop.NameEquals("id"u8))
                 {
-                    id = property.Value.GetString();
+                    checkpointId = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("created_at"u8))
+                if (prop.NameEquals("created_at"u8))
                 {
-                    createdAt = DateTimeOffset.FromUnixTimeSeconds(property.Value.GetInt64());
+                    createdAt = DateTimeOffset.FromUnixTimeSeconds(prop.Value.GetInt64());
                     continue;
                 }
-                if (property.NameEquals("fine_tuned_model_checkpoint"u8))
+                if (prop.NameEquals("fine_tuned_model_checkpoint"u8))
                 {
-                    fineTunedModelCheckpoint = property.Value.GetString();
+                    fineTunedModelCheckpointId = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("step_number"u8))
+                if (prop.NameEquals("step_number"u8))
                 {
-                    stepNumber = property.Value.GetInt32();
+                    stepNumber = prop.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("metrics"u8))
+                if (prop.NameEquals("metrics"u8))
                 {
-                    metrics = FineTuningCheckpointMetrics.DeserializeFineTuningCheckpointMetrics(property.Value, options);
+                    metrics = FineTuningCheckpointMetrics.DeserializeFineTuningCheckpointMetrics(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("fine_tuning_job_id"u8))
+                if (prop.NameEquals("fine_tuning_job_id"u8))
                 {
-                    fineTuningJobId = property.Value.GetString();
+                    jobId = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("object"u8))
+                if (prop.NameEquals("object"u8))
                 {
-                    @object = property.Value.GetString();
+                    @object = prop.Value.GetString();
                     continue;
                 }
                 if (true)
                 {
-                    rawDataDictionary ??= new Dictionary<string, BinaryData>();
-                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            serializedAdditionalRawData = rawDataDictionary;
             return new FineTuningCheckpoint(
-                id,
+                checkpointId,
                 createdAt,
-                fineTunedModelCheckpoint,
+                fineTunedModelCheckpointId,
                 stepNumber,
                 metrics,
-                fineTuningJobId,
+                jobId,
                 @object,
-                serializedAdditionalRawData);
+                additionalBinaryDataProperties);
         }
 
-        BinaryData IPersistableModel<FineTuningCheckpoint>.Write(ModelReaderWriterOptions options)
-        {
-            var format = options.Format == "W" ? ((IPersistableModel<FineTuningCheckpoint>)this).GetFormatFromOptions(options) : options.Format;
+        BinaryData IPersistableModel<FineTuningCheckpoint>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
 
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<FineTuningCheckpoint>)this).GetFormatFromOptions(options) : options.Format;
             switch (format)
             {
                 case "J":
@@ -175,15 +181,16 @@ namespace OpenAI.FineTuning
             }
         }
 
-        FineTuningCheckpoint IPersistableModel<FineTuningCheckpoint>.Create(BinaryData data, ModelReaderWriterOptions options)
-        {
-            var format = options.Format == "W" ? ((IPersistableModel<FineTuningCheckpoint>)this).GetFormatFromOptions(options) : options.Format;
+        FineTuningCheckpoint IPersistableModel<FineTuningCheckpoint>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
 
+        protected virtual FineTuningCheckpoint PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<FineTuningCheckpoint>)this).GetFormatFromOptions(options) : options.Format;
             switch (format)
             {
                 case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data))
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
                         return DeserializeFineTuningCheckpoint(document.RootElement, options);
                     }
                 default:
@@ -193,15 +200,20 @@ namespace OpenAI.FineTuning
 
         string IPersistableModel<FineTuningCheckpoint>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
 
-        internal static FineTuningCheckpoint FromResponse(PipelineResponse response)
+        public static implicit operator BinaryContent(FineTuningCheckpoint fineTuningCheckpoint)
         {
-            using var document = JsonDocument.Parse(response.Content);
-            return DeserializeFineTuningCheckpoint(document.RootElement);
+            if (fineTuningCheckpoint == null)
+            {
+                return null;
+            }
+            return BinaryContent.Create(fineTuningCheckpoint, ModelSerializationExtensions.WireOptions);
         }
 
-        internal virtual BinaryContent ToBinaryContent()
+        public static explicit operator FineTuningCheckpoint(ClientResult result)
         {
-            return BinaryContent.Create(this, ModelSerializationExtensions.WireOptions);
+            using PipelineResponse response = result.GetRawResponse();
+            using JsonDocument document = JsonDocument.Parse(response.Content);
+            return DeserializeFineTuningCheckpoint(document.RootElement, ModelSerializationExtensions.WireOptions);
         }
     }
 }

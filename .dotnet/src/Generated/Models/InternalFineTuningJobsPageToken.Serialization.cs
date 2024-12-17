@@ -7,6 +7,7 @@ using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
+using OpenAI;
 
 namespace OpenAI.FineTuning
 {
@@ -14,26 +15,31 @@ namespace OpenAI.FineTuning
     {
         void IJsonModel<InternalFineTuningJobsPageToken>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<InternalFineTuningJobsPageToken>)this).GetFormatFromOptions(options) : options.Format;
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<InternalFineTuningJobsPageToken>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(InternalFineTuningJobsPageToken)} does not support writing '{format}' format.");
             }
-
-            writer.WriteStartObject();
-            if (SerializedAdditionalRawData?.ContainsKey("limit") != true && Optional.IsDefined(Limit))
+            if (Optional.IsDefined(Limit) && _additionalBinaryDataProperties?.ContainsKey("limit") != true)
             {
                 writer.WritePropertyName("limit"u8);
                 writer.WriteNumberValue(Limit.Value);
             }
-            if (SerializedAdditionalRawData?.ContainsKey("after") != true && Optional.IsDefined(After))
+            if (Optional.IsDefined(After) && _additionalBinaryDataProperties?.ContainsKey("after") != true)
             {
                 writer.WritePropertyName("after"u8);
                 writer.WriteStringValue(After);
             }
-            if (SerializedAdditionalRawData != null)
+            if (true && _additionalBinaryDataProperties != null)
             {
-                foreach (var item in SerializedAdditionalRawData)
+                foreach (var item in _additionalBinaryDataProperties)
                 {
                     if (ModelSerializationExtensions.IsSentinelValue(item.Value))
                     {
@@ -41,7 +47,7 @@ namespace OpenAI.FineTuning
                     }
                     writer.WritePropertyName(item.Key);
 #if NET6_0_OR_GREATER
-				writer.WriteRawValue(item.Value);
+                    writer.WriteRawValue(item.Value);
 #else
                     using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
@@ -50,63 +56,59 @@ namespace OpenAI.FineTuning
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
-        InternalFineTuningJobsPageToken IJsonModel<InternalFineTuningJobsPageToken>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        InternalFineTuningJobsPageToken IJsonModel<InternalFineTuningJobsPageToken>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        protected virtual InternalFineTuningJobsPageToken JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            var format = options.Format == "W" ? ((IPersistableModel<InternalFineTuningJobsPageToken>)this).GetFormatFromOptions(options) : options.Format;
+            string format = options.Format == "W" ? ((IPersistableModel<InternalFineTuningJobsPageToken>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(InternalFineTuningJobsPageToken)} does not support reading '{format}' format.");
             }
-
             using JsonDocument document = JsonDocument.ParseValue(ref reader);
             return DeserializeInternalFineTuningJobsPageToken(document.RootElement, options);
         }
 
-        internal static InternalFineTuningJobsPageToken DeserializeInternalFineTuningJobsPageToken(JsonElement element, ModelReaderWriterOptions options = null)
+        internal static InternalFineTuningJobsPageToken DeserializeInternalFineTuningJobsPageToken(JsonElement element, ModelReaderWriterOptions options)
         {
-            options ??= ModelSerializationExtensions.WireOptions;
-
             if (element.ValueKind == JsonValueKind.Null)
             {
                 return null;
             }
             int? limit = default;
             string after = default;
-            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
-            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
-            foreach (var property in element.EnumerateObject())
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
             {
-                if (property.NameEquals("limit"u8))
+                if (prop.NameEquals("limit"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
                         continue;
                     }
-                    limit = property.Value.GetInt32();
+                    limit = prop.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("after"u8))
+                if (prop.NameEquals("after"u8))
                 {
-                    after = property.Value.GetString();
+                    after = prop.Value.GetString();
                     continue;
                 }
                 if (true)
                 {
-                    rawDataDictionary ??= new Dictionary<string, BinaryData>();
-                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            serializedAdditionalRawData = rawDataDictionary;
-            return new InternalFineTuningJobsPageToken(limit, after, serializedAdditionalRawData);
+            return new InternalFineTuningJobsPageToken(limit, after, additionalBinaryDataProperties);
         }
 
-        BinaryData IPersistableModel<InternalFineTuningJobsPageToken>.Write(ModelReaderWriterOptions options)
-        {
-            var format = options.Format == "W" ? ((IPersistableModel<InternalFineTuningJobsPageToken>)this).GetFormatFromOptions(options) : options.Format;
+        BinaryData IPersistableModel<InternalFineTuningJobsPageToken>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
 
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<InternalFineTuningJobsPageToken>)this).GetFormatFromOptions(options) : options.Format;
             switch (format)
             {
                 case "J":
@@ -116,15 +118,16 @@ namespace OpenAI.FineTuning
             }
         }
 
-        InternalFineTuningJobsPageToken IPersistableModel<InternalFineTuningJobsPageToken>.Create(BinaryData data, ModelReaderWriterOptions options)
-        {
-            var format = options.Format == "W" ? ((IPersistableModel<InternalFineTuningJobsPageToken>)this).GetFormatFromOptions(options) : options.Format;
+        InternalFineTuningJobsPageToken IPersistableModel<InternalFineTuningJobsPageToken>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
 
+        protected virtual InternalFineTuningJobsPageToken PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<InternalFineTuningJobsPageToken>)this).GetFormatFromOptions(options) : options.Format;
             switch (format)
             {
                 case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data))
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
                         return DeserializeInternalFineTuningJobsPageToken(document.RootElement, options);
                     }
                 default:
@@ -134,15 +137,20 @@ namespace OpenAI.FineTuning
 
         string IPersistableModel<InternalFineTuningJobsPageToken>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
 
-        internal static InternalFineTuningJobsPageToken FromResponse(PipelineResponse response)
+        public static implicit operator BinaryContent(InternalFineTuningJobsPageToken internalFineTuningJobsPageToken)
         {
-            using var document = JsonDocument.Parse(response.Content);
-            return DeserializeInternalFineTuningJobsPageToken(document.RootElement);
+            if (internalFineTuningJobsPageToken == null)
+            {
+                return null;
+            }
+            return BinaryContent.Create(internalFineTuningJobsPageToken, ModelSerializationExtensions.WireOptions);
         }
 
-        internal virtual BinaryContent ToBinaryContent()
+        public static explicit operator InternalFineTuningJobsPageToken(ClientResult result)
         {
-            return BinaryContent.Create(this, ModelSerializationExtensions.WireOptions);
+            using PipelineResponse response = result.GetRawResponse();
+            using JsonDocument document = JsonDocument.Parse(response.Content);
+            return DeserializeInternalFineTuningJobsPageToken(document.RootElement, ModelSerializationExtensions.WireOptions);
         }
     }
 }

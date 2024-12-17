@@ -44,7 +44,7 @@ public partial class FineTuningJob : OperationResult
     {
         _pipeline = pipeline;
         _endpoint = endpoint;
-        var job = InternalFineTuningJob.FromResponse(response);
+        var job = (InternalFineTuningJob)ClientResult.FromResponse(response);
         CopyLocalParameters(response, job);
     }
 
@@ -185,7 +185,7 @@ public partial class FineTuningJob : OperationResult
     {
         ClientResult result = await GetJobAsync(cancellationToken.ToRequestOptions()).ConfigureAwait(false);
         var response = result.GetRawResponse();
-        CopyLocalParameters(response, InternalFineTuningJob.FromResponse(response));
+        CopyLocalParameters(response, (InternalFineTuningJob)ClientResult.FromResponse(response));
         return result;
     }
 
@@ -194,7 +194,7 @@ public partial class FineTuningJob : OperationResult
     {
         ClientResult result = GetJob(cancellationToken.ToRequestOptions());
         var response = result.GetRawResponse();
-        CopyLocalParameters(response, InternalFineTuningJob.FromResponse(response));
+        CopyLocalParameters(response, (InternalFineTuningJob)ClientResult.FromResponse(response));
         return result;
     }
 
@@ -208,7 +208,7 @@ public partial class FineTuningJob : OperationResult
     {
         using PipelineMessage message = CancelPipelineMessage(JobId, cancellationToken.ToRequestOptions());
         PipelineResponse response = _pipeline.ProcessMessage(message, cancellationToken.ToRequestOptions());
-        CopyLocalParameters(response, InternalFineTuningJob.FromResponse(response));
+        CopyLocalParameters(response, (InternalFineTuningJob)ClientResult.FromResponse(response));
         return ClientResult.FromResponse(response);
     }
 
@@ -222,7 +222,7 @@ public partial class FineTuningJob : OperationResult
     {
         using PipelineMessage message = CancelPipelineMessage(JobId, cancellationToken.ToRequestOptions());
         PipelineResponse response = await _pipeline.ProcessMessageAsync(message, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
-        CopyLocalParameters(response, InternalFineTuningJob.FromResponse(response));
+        CopyLocalParameters(response, (InternalFineTuningJob)ClientResult.FromResponse(response));
         return ClientResult.FromResponse(response);
     }
 

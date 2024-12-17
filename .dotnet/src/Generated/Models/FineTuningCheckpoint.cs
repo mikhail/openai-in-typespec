@@ -9,14 +9,10 @@ namespace OpenAI.FineTuning
 {
     public partial class FineTuningCheckpoint
     {
-        internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
+        private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
         internal FineTuningCheckpoint(string checkpointId, DateTimeOffset createdAt, string fineTunedModelCheckpointId, int stepNumber, FineTuningCheckpointMetrics metrics, string jobId)
         {
-            Argument.AssertNotNull(checkpointId, nameof(checkpointId));
-            Argument.AssertNotNull(fineTunedModelCheckpointId, nameof(fineTunedModelCheckpointId));
-            Argument.AssertNotNull(metrics, nameof(metrics));
-            Argument.AssertNotNull(jobId, nameof(jobId));
-
             CheckpointId = checkpointId;
             CreatedAt = createdAt;
             FineTunedModelCheckpointId = fineTunedModelCheckpointId;
@@ -25,7 +21,7 @@ namespace OpenAI.FineTuning
             JobId = jobId;
         }
 
-        internal FineTuningCheckpoint(string checkpointId, DateTimeOffset createdAt, string fineTunedModelCheckpointId, int stepNumber, FineTuningCheckpointMetrics metrics, string jobId, string @object, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal FineTuningCheckpoint(string checkpointId, DateTimeOffset createdAt, string fineTunedModelCheckpointId, int stepNumber, FineTuningCheckpointMetrics metrics, string jobId, string @object, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             CheckpointId = checkpointId;
             CreatedAt = createdAt;
@@ -34,11 +30,13 @@ namespace OpenAI.FineTuning
             Metrics = metrics;
             JobId = jobId;
             _object = @object;
-            SerializedAdditionalRawData = serializedAdditionalRawData;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        internal FineTuningCheckpoint()
+        internal IDictionary<string, BinaryData> SerializedAdditionalRawData
         {
+            get => _additionalBinaryDataProperties;
+            set => _additionalBinaryDataProperties = value;
         }
     }
 }

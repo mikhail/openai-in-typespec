@@ -9,19 +9,27 @@ namespace OpenAI.FineTuning
 {
     internal partial class InternalFineTuningJobsPageToken
     {
-        internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
+        private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
         public InternalFineTuningJobsPageToken()
         {
         }
 
-        internal InternalFineTuningJobsPageToken(int? limit, string after, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal InternalFineTuningJobsPageToken(int? limit, string after, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Limit = limit;
             After = after;
-            SerializedAdditionalRawData = serializedAdditionalRawData;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         public int? Limit { get; set; }
+
         public string After { get; set; }
+
+        internal IDictionary<string, BinaryData> SerializedAdditionalRawData
+        {
+            get => _additionalBinaryDataProperties;
+            set => _additionalBinaryDataProperties = value;
+        }
     }
 }

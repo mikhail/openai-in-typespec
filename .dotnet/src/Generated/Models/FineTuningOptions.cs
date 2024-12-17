@@ -4,15 +4,15 @@
 
 using System;
 using System.Collections.Generic;
-using OpenAI.Models;
+using ;
 
 namespace OpenAI.FineTuning
 {
     public partial class FineTuningOptions
     {
-        internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
+        private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        internal FineTuningOptions(CreateFineTuningJobRequestModel model, string trainingFile, HyperparameterOptions hyperparameters, string suffix, string validationFile, IList<FineTuningIntegration> integrations, int? seed, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal FineTuningOptions(global::.CreateFineTuningJobRequestModel model, string trainingFile, HyperparameterOptions hyperparameters, string suffix, string validationFile, IList<FineTuningIntegration> integrations, int? seed, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Model = model;
             TrainingFile = trainingFile;
@@ -21,7 +21,13 @@ namespace OpenAI.FineTuning
             ValidationFile = validationFile;
             Integrations = integrations;
             Seed = seed;
-            SerializedAdditionalRawData = serializedAdditionalRawData;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        internal IDictionary<string, BinaryData> SerializedAdditionalRawData
+        {
+            get => _additionalBinaryDataProperties;
+            set => _additionalBinaryDataProperties = value;
         }
     }
 }

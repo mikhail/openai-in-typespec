@@ -5,70 +5,73 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenAI;
 
 namespace OpenAI.FineTuning
 {
     internal partial class InternalFineTuningJob
     {
-        internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
-        internal InternalFineTuningJob(string jobId, DateTimeOffset createdAt, FineTuningError error, string fineTunedModel, DateTimeOffset? finishedAt, string baseModel, string organizationId, IEnumerable<string> resultFileIds, FineTuningStatus status, int? billableTrainedTokens, string trainingFileId, string validationFileId, int seed)
-        {
-            Argument.AssertNotNull(jobId, nameof(jobId));
-            Argument.AssertNotNull(baseModel, nameof(baseModel));
-            Argument.AssertNotNull(organizationId, nameof(organizationId));
-            Argument.AssertNotNull(resultFileIds, nameof(resultFileIds));
-            Argument.AssertNotNull(trainingFileId, nameof(trainingFileId));
+        private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-            JobId = jobId;
+        internal InternalFineTuningJob(DateTimeOffset createdAt, FineTuningError error, string fineTunedModel, DateTimeOffset? finishedAt, string organizationId, int seed, string jobId, string baseModel, string validationFileId, string trainingFileId, IEnumerable<string> resultFileIds, FineTuningStatus status, int? billableTrainedTokens)
+        {
             CreatedAt = createdAt;
             Error = error;
             FineTunedModel = fineTunedModel;
             FinishedAt = finishedAt;
-            BaseModel = baseModel;
             OrganizationId = organizationId;
+            Seed = seed;
+            JobId = jobId;
+            BaseModel = baseModel;
+            ValidationFileId = validationFileId;
+            TrainingFileId = trainingFileId;
             ResultFileIds = resultFileIds.ToList();
             Status = status;
-            BillableTrainedTokens = billableTrainedTokens;
-            TrainingFileId = trainingFileId;
-            ValidationFileId = validationFileId;
             Integrations = new ChangeTrackingList<FineTuningIntegration>();
-            Seed = seed;
+            BillableTrainedTokens = billableTrainedTokens;
         }
 
-        internal InternalFineTuningJob(string userProvidedSuffix, string jobId, DateTimeOffset createdAt, FineTuningError error, string fineTunedModel, DateTimeOffset? finishedAt, FineTuningHyperparameters hyperparameters, string baseModel, string @object, string organizationId, IReadOnlyList<string> resultFileIds, FineTuningStatus status, int? billableTrainedTokens, string trainingFileId, string validationFileId, IReadOnlyList<FineTuningIntegration> integrations, int seed, DateTimeOffset? estimatedFinishAt, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal InternalFineTuningJob(string userProvidedSuffix, DateTimeOffset createdAt, FineTuningError error, string fineTunedModel, DateTimeOffset? finishedAt, string organizationId, int seed, string jobId, string baseModel, DateTimeOffset? estimatedFinishAt, string validationFileId, string trainingFileId, IReadOnlyList<string> resultFileIds, FineTuningStatus status, string @object, FineTuningHyperparameters hyperparameters, IReadOnlyList<FineTuningIntegration> integrations, int? billableTrainedTokens, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             UserProvidedSuffix = userProvidedSuffix;
-            JobId = jobId;
             CreatedAt = createdAt;
             Error = error;
             FineTunedModel = fineTunedModel;
             FinishedAt = finishedAt;
-            Hyperparameters = hyperparameters;
-            BaseModel = baseModel;
-            _object = @object;
             OrganizationId = organizationId;
+            Seed = seed;
+            JobId = jobId;
+            BaseModel = baseModel;
+            EstimatedFinishAt = estimatedFinishAt;
+            ValidationFileId = validationFileId;
+            TrainingFileId = trainingFileId;
             ResultFileIds = resultFileIds;
             Status = status;
-            BillableTrainedTokens = billableTrainedTokens;
-            TrainingFileId = trainingFileId;
-            ValidationFileId = validationFileId;
+            _object = @object;
+            Hyperparameters = hyperparameters;
             Integrations = integrations;
-            Seed = seed;
-            EstimatedFinishAt = estimatedFinishAt;
-            SerializedAdditionalRawData = serializedAdditionalRawData;
-        }
-
-        internal InternalFineTuningJob()
-        {
+            BillableTrainedTokens = billableTrainedTokens;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         public string UserProvidedSuffix { get; }
+
         public DateTimeOffset CreatedAt { get; }
+
         public FineTuningError Error { get; }
+
         public string FineTunedModel { get; }
+
         public DateTimeOffset? FinishedAt { get; }
 
         public string OrganizationId { get; }
+
         public int Seed { get; }
+
+        internal IDictionary<string, BinaryData> SerializedAdditionalRawData
+        {
+            get => _additionalBinaryDataProperties;
+            set => _additionalBinaryDataProperties = value;
+        }
     }
 }

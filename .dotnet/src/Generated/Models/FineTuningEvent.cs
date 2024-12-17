@@ -4,41 +4,41 @@
 
 using System;
 using System.Collections.Generic;
-using OpenAI.Models;
 
 namespace OpenAI.FineTuning
 {
     public partial class FineTuningEvent
     {
-        internal IDictionary<string, BinaryData> SerializedAdditionalRawData { get; set; }
-        internal FineTuningEvent(string id, DateTimeOffset createdAt, string level, string message)
-        {
-            Argument.AssertNotNull(id, nameof(id));
-            Argument.AssertNotNull(level, nameof(level));
-            Argument.AssertNotNull(message, nameof(message));
+        private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
+        internal FineTuningEvent(string id, DateTimeOffset createdAt, string message, string level)
+        {
             Id = id;
             CreatedAt = createdAt;
-            Level = level;
             Message = message;
+            Level = level;
         }
 
-        internal FineTuningEvent(string id, DateTimeOffset createdAt, string level, string message, string @object, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        internal FineTuningEvent(string id, DateTimeOffset createdAt, string message, string level, string @object, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Id = id;
             CreatedAt = createdAt;
-            Level = level;
             Message = message;
+            Level = level;
             _object = @object;
-            SerializedAdditionalRawData = serializedAdditionalRawData;
-        }
-
-        internal FineTuningEvent()
-        {
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         public string Id { get; }
+
         public DateTimeOffset CreatedAt { get; }
+
         public string Message { get; }
+
+        internal IDictionary<string, BinaryData> SerializedAdditionalRawData
+        {
+            get => _additionalBinaryDataProperties;
+            set => _additionalBinaryDataProperties = value;
+        }
     }
 }

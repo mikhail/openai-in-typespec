@@ -2,9 +2,6 @@
 
 #nullable disable
 
-using System;
-using System.Collections.Generic;
-
 namespace OpenAI.FineTuning
 {
     public partial class WeightsAndBiasesIntegration : FineTuningIntegration

@@ -10,17 +10,21 @@ namespace OpenAI.FineTuning
     public readonly partial struct HyperparameterBatchSize : IEquatable<HyperparameterBatchSize>
     {
         private readonly string _value;
-
         private const string AutoValue = "auto";
 
         public static HyperparameterBatchSize Auto { get; } = new HyperparameterBatchSize(AutoValue);
+
         public static bool operator ==(HyperparameterBatchSize left, HyperparameterBatchSize right) => left.Equals(right);
+
         public static bool operator !=(HyperparameterBatchSize left, HyperparameterBatchSize right) => !left.Equals(right);
+
         public static implicit operator HyperparameterBatchSize(string value) => new HyperparameterBatchSize(value);
+
         public bool Equals(HyperparameterBatchSize other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
+
         public override string ToString() => _value;
     }
 }
