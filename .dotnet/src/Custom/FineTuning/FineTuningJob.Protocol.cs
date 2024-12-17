@@ -93,6 +93,7 @@ public partial class FineTuningJob : OperationResult
     /// <inheritdoc/>
     public override async ValueTask<ClientResult> UpdateStatusAsync(RequestOptions? options)
     {
+        options = options ?? new RequestOptions();
         ClientResult result = await GetJobAsync(options).ConfigureAwait(false);
         var response = result.GetRawResponse();
         SetRawResponse(response);
@@ -105,6 +106,7 @@ public partial class FineTuningJob : OperationResult
     /// <inheritdoc/>
     public override ClientResult UpdateStatus(RequestOptions? options)
     {
+        options = options ?? new RequestOptions();
         ClientResult result = GetJob(options);
         var response = result.GetRawResponse();
         SetRawResponse(response);
@@ -114,14 +116,14 @@ public partial class FineTuningJob : OperationResult
         return result;
     }
 
-    internal async Task<FineTuningJob> WaitUntilAsync(bool waitUntilCompleted, RequestOptions? options)
+    internal async Task<FineTuningJob> WaitUntilAsync(bool waitUntilCompleted, RequestOptions options)
     {
         if (!waitUntilCompleted) return this;
         await WaitForCompletionAsync(options?.CancellationToken ?? default).ConfigureAwait(false);
         return this;
     }
 
-    internal FineTuningJob WaitUntil(bool waitUntilCompleted, RequestOptions? options)
+    internal FineTuningJob WaitUntil(bool waitUntilCompleted, RequestOptions options)
     {
         if (!waitUntilCompleted) return this;
         WaitForCompletion(options?.CancellationToken ?? default);
@@ -136,7 +138,7 @@ public partial class FineTuningJob : OperationResult
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    internal virtual async Task<ClientResult> GetJobAsync(RequestOptions? options)
+    internal virtual async Task<ClientResult> GetJobAsync(RequestOptions options)
     {
         using PipelineMessage message = FineTuningClient.GetJobPipelineMessage(_pipeline, _endpoint, JobId, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
@@ -153,7 +155,7 @@ public partial class FineTuningJob : OperationResult
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    internal virtual ClientResult GetJob(RequestOptions? options)
+    internal virtual ClientResult GetJob(RequestOptions options)
     {
         using PipelineMessage message = FineTuningClient.GetJobPipelineMessage(_pipeline, _endpoint, JobId, options);
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
