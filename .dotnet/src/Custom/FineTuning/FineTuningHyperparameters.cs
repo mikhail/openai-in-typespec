@@ -15,8 +15,6 @@ public readonly partial struct FineTuningHyperparameters
     [CodeGenMember("LearningRateMultiplier")]
     internal BinaryData _LearningRateMultiplier { get; }
 
-    public IDictionary<string, BinaryData> SerializedAdditionalRawData { get; }
-
     private float HandleDefaults(BinaryData data)
     {
         if (data is null)

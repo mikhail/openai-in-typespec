@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ;
 using OpenAI.Assistants;
 using OpenAI.Audio;
 using OpenAI.Chat;
@@ -824,7 +823,7 @@ namespace OpenAI
                 additionalBinaryDataProperties: null);
         }
 
-        public static FineTuningOptions FineTuningOptions(global::.CreateFineTuningJobRequestModel model = default, string trainingFile = default, HyperparameterOptions hyperparameters = default, string suffix = default, string validationFile = default, IEnumerable<FineTuningIntegration> integrations = default, int? seed = default)
+        public static FineTuningOptions FineTuningOptions(CreateFineTuningJobRequestModel model = default, string trainingFile = default, HyperparameterOptions hyperparameters = default, string suffix = default, string validationFile = default, IEnumerable<FineTuningIntegration> integrations = default, int? seed = default)
         {
             integrations ??= new ChangeTrackingList<FineTuningIntegration>();
 

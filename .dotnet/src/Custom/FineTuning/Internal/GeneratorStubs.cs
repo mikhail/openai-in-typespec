@@ -31,10 +31,15 @@ internal partial class InternalCreateFineTuningJobRequestWandbIntegrationWandb
     public string Project { get; set; }
 }
 
+[CodeGenModel("CreateFineTuningJobRequestModel")]
+public readonly partial struct CreateFineTuningJobRequestModel { }
+
 [CodeGenModel("FineTuningJobObject")]
 internal readonly partial struct InternalFineTuningJobObject { }
 
+[CodeGenModel("FineTuningJobEventObject")]
 
+public readonly partial struct FineTuningJobEventObject { }
 
 
 [CodeGenModel("FineTuningJobCheckpointObject")]
@@ -75,3 +80,9 @@ internal partial class UnknownFineTuningIntegration { }
 
 [CodeGenModel("ListFineTuningJobEventsResponseObject")]
 internal readonly partial struct InternalListFineTuningJobEventsResponseObject { }
+
+[CodeGenModel("FineTuningJobEventLevel")]
+internal enum FineTuningJobEventLevel {Info, Warn, Error}
+
+[CodeGenModel("FineTuningJobEventLevelExtensions")]
+internal partial class FineTuningJobEventLevelExtensions { }

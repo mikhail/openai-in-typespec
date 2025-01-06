@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using ;
 
 namespace OpenAI.FineTuning
 {
@@ -12,7 +11,7 @@ namespace OpenAI.FineTuning
     {
         private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        internal FineTuningOptions(global::.CreateFineTuningJobRequestModel model, string trainingFile, HyperparameterOptions hyperparameters, string suffix, string validationFile, IList<FineTuningIntegration> integrations, int? seed, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        internal FineTuningOptions(CreateFineTuningJobRequestModel model, string trainingFile, HyperparameterOptions hyperparameters, string suffix, string validationFile, IList<FineTuningIntegration> integrations, int? seed, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Model = model;
             TrainingFile = trainingFile;

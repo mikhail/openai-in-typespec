@@ -7,7 +7,6 @@ using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using ;
 using OpenAI;
 
 namespace OpenAI.FineTuning
@@ -31,7 +30,7 @@ namespace OpenAI.FineTuning
             if (_additionalBinaryDataProperties?.ContainsKey("model") != true)
             {
                 writer.WritePropertyName("model"u8);
-                writer.WriteStringValue(Model.ToSerialString());
+                writer.WriteStringValue(Model.ToString());
             }
             if (_additionalBinaryDataProperties?.ContainsKey("training_file") != true)
             {
@@ -136,7 +135,7 @@ namespace OpenAI.FineTuning
             {
                 return null;
             }
-            global::.CreateFineTuningJobRequestModel model = default;
+            CreateFineTuningJobRequestModel model = default;
             string trainingFile = default;
             HyperparameterOptions hyperparameters = default;
             string suffix = default;
@@ -148,7 +147,7 @@ namespace OpenAI.FineTuning
             {
                 if (prop.NameEquals("model"u8))
                 {
-                    model = prop.Value.GetString().ToCreateFineTuningJobRequestModel();
+                    model = new CreateFineTuningJobRequestModel(prop.Value.GetString());
                     continue;
                 }
                 if (prop.NameEquals("training_file"u8))

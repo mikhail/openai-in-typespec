@@ -6,7 +6,7 @@ using System;
 using System.ComponentModel;
 using OpenAI;
 
-namespace OpenAI.Models
+namespace OpenAI.FineTuning
 {
     public readonly partial struct FineTuningJobEventObject : IEquatable<FineTuningJobEventObject>
     {
