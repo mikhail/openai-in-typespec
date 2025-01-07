@@ -1,17 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace OpenAI.FineTuning;
 
 [CodeGenModel("FineTuningJobHyperparameters")]
+[StructLayout(LayoutKind.Auto)]
 public readonly partial struct FineTuningHyperparameters
 {
+
     private static readonly BinaryData Auto = new("\"auto\"");
 
     [CodeGenMember("NEpochs")]
     internal BinaryData _CycleCount { get; }
+
     [CodeGenMember("BatchSize")]
     internal BinaryData _BatchSize { get; }
+
     [CodeGenMember("LearningRateMultiplier")]
     internal BinaryData _LearningRateMultiplier { get; }
 
