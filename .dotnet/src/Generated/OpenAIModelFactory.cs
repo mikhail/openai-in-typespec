@@ -823,11 +823,12 @@ namespace OpenAI
                 additionalBinaryDataProperties: null);
         }
 
-        public static FineTuningOptions FineTuningOptions(CreateFineTuningJobRequestModel model = default, string trainingFile = default, HyperparameterOptions hyperparameters = default, string suffix = default, string validationFile = default, IEnumerable<FineTuningIntegration> integrations = default, int? seed = default)
+        public static FineTuningOptions FineTuningOptions(FineTuningTrainingMethod @method = default, CreateFineTuningJobRequestModel model = default, string trainingFile = default, HyperparameterOptions hyperparameters = default, string suffix = default, string validationFile = default, IEnumerable<FineTuningIntegration> integrations = default, int? seed = default)
         {
             integrations ??= new ChangeTrackingList<FineTuningIntegration>();
 
             return new FineTuningOptions(
+                @method,
                 model,
                 trainingFile,
                 hyperparameters,
@@ -836,12 +837,6 @@ namespace OpenAI
                 integrations?.ToList(),
                 seed,
                 additionalBinaryDataProperties: null);
-        }
-
-        public static HyperparameterOptions HyperparameterOptions(HyperparameterCycleCount cycleCount = default, HyperparameterBatchSize batchSize = default, HyperparameterLearningRate learningRate = default)
-        {
-
-            return new HyperparameterOptions(cycleCount, batchSize, learningRate, additionalBinaryDataProperties: null);
         }
 
         public static FineTuningIntegration FineTuningIntegration(string @type = default)
@@ -856,16 +851,22 @@ namespace OpenAI
             return new WeightsAndBiasesIntegration(@type, serializedAdditionalRawData: null, wandb);
         }
 
+        public static FineTuningTrainingMethod FineTuningTrainingMethod(string @type = default)
+        {
+
+            return new UnknownFineTuningJobRequestMethod(new InternalCreateFineTuningJobRequestMethodType(@type), additionalBinaryDataProperties: null);
+        }
+
         public static FineTuningError FineTuningError(string code = default, string message = default, string invalidParameter = default)
         {
 
             return new FineTuningError(code, message, invalidParameter, additionalBinaryDataProperties: null);
         }
 
-        public static FineTuningHyperparameters FineTuningHyperparameters(BinaryData cycleCount = default, BinaryData batchSize = default, BinaryData learningRateMultiplier = default)
+        public static FineTuningHyperparameters FineTuningHyperparameters(int? beta = default, BinaryData cycleCount = default, BinaryData batchSize = default, BinaryData learningRateMultiplier = default)
         {
 
-            return new FineTuningHyperparameters(cycleCount, batchSize, learningRateMultiplier, additionalBinaryDataProperties: null);
+            return new FineTuningHyperparameters(beta, cycleCount, batchSize, learningRateMultiplier, additionalBinaryDataProperties: null);
         }
 
         public static FineTuningCheckpoint FineTuningCheckpoint(string checkpointId = default, DateTimeOffset createdAt = default, string fineTunedModelCheckpointId = default, int stepNumber = default, FineTuningCheckpointMetrics metrics = default, string jobId = default, string @object = default)

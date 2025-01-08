@@ -11,7 +11,7 @@ using OpenAI;
 
 namespace OpenAI.FineTuning
 {
-    public partial class HyperparameterOptions : IJsonModel<HyperparameterOptions>
+    internal partial class HyperparameterOptions : IJsonModel<HyperparameterOptions>
     {
         void IJsonModel<HyperparameterOptions>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
@@ -27,20 +27,20 @@ namespace OpenAI.FineTuning
             {
                 throw new FormatException($"The model {nameof(HyperparameterOptions)} does not support writing '{format}' format.");
             }
-            if (_additionalBinaryDataProperties?.ContainsKey("n_epochs") != true)
+            if (Optional.IsDefined(CycleCount) && _additionalBinaryDataProperties?.ContainsKey("n_epochs") != true)
             {
                 writer.WritePropertyName("n_epochs"u8);
-                writer.WriteObjectValue<HyperparameterCycleCount>(CycleCount, options);
+                writer.WriteObjectValue<FineTuning.HyperparameterCycleCount>(CycleCount, options);
             }
-            if (_additionalBinaryDataProperties?.ContainsKey("batch_size") != true)
+            if (Optional.IsDefined(BatchSize) && _additionalBinaryDataProperties?.ContainsKey("batch_size") != true)
             {
                 writer.WritePropertyName("batch_size"u8);
-                writer.WriteObjectValue<HyperparameterBatchSize>(BatchSize, options);
+                writer.WriteObjectValue<FineTuning.HyperparameterBatchSize>(BatchSize, options);
             }
-            if (_additionalBinaryDataProperties?.ContainsKey("learning_rate_multiplier") != true)
+            if (Optional.IsDefined(LearningRate) && _additionalBinaryDataProperties?.ContainsKey("learning_rate_multiplier") != true)
             {
                 writer.WritePropertyName("learning_rate_multiplier"u8);
-                writer.WriteObjectValue<HyperparameterLearningRate>(LearningRate, options);
+                writer.WriteObjectValue<FineTuning.HyperparameterLearningRateMultiplier>(LearningRate, options);
             }
             if (true && _additionalBinaryDataProperties != null)
             {
@@ -82,9 +82,9 @@ namespace OpenAI.FineTuning
             {
                 return null;
             }
-            HyperparameterCycleCount cycleCount = default;
-            HyperparameterBatchSize batchSize = default;
-            HyperparameterLearningRate learningRate = default;
+            FineTuning.HyperparameterCycleCount cycleCount = default;
+            FineTuning.HyperparameterBatchSize batchSize = default;
+            FineTuning.HyperparameterLearningRateMultiplier learningRate = default;
             IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
             foreach (var prop in element.EnumerateObject())
             {
@@ -94,7 +94,7 @@ namespace OpenAI.FineTuning
                     {
                         continue;
                     }
-                    cycleCount = HyperparameterCycleCount.DeserializeHyperparameterCycleCount(prop.Value, options);
+                    cycleCount = FineTuning.HyperparameterCycleCount.DeserializeHyperparameterCycleCount(prop.Value, options);
                     continue;
                 }
                 if (prop.NameEquals("batch_size"u8))
@@ -103,7 +103,7 @@ namespace OpenAI.FineTuning
                     {
                         continue;
                     }
-                    batchSize = HyperparameterBatchSize.DeserializeHyperparameterBatchSize(prop.Value, options);
+                    batchSize = FineTuning.HyperparameterBatchSize.DeserializeHyperparameterBatchSize(prop.Value, options);
                     continue;
                 }
                 if (prop.NameEquals("learning_rate_multiplier"u8))
@@ -112,7 +112,7 @@ namespace OpenAI.FineTuning
                     {
                         continue;
                     }
-                    learningRate = HyperparameterLearningRate.DeserializeHyperparameterLearningRate(prop.Value, options);
+                    learningRate = FineTuning.HyperparameterLearningRateMultiplier.DeserializeHyperparameterLearningRateMultiplier(prop.Value, options);
                     continue;
                 }
                 if (true)

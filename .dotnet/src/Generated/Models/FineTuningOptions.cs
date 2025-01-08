@@ -11,8 +11,9 @@ namespace OpenAI.FineTuning
     {
         private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        internal FineTuningOptions(CreateFineTuningJobRequestModel model, string trainingFile, HyperparameterOptions hyperparameters, string suffix, string validationFile, IList<FineTuningIntegration> integrations, int? seed, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        internal FineTuningOptions(FineTuningTrainingMethod @method, CreateFineTuningJobRequestModel model, string trainingFile, HyperparameterOptions hyperparameters, string suffix, string validationFile, IList<FineTuningIntegration> integrations, int? seed, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
+            Method = @method;
             Model = model;
             TrainingFile = trainingFile;
             Hyperparameters = hyperparameters;
@@ -22,6 +23,8 @@ namespace OpenAI.FineTuning
             Seed = seed;
             _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
+
+        public FineTuningTrainingMethod Method { get; set; }
 
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData
         {

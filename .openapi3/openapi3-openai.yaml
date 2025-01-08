@@ -5465,9 +5465,36 @@ components:
 
             See the [fine-tuning guide](/docs/guides/fine-tuning) for more details.
         hyperparameters:
-          allOf:
-            - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparameters'
+          type: object
+          properties:
+            n_epochs:
+              allOf:
+                - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersNEpochsOption'
+              minimum: 1
+              maximum: 50
+              description: |-
+                The number of epochs to train the model for. An epoch refers to one full cycle
+                through the training dataset.
+              default: auto
+            batch_size:
+              allOf:
+                - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersBatchSizeOption'
+              minimum: 1
+              maximum: 256
+              description: |-
+                Number of examples in each batch. A larger batch size means that model parameters
+                are updated less frequently, but with lower variance.
+              default: auto
+            learning_rate_multiplier:
+              allOf:
+                - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersLearningRateMultiplierOption'
+              minimum: 0
+              description: |-
+                Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
+                overfitting.
+              default: auto
           description: The hyperparameters used for the fine-tuning job.
+          deprecated: true
         suffix:
           type: string
           nullable: true
@@ -5507,53 +5534,44 @@ components:
           description: |-
             The seed controls the reproducibility of the job. Passing in the same seed and job parameters should produce the same results, but may differ in rare cases.
             If a seed is not specified, one will be generated for you.
-    CreateFineTuningJobRequestHyperparameters:
-      type: object
-      properties:
-        n_epochs:
-          anyOf:
-            - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersNEpochsChoiceEnum'
-            - type: integer
-              format: int32
-          minimum: 1
-          maximum: 50
-          description: |-
-            The number of epochs to train the model for. An epoch refers to one full cycle
-            through the training dataset.
-          default: auto
-        batch_size:
-          anyOf:
-            - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersBatchSizeChoiceEnum'
-            - type: integer
-              format: int32
-          minimum: 1
-          maximum: 256
-          description: |-
-            Number of examples in each batch. A larger batch size means that model parameters
-            are updated less frequently, but with lower variance.
-          default: auto
-        learning_rate_multiplier:
-          anyOf:
-            - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersLearningRateMultiplierChoiceEnum'
-            - type: number
-              format: float
-          minimum: 0
-          description: |-
-            Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
-            overfitting.
-          default: auto
+        method:
+          $ref: '#/components/schemas/FineTuningJobRequestMethod'
     CreateFineTuningJobRequestHyperparametersBatchSizeChoiceEnum:
       type: string
       enum:
         - auto
+    CreateFineTuningJobRequestHyperparametersBatchSizeOption:
+      anyOf:
+        - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersBatchSizeChoiceEnum'
+        - type: integer
+          format: int32
+    CreateFineTuningJobRequestHyperparametersBetaChoiceEnum:
+      type: string
+      enum:
+        - auto
+    CreateFineTuningJobRequestHyperparametersBetaOption:
+      anyOf:
+        - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersLearningRateMultiplierChoiceEnum'
+        - type: integer
+          format: int32
     CreateFineTuningJobRequestHyperparametersLearningRateMultiplierChoiceEnum:
       type: string
       enum:
         - auto
+    CreateFineTuningJobRequestHyperparametersLearningRateMultiplierOption:
+      anyOf:
+        - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersLearningRateMultiplierChoiceEnum'
+        - type: number
+          format: float
     CreateFineTuningJobRequestHyperparametersNEpochsChoiceEnum:
       type: string
       enum:
         - auto
+    CreateFineTuningJobRequestHyperparametersNEpochsOption:
+      anyOf:
+        - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersNEpochsChoiceEnum'
+        - type: integer
+          format: int32
     CreateFineTuningJobRequestIntegration:
       type: object
       required:
@@ -5569,6 +5587,12 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/CreateFineTuningJobRequestIntegration'
+    CreateFineTuningJobRequestMethodType:
+      type: string
+      enum:
+        - supervised
+        - dpo
+        - reinforcement
     CreateFineTuningJobRequestWandbIntegration:
       type: object
       required:
@@ -7073,6 +7097,7 @@ components:
         - training_file
         - validation_file
         - seed
+        - method
       properties:
         user_provided_suffix:
           type: string
@@ -7170,7 +7195,15 @@ components:
           format: unixtime
           nullable: true
           description: The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The value will be null if the fine-tuning job is not running.
+        method:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/FineTuningJobRequestMethod'
+          nullable: true
       description: The `fine_tuning.job` object represents a fine-tuning job that has been created through the API.
+    FineTuningJobBatchSize:
+      type: integer
+      format: int32
     FineTuningJobCheckpoint:
       type: object
       required:
@@ -7264,55 +7297,198 @@ components:
     FineTuningJobHyperparameters:
       type: object
       required:
+        - beta
         - n_epochs
         - batch_size
         - learning_rate_multiplier
       properties:
+        beta:
+          type: integer
+          format: int32
+          nullable: true
         n_epochs:
-          anyOf:
-            - $ref: '#/components/schemas/FineTuningJobHyperparametersNEpochsChoiceEnum'
-            - type: integer
-              format: int32
+          type: integer
+          format: int32
+          nullable: true
           description: |-
             The number of epochs to train the model for. An epoch refers to one full cycle
             through the training dataset.
-          default: auto
         batch_size:
-          anyOf:
-            - $ref: '#/components/schemas/FineTuningJobHyperparametersBatchSizeChoiceEnum'
-            - type: integer
-              format: int32
+          type: integer
+          format: int32
+          nullable: true
           description: |-
             Number of examples in each batch. A larger batch size means that model parameters
             are updated less frequently, but with lower variance.
-          default: auto
         learning_rate_multiplier:
-          anyOf:
-            - $ref: '#/components/schemas/FineTuningJobHyperparametersLearningRateMultiplierChoiceEnum'
-            - type: number
-              format: float
+          type: number
+          format: float
+          nullable: true
           description: |-
             Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
             overfitting.
-          default: auto
-    FineTuningJobHyperparametersBatchSizeChoiceEnum:
-      type: string
-      enum:
-        - auto
-    FineTuningJobHyperparametersLearningRateMultiplierChoiceEnum:
-      type: string
-      enum:
-        - auto
-    FineTuningJobHyperparametersNEpochsChoiceEnum:
-      type: string
-      enum:
-        - auto
     FineTuningJobIntegrationsItem:
       type: array
       items:
         $ref: '#/components/schemas/FineTuningIntegration'
       maxItems: 5
       x-oaiExpandable: true
+    FineTuningJobRequestMethod:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/CreateFineTuningJobRequestMethodType'
+      discriminator:
+        propertyName: type
+        mapping:
+          supervised: '#/components/schemas/FineTuningJobRequestMethodSupervised'
+          dpo: '#/components/schemas/FineTuningJobRequestMethodDpo'
+          reinforcement: '#/components/schemas/FineTuningJobRequestMethodReinforcement'
+    FineTuningJobRequestMethodDpo:
+      type: object
+      required:
+        - type
+        - dpo
+      properties:
+        type:
+          type: string
+          enum:
+            - dpo
+        dpo:
+          type: object
+          properties:
+            hyperparameters:
+              type: object
+              properties:
+                n_epochs:
+                  allOf:
+                    - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersNEpochsOption'
+                  minimum: 1
+                  maximum: 50
+                  description: |-
+                    The number of epochs to train the model for. An epoch refers to one full cycle
+                    through the training dataset.
+                  default: auto
+                batch_size:
+                  allOf:
+                    - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersBatchSizeOption'
+                  minimum: 1
+                  maximum: 256
+                  description: |-
+                    Number of examples in each batch. A larger batch size means that model parameters
+                    are updated less frequently, but with lower variance.
+                  default: auto
+                learning_rate_multiplier:
+                  allOf:
+                    - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersLearningRateMultiplierOption'
+                  minimum: 0
+                  description: |-
+                    Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
+                    overfitting.
+                  default: auto
+                beta:
+                  allOf:
+                    - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersBetaOption'
+                  description: The beta value for the DPO method. A higher beta value will increase the weight of the penalty between the policy and reference model.
+                  default: auto
+          required:
+            - hyperparameters
+      allOf:
+        - $ref: '#/components/schemas/FineTuningJobRequestMethod'
+    FineTuningJobRequestMethodReinforcement:
+      type: object
+      required:
+        - type
+        - reinforcement
+      properties:
+        type:
+          type: string
+          enum:
+            - reinforcement
+        reinforcement:
+          type: object
+          properties:
+            hyperparameters:
+              type: object
+              properties:
+                n_epochs:
+                  allOf:
+                    - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersNEpochsOption'
+                  minimum: 1
+                  maximum: 50
+                  description: |-
+                    The number of epochs to train the model for. An epoch refers to one full cycle
+                    through the training dataset.
+                  default: auto
+                batch_size:
+                  allOf:
+                    - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersBatchSizeOption'
+                  minimum: 1
+                  maximum: 256
+                  description: |-
+                    Number of examples in each batch. A larger batch size means that model parameters
+                    are updated less frequently, but with lower variance.
+                  default: auto
+                learning_rate_multiplier:
+                  allOf:
+                    - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersLearningRateMultiplierOption'
+                  minimum: 0
+                  description: |-
+                    Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
+                    overfitting.
+                  default: auto
+          required:
+            - hyperparameters
+      allOf:
+        - $ref: '#/components/schemas/FineTuningJobRequestMethod'
+    FineTuningJobRequestMethodSupervised:
+      type: object
+      required:
+        - type
+        - supervised
+      properties:
+        type:
+          type: string
+          enum:
+            - supervised
+        supervised:
+          type: object
+          properties:
+            hyperparameters:
+              type: object
+              properties:
+                n_epochs:
+                  allOf:
+                    - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersNEpochsOption'
+                  minimum: 1
+                  maximum: 50
+                  description: |-
+                    The number of epochs to train the model for. An epoch refers to one full cycle
+                    through the training dataset.
+                  default: auto
+                batch_size:
+                  allOf:
+                    - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersBatchSizeOption'
+                  minimum: 1
+                  maximum: 256
+                  description: |-
+                    Number of examples in each batch. A larger batch size means that model parameters
+                    are updated less frequently, but with lower variance.
+                  default: auto
+                learning_rate_multiplier:
+                  allOf:
+                    - $ref: '#/components/schemas/CreateFineTuningJobRequestHyperparametersLearningRateMultiplierOption'
+                  minimum: 0
+                  description: |-
+                    Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
+                    overfitting.
+                  default: auto
+          required:
+            - hyperparameters
+      allOf:
+        - $ref: '#/components/schemas/FineTuningJobRequestMethod'
     FineTuningJobsPageToken:
       type: object
       properties:

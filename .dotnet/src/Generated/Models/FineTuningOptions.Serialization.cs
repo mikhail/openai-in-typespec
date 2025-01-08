@@ -27,6 +27,11 @@ namespace OpenAI.FineTuning
             {
                 throw new FormatException($"The model {nameof(FineTuningOptions)} does not support writing '{format}' format.");
             }
+            if (Optional.IsDefined(Method) && _additionalBinaryDataProperties?.ContainsKey("method") != true)
+            {
+                writer.WritePropertyName("method"u8);
+                writer.WriteObjectValue(Method, options);
+            }
             if (_additionalBinaryDataProperties?.ContainsKey("model") != true)
             {
                 writer.WritePropertyName("model"u8);
@@ -135,6 +140,7 @@ namespace OpenAI.FineTuning
             {
                 return null;
             }
+            FineTuningTrainingMethod @method = default;
             CreateFineTuningJobRequestModel model = default;
             string trainingFile = default;
             HyperparameterOptions hyperparameters = default;
@@ -145,6 +151,15 @@ namespace OpenAI.FineTuning
             IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
             foreach (var prop in element.EnumerateObject())
             {
+                if (prop.NameEquals("method"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    @method = FineTuningTrainingMethod.DeserializeFineTuningTrainingMethod(prop.Value, options);
+                    continue;
+                }
                 if (prop.NameEquals("model"u8))
                 {
                     model = new CreateFineTuningJobRequestModel(prop.Value.GetString());
@@ -214,6 +229,7 @@ namespace OpenAI.FineTuning
                 }
             }
             return new FineTuningOptions(
+                @method,
                 model,
                 trainingFile,
                 hyperparameters,

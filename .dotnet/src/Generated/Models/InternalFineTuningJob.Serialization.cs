@@ -94,6 +94,18 @@ namespace OpenAI.FineTuning
                 writer.WritePropertyName("seed"u8);
                 writer.WriteNumberValue(Seed);
             }
+            if (_additionalBinaryDataProperties?.ContainsKey("method") != true)
+            {
+                if (Method != null)
+                {
+                    writer.WritePropertyName("method"u8);
+                    writer.WriteObjectValue(Method, options);
+                }
+                else
+                {
+                    writer.WriteNull("method"u8);
+                }
+            }
             if (_additionalBinaryDataProperties?.ContainsKey("id") != true)
             {
                 writer.WritePropertyName("id"u8);
@@ -239,6 +251,7 @@ namespace OpenAI.FineTuning
             DateTimeOffset? finishedAt = default;
             string organizationId = default;
             int seed = default;
+            FineTuningTrainingMethod @method = default;
             string jobId = default;
             string baseModel = default;
             DateTimeOffset? estimatedFinishAt = default;
@@ -306,6 +319,16 @@ namespace OpenAI.FineTuning
                 if (prop.NameEquals("seed"u8))
                 {
                     seed = prop.Value.GetInt32();
+                    continue;
+                }
+                if (prop.NameEquals("method"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        @method = null;
+                        continue;
+                    }
+                    @method = FineTuningTrainingMethod.DeserializeFineTuningTrainingMethod(prop.Value, options);
                     continue;
                 }
                 if (prop.NameEquals("id"u8))
@@ -416,6 +439,7 @@ namespace OpenAI.FineTuning
                 finishedAt,
                 organizationId,
                 seed,
+                @method,
                 jobId,
                 baseModel,
                 estimatedFinishAt,

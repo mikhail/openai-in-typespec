@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace OpenAI.FineTuning;
 
 [CodeGenModel("CreateFineTuningJobRequestHyperparameters")]
-public partial class HyperparameterOptions
+internal partial class HyperparameterOptions
 {
     [CodeGenMember("NEpochs")]
     public HyperparameterCycleCount CycleCount { get; set; }
@@ -13,5 +13,5 @@ public partial class HyperparameterOptions
     public HyperparameterBatchSize BatchSize { get; set; }
 
     [CodeGenMember("LearningRateMultiplier")]
-    public HyperparameterLearningRate LearningRate { get; set; }
+    public HyperparameterLearningRateMultiplier LearningRate { get; set; }
 }

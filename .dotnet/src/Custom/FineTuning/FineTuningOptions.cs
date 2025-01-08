@@ -15,9 +15,10 @@ public partial class FineTuningOptions
     [CodeGenMember("TrainingFile")]
     internal string TrainingFile { get; set; }
 
+    // CUSTOM: Hide deprecated Hyperparameters in favor of method
     /// <inheritdoc cref="HyperparameterOptions"/>
     [CodeGenMember("Hyperparameters")]
-    public HyperparameterOptions Hyperparameters { get; set; }
+    internal HyperparameterOptions Hyperparameters { get; set; }
 
     /// <summary>
     /// Suffix to append to the model name and job name

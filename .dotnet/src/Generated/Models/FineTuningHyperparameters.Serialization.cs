@@ -31,41 +31,74 @@ namespace OpenAI.FineTuning
             {
                 throw new FormatException($"The model {nameof(FineTuningHyperparameters)} does not support writing '{format}' format.");
             }
+            if (_additionalBinaryDataProperties?.ContainsKey("beta") != true)
+            {
+                if (Beta != null)
+                {
+                    writer.WritePropertyName("beta"u8);
+                    writer.WriteNumberValue(Beta.Value);
+                }
+                else
+                {
+                    writer.WriteNull("beta"u8);
+                }
+            }
             if (_additionalBinaryDataProperties?.ContainsKey("n_epochs") != true)
             {
-                writer.WritePropertyName("n_epochs"u8);
-#if NET6_0_OR_GREATER
-                writer.WriteRawValue(_CycleCount);
-#else
-                using (JsonDocument document = JsonDocument.Parse(_CycleCount))
+                if (_CycleCount != null)
                 {
-                    JsonSerializer.Serialize(writer, document.RootElement);
-                }
+                    writer.WritePropertyName("n_epochs"u8);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(_CycleCount);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(_CycleCount))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
 #endif
+                }
+                else
+                {
+                    writer.WriteNull("nEpochs"u8);
+                }
             }
             if (_additionalBinaryDataProperties?.ContainsKey("batch_size") != true)
             {
-                writer.WritePropertyName("batch_size"u8);
-#if NET6_0_OR_GREATER
-                writer.WriteRawValue(_BatchSize);
-#else
-                using (JsonDocument document = JsonDocument.Parse(_BatchSize))
+                if (_BatchSize != null)
                 {
-                    JsonSerializer.Serialize(writer, document.RootElement);
-                }
+                    writer.WritePropertyName("batch_size"u8);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(_BatchSize);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(_BatchSize))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
 #endif
+                }
+                else
+                {
+                    writer.WriteNull("batchSize"u8);
+                }
             }
             if (_additionalBinaryDataProperties?.ContainsKey("learning_rate_multiplier") != true)
             {
-                writer.WritePropertyName("learning_rate_multiplier"u8);
-#if NET6_0_OR_GREATER
-                writer.WriteRawValue(_LearningRateMultiplier);
-#else
-                using (JsonDocument document = JsonDocument.Parse(_LearningRateMultiplier))
+                if (_LearningRateMultiplier != null)
                 {
-                    JsonSerializer.Serialize(writer, document.RootElement);
-                }
+                    writer.WritePropertyName("learning_rate_multiplier"u8);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(_LearningRateMultiplier);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(_LearningRateMultiplier))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
 #endif
+                }
+                else
+                {
+                    writer.WriteNull("learningRateMultiplier"u8);
+                }
             }
             if (true && _additionalBinaryDataProperties != null)
             {
@@ -107,24 +140,50 @@ namespace OpenAI.FineTuning
             {
                 return default;
             }
+            int? beta = default;
             BinaryData cycleCount = default;
             BinaryData batchSize = default;
             BinaryData learningRateMultiplier = default;
             IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
             foreach (var prop in element.EnumerateObject())
             {
+                if (prop.NameEquals("beta"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        beta = null;
+                        continue;
+                    }
+                    beta = prop.Value.GetInt32();
+                    continue;
+                }
                 if (prop.NameEquals("n_epochs"u8))
                 {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        cycleCount = null;
+                        continue;
+                    }
                     cycleCount = BinaryData.FromString(prop.Value.GetRawText());
                     continue;
                 }
                 if (prop.NameEquals("batch_size"u8))
                 {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        batchSize = null;
+                        continue;
+                    }
                     batchSize = BinaryData.FromString(prop.Value.GetRawText());
                     continue;
                 }
                 if (prop.NameEquals("learning_rate_multiplier"u8))
                 {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        learningRateMultiplier = null;
+                        continue;
+                    }
                     learningRateMultiplier = BinaryData.FromString(prop.Value.GetRawText());
                     continue;
                 }
@@ -133,7 +192,7 @@ namespace OpenAI.FineTuning
                     additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new FineTuningHyperparameters(cycleCount, batchSize, learningRateMultiplier, additionalBinaryDataProperties);
+            return new FineTuningHyperparameters(beta, cycleCount, batchSize, learningRateMultiplier, additionalBinaryDataProperties);
         }
 
         BinaryData IPersistableModel<FineTuningHyperparameters>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
