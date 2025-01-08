@@ -1,33 +1,6 @@
-using System;
 using System.ClientModel.Primitives;
-using System.ComponentModel;
-using System.Text.Json;
 
 namespace OpenAI.FineTuning;
-
-[CodeGenModel("FineTuneMethodType")]
-internal readonly partial struct InternalFineTuneMethodType { }
-
-[CodeGenModel("FineTuneSupervisedMethod")]
-internal partial class InternalFineTuningJobRequestMethodSupervised { }
-
-[CodeGenModel("FineTuningJobRequestMethodSupervisedSupervised")]
-internal partial class InternalFineTuningJobRequestMethodSupervisedSupervised { }
-
-[CodeGenModel("FineTuneSupervisedMethodHyperparameters")]
-internal partial class InternalFineTuneSupervisedMethodHyperparameters { }
-
-[CodeGenModel("FineTuneDPOMethod")]
-internal partial class InternalFineTuningJobRequestMethodDpo { }
-
-[CodeGenModel("FineTuningJobRequestMethodDpoDpo")]
-internal partial class InternalFineTuningJobRequestMethodDpoDpo { }
-
-[CodeGenModel("FineTuneDPOMethodHyperparameters")]
-internal partial class InternalFineTuningJobRequestMethodDpoDpoHyperparameters { }
-
-[CodeGenModel("UnknownFineTuningJobRequestMethod")]
-internal partial class UnknownFineTuningJobRequestMethod { }
 
 [CodeGenModel("FineTuneMethod")]
 public partial class FineTuningTrainingMethod
