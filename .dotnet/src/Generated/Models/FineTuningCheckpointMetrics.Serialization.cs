@@ -13,10 +13,6 @@ namespace OpenAI.FineTuning
 {
     public partial class FineTuningCheckpointMetrics : IJsonModel<FineTuningCheckpointMetrics>
     {
-        internal FineTuningCheckpointMetrics()
-        {
-        }
-
         void IJsonModel<FineTuningCheckpointMetrics>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
@@ -31,15 +27,15 @@ namespace OpenAI.FineTuning
             {
                 throw new FormatException($"The model {nameof(FineTuningCheckpointMetrics)} does not support writing '{format}' format.");
             }
-            if (_additionalBinaryDataProperties?.ContainsKey("train_loss") != true)
+            if (Optional.IsDefined(TrainLoss) && _additionalBinaryDataProperties?.ContainsKey("train_loss") != true)
             {
                 writer.WritePropertyName("train_loss"u8);
-                writer.WriteNumberValue(TrainLoss);
+                writer.WriteNumberValue(TrainLoss.Value);
             }
-            if (_additionalBinaryDataProperties?.ContainsKey("train_mean_token_accuracy") != true)
+            if (Optional.IsDefined(TrainMeanTokenAccuracy) && _additionalBinaryDataProperties?.ContainsKey("train_mean_token_accuracy") != true)
             {
                 writer.WritePropertyName("train_mean_token_accuracy"u8);
-                writer.WriteNumberValue(TrainMeanTokenAccuracy);
+                writer.WriteNumberValue(TrainMeanTokenAccuracy.Value);
             }
             if (Optional.IsDefined(ValidLoss) && _additionalBinaryDataProperties?.ContainsKey("valid_loss") != true)
             {
@@ -106,8 +102,8 @@ namespace OpenAI.FineTuning
             {
                 return null;
             }
-            float trainLoss = default;
-            float trainMeanTokenAccuracy = default;
+            float? trainLoss = default;
+            float? trainMeanTokenAccuracy = default;
             float? validLoss = default;
             float? validMeanTokenAccuracy = default;
             float? fullValidLoss = default;
@@ -118,11 +114,19 @@ namespace OpenAI.FineTuning
             {
                 if (prop.NameEquals("train_loss"u8))
                 {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
                     trainLoss = prop.Value.GetSingle();
                     continue;
                 }
                 if (prop.NameEquals("train_mean_token_accuracy"u8))
                 {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
                     trainMeanTokenAccuracy = prop.Value.GetSingle();
                     continue;
                 }
@@ -164,6 +168,10 @@ namespace OpenAI.FineTuning
                 }
                 if (prop.NameEquals("step"u8))
                 {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
                     stepNumber = prop.Value.GetInt32();
                     continue;
                 }

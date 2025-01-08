@@ -11,24 +11,20 @@ namespace OpenAI.FineTuning
     {
         private readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        internal FineTuningHyperparameters(int? beta, BinaryData cycleCount, BinaryData batchSize, BinaryData learningRateMultiplier)
+        internal FineTuningHyperparameters(BinaryData cycleCount, BinaryData batchSize, BinaryData learningRateMultiplier)
         {
-            Beta = beta;
             _CycleCount = cycleCount;
             _BatchSize = batchSize;
             _LearningRateMultiplier = learningRateMultiplier;
         }
 
-        internal FineTuningHyperparameters(int? beta, BinaryData cycleCount, BinaryData batchSize, BinaryData learningRateMultiplier, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        internal FineTuningHyperparameters(BinaryData cycleCount, BinaryData batchSize, BinaryData learningRateMultiplier, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            Beta = beta;
             _CycleCount = cycleCount;
             _BatchSize = batchSize;
             _LearningRateMultiplier = learningRateMultiplier;
             _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
-
-        public int? Beta { get; }
 
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData => _additionalBinaryDataProperties;
     }

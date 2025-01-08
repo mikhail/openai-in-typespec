@@ -11,14 +11,11 @@ namespace OpenAI.FineTuning
     {
         private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        internal FineTuningCheckpointMetrics(float trainLoss, float trainMeanTokenAccuracy, int stepNumber)
+        internal FineTuningCheckpointMetrics()
         {
-            TrainLoss = trainLoss;
-            TrainMeanTokenAccuracy = trainMeanTokenAccuracy;
-            StepNumber = stepNumber;
         }
 
-        internal FineTuningCheckpointMetrics(float trainLoss, float trainMeanTokenAccuracy, float? validLoss, float? validMeanTokenAccuracy, float? fullValidLoss, float? fullValidMeanTokenAccuracy, int stepNumber, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        internal FineTuningCheckpointMetrics(float? trainLoss, float? trainMeanTokenAccuracy, float? validLoss, float? validMeanTokenAccuracy, float? fullValidLoss, float? fullValidMeanTokenAccuracy, int stepNumber, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             TrainLoss = trainLoss;
             TrainMeanTokenAccuracy = trainMeanTokenAccuracy;
@@ -30,9 +27,9 @@ namespace OpenAI.FineTuning
             _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        public float TrainLoss { get; }
+        public float? TrainLoss { get; }
 
-        public float TrainMeanTokenAccuracy { get; }
+        public float? TrainMeanTokenAccuracy { get; }
 
         public float? ValidLoss { get; }
 

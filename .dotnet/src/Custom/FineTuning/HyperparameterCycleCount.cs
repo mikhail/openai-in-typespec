@@ -9,7 +9,7 @@ namespace OpenAI.FineTuning;
 internal readonly partial struct InternalCreateFineTuningJobRequestHyperparametersNEpochsChoiceEnum { }
 
 [CodeGenModel("CreateFineTuningJobRequestHyperparametersNEpochsOption")]
-public partial class HyperparameterCycleCount : IEquatable<int>, IEquatable<string>, IJsonModel<HyperparameterCycleCount> {
+public partial class HyperparameterCycleCount : IEquatable<int>, IEquatable<string>, IJsonModel<HyperparameterCycleCount>
 {
     private readonly string _stringValue;
     private readonly int? _intValue;
@@ -19,7 +19,7 @@ public partial class HyperparameterCycleCount : IEquatable<int>, IEquatable<stri
         _stringValue = predefinedLabel;
     }
 
-    internal HyperparameterCycleCount(int epochCount)
+    public HyperparameterCycleCount(int epochCount)
     {
         _intValue = epochCount;
     }
@@ -51,11 +51,14 @@ public partial class HyperparameterCycleCount : IEquatable<int>, IEquatable<stri
 
     void IJsonModel<HyperparameterCycleCount>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
     {
-        throw new NotImplementedException();
+        SerializeHyperparameterCycleCount(this, writer, options);
     }
 
     HyperparameterCycleCount IJsonModel<HyperparameterCycleCount>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
-        => CustomSerializationHelpers.SerializeInstance(this, SerializeHyperparameterCycleCount, writer, options);
+    {
+        using JsonDocument document = JsonDocument.ParseValue(ref reader);
+        return DeserializeHyperparameterCycleCount(document.RootElement, options);
+    }
 
     internal static void SerializeHyperparameterCycleCount(HyperparameterCycleCount instance, Utf8JsonWriter writer, ModelReaderWriterOptions options)
     {

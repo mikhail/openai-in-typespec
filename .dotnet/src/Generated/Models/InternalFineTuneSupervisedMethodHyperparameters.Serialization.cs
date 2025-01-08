@@ -11,9 +11,9 @@ using OpenAI;
 
 namespace OpenAI.FineTuning
 {
-    internal partial class InternalFineTuningJobRequestMethodDpoDpoHyperparameters : IJsonModel<InternalFineTuningJobRequestMethodDpoDpoHyperparameters>
+    internal partial class InternalFineTuneSupervisedMethodHyperparameters : IJsonModel<InternalFineTuneSupervisedMethodHyperparameters>
     {
-        void IJsonModel<InternalFineTuningJobRequestMethodDpoDpoHyperparameters>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        void IJsonModel<InternalFineTuneSupervisedMethodHyperparameters>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
             JsonModelWriteCore(writer, options);
@@ -22,22 +22,10 @@ namespace OpenAI.FineTuning
 
         protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            string format = options.Format == "W" ? ((IPersistableModel<InternalFineTuningJobRequestMethodDpoDpoHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
+            string format = options.Format == "W" ? ((IPersistableModel<InternalFineTuneSupervisedMethodHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
-                throw new FormatException($"The model {nameof(InternalFineTuningJobRequestMethodDpoDpoHyperparameters)} does not support writing '{format}' format.");
-            }
-            if (Optional.IsDefined(Beta) && _additionalBinaryDataProperties?.ContainsKey("beta") != true)
-            {
-                writer.WritePropertyName("beta"u8);
-#if NET6_0_OR_GREATER
-                writer.WriteRawValue(Beta);
-#else
-                using (JsonDocument document = JsonDocument.Parse(Beta))
-                {
-                    JsonSerializer.Serialize(writer, document.RootElement);
-                }
-#endif
+                throw new FormatException($"The model {nameof(InternalFineTuneSupervisedMethodHyperparameters)} does not support writing '{format}' format.");
             }
             if (Optional.IsDefined(BatchSize) && _additionalBinaryDataProperties?.ContainsKey("batch_size") != true)
             {
@@ -96,41 +84,31 @@ namespace OpenAI.FineTuning
             }
         }
 
-        InternalFineTuningJobRequestMethodDpoDpoHyperparameters IJsonModel<InternalFineTuningJobRequestMethodDpoDpoHyperparameters>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+        InternalFineTuneSupervisedMethodHyperparameters IJsonModel<InternalFineTuneSupervisedMethodHyperparameters>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
 
-        protected virtual InternalFineTuningJobRequestMethodDpoDpoHyperparameters JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        protected virtual InternalFineTuneSupervisedMethodHyperparameters JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            string format = options.Format == "W" ? ((IPersistableModel<InternalFineTuningJobRequestMethodDpoDpoHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
+            string format = options.Format == "W" ? ((IPersistableModel<InternalFineTuneSupervisedMethodHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
-                throw new FormatException($"The model {nameof(InternalFineTuningJobRequestMethodDpoDpoHyperparameters)} does not support reading '{format}' format.");
+                throw new FormatException($"The model {nameof(InternalFineTuneSupervisedMethodHyperparameters)} does not support reading '{format}' format.");
             }
             using JsonDocument document = JsonDocument.ParseValue(ref reader);
-            return DeserializeInternalFineTuningJobRequestMethodDpoDpoHyperparameters(document.RootElement, options);
+            return DeserializeInternalFineTuneSupervisedMethodHyperparameters(document.RootElement, options);
         }
 
-        internal static InternalFineTuningJobRequestMethodDpoDpoHyperparameters DeserializeInternalFineTuningJobRequestMethodDpoDpoHyperparameters(JsonElement element, ModelReaderWriterOptions options)
+        internal static InternalFineTuneSupervisedMethodHyperparameters DeserializeInternalFineTuneSupervisedMethodHyperparameters(JsonElement element, ModelReaderWriterOptions options)
         {
             if (element.ValueKind == JsonValueKind.Null)
             {
                 return null;
             }
-            BinaryData beta = default;
             BinaryData batchSize = default;
             BinaryData learningRateMultiplier = default;
             BinaryData nEpochs = default;
             IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
             foreach (var prop in element.EnumerateObject())
             {
-                if (prop.NameEquals("beta"u8))
-                {
-                    if (prop.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        continue;
-                    }
-                    beta = BinaryData.FromString(prop.Value.GetRawText());
-                    continue;
-                }
                 if (prop.NameEquals("batch_size"u8))
                 {
                     if (prop.Value.ValueKind == JsonValueKind.Null)
@@ -163,56 +141,56 @@ namespace OpenAI.FineTuning
                     additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new InternalFineTuningJobRequestMethodDpoDpoHyperparameters(beta, batchSize, learningRateMultiplier, nEpochs, additionalBinaryDataProperties);
+            return new InternalFineTuneSupervisedMethodHyperparameters(batchSize, learningRateMultiplier, nEpochs, additionalBinaryDataProperties);
         }
 
-        BinaryData IPersistableModel<InternalFineTuningJobRequestMethodDpoDpoHyperparameters>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+        BinaryData IPersistableModel<InternalFineTuneSupervisedMethodHyperparameters>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
 
         protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
         {
-            string format = options.Format == "W" ? ((IPersistableModel<InternalFineTuningJobRequestMethodDpoDpoHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
+            string format = options.Format == "W" ? ((IPersistableModel<InternalFineTuneSupervisedMethodHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
             switch (format)
             {
                 case "J":
                     return ModelReaderWriter.Write(this, options);
                 default:
-                    throw new FormatException($"The model {nameof(InternalFineTuningJobRequestMethodDpoDpoHyperparameters)} does not support writing '{options.Format}' format.");
+                    throw new FormatException($"The model {nameof(InternalFineTuneSupervisedMethodHyperparameters)} does not support writing '{options.Format}' format.");
             }
         }
 
-        InternalFineTuningJobRequestMethodDpoDpoHyperparameters IPersistableModel<InternalFineTuningJobRequestMethodDpoDpoHyperparameters>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+        InternalFineTuneSupervisedMethodHyperparameters IPersistableModel<InternalFineTuneSupervisedMethodHyperparameters>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
 
-        protected virtual InternalFineTuningJobRequestMethodDpoDpoHyperparameters PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        protected virtual InternalFineTuneSupervisedMethodHyperparameters PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            string format = options.Format == "W" ? ((IPersistableModel<InternalFineTuningJobRequestMethodDpoDpoHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
+            string format = options.Format == "W" ? ((IPersistableModel<InternalFineTuneSupervisedMethodHyperparameters>)this).GetFormatFromOptions(options) : options.Format;
             switch (format)
             {
                 case "J":
                     using (JsonDocument document = JsonDocument.Parse(data))
                     {
-                        return DeserializeInternalFineTuningJobRequestMethodDpoDpoHyperparameters(document.RootElement, options);
+                        return DeserializeInternalFineTuneSupervisedMethodHyperparameters(document.RootElement, options);
                     }
                 default:
-                    throw new FormatException($"The model {nameof(InternalFineTuningJobRequestMethodDpoDpoHyperparameters)} does not support reading '{options.Format}' format.");
+                    throw new FormatException($"The model {nameof(InternalFineTuneSupervisedMethodHyperparameters)} does not support reading '{options.Format}' format.");
             }
         }
 
-        string IPersistableModel<InternalFineTuningJobRequestMethodDpoDpoHyperparameters>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+        string IPersistableModel<InternalFineTuneSupervisedMethodHyperparameters>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
 
-        public static implicit operator BinaryContent(InternalFineTuningJobRequestMethodDpoDpoHyperparameters internalFineTuningJobRequestMethodDpoDpoHyperparameters)
+        public static implicit operator BinaryContent(InternalFineTuneSupervisedMethodHyperparameters internalFineTuneSupervisedMethodHyperparameters)
         {
-            if (internalFineTuningJobRequestMethodDpoDpoHyperparameters == null)
+            if (internalFineTuneSupervisedMethodHyperparameters == null)
             {
                 return null;
             }
-            return BinaryContent.Create(internalFineTuningJobRequestMethodDpoDpoHyperparameters, ModelSerializationExtensions.WireOptions);
+            return BinaryContent.Create(internalFineTuneSupervisedMethodHyperparameters, ModelSerializationExtensions.WireOptions);
         }
 
-        public static explicit operator InternalFineTuningJobRequestMethodDpoDpoHyperparameters(ClientResult result)
+        public static explicit operator InternalFineTuneSupervisedMethodHyperparameters(ClientResult result)
         {
             using PipelineResponse response = result.GetRawResponse();
             using JsonDocument document = JsonDocument.Parse(response.Content);
-            return DeserializeInternalFineTuningJobRequestMethodDpoDpoHyperparameters(document.RootElement, ModelSerializationExtensions.WireOptions);
+            return DeserializeInternalFineTuneSupervisedMethodHyperparameters(document.RootElement, ModelSerializationExtensions.WireOptions);
         }
     }
 }

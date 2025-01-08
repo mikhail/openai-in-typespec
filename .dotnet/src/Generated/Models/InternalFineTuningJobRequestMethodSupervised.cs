@@ -4,24 +4,29 @@
 
 using System;
 using System.Collections.Generic;
-using OpenAI;
 
 namespace OpenAI.FineTuning
 {
-    internal partial class InternalFineTuningJobRequestMethodSupervised : FineTuningTrainingMethod
+    internal partial class InternalFineTuningJobRequestMethodSupervised
     {
-        public InternalFineTuningJobRequestMethodSupervised(InternalFineTuningJobRequestMethodSupervisedSupervised supervised) : base(InternalCreateFineTuningJobRequestMethodType.Supervised)
-        {
-            Argument.AssertNotNull(supervised, nameof(supervised));
+        private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-            Supervised = supervised;
+        public InternalFineTuningJobRequestMethodSupervised()
+        {
         }
 
-        internal InternalFineTuningJobRequestMethodSupervised(InternalCreateFineTuningJobRequestMethodType @type, IDictionary<string, BinaryData> additionalBinaryDataProperties, InternalFineTuningJobRequestMethodSupervisedSupervised supervised) : base(@type, additionalBinaryDataProperties)
+        internal InternalFineTuningJobRequestMethodSupervised(InternalFineTuneSupervisedMethodHyperparameters hyperparameters, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            Supervised = supervised;
+            Hyperparameters = hyperparameters;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        public InternalFineTuningJobRequestMethodSupervisedSupervised Supervised { get; set; }
+        public InternalFineTuneSupervisedMethodHyperparameters Hyperparameters { get; set; }
+
+        internal IDictionary<string, BinaryData> SerializedAdditionalRawData
+        {
+            get => _additionalBinaryDataProperties;
+            set => _additionalBinaryDataProperties = value;
+        }
     }
 }

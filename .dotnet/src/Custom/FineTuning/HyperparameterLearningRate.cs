@@ -9,28 +9,28 @@ namespace OpenAI.FineTuning;
 internal readonly partial struct InternalCreateFineTuningJobRequestHyperparametersLearningRateMultiplierChoiceEnum { }
 
 [CodeGenModel("CreateFineTuningJobRequestHyperparametersLearningRateMultiplierOption")]
-public partial class HyperparameterLearningRateMultiplier : IEquatable<double>, IEquatable<string>, IJsonModel<HyperparameterLearningRateMultiplier> {
+public partial class HyperparameterLearningRate : IEquatable<double>, IEquatable<string>, IJsonModel<HyperparameterLearningRate>
 {
     private readonly string _stringValue;
     private readonly double? _doubleValue;
 
-    internal HyperparameterLearningRateMultiplier(string predefinedLabel)
+    internal HyperparameterLearningRate(string predefinedLabel)
     {
         _stringValue = predefinedLabel;
     }
 
-    internal HyperparameterLearningRateMultiplier(double learningRateMultiplier)
+    public HyperparameterLearningRate(double learningRateMultiplier)
     {
-        _doubleValue = epochCount;
+        _doubleValue = learningRateMultiplier;
     }
 
-    public static HyperparameterLearningRateMultiplier CreateAuto() => new(InternalCreateFineTuningJobRequestHyperparametersLearningRateMultiplierChoiceEnum.Auto.ToString());
-    public static HyperparameterLearningRateMultiplier CreateMultiplier(double learningRateMultiplier) => new(learningRateMultiplier);
+    public static HyperparameterLearningRate CreateAuto() => new(InternalCreateFineTuningJobRequestHyperparametersLearningRateMultiplierChoiceEnum.Auto.ToString());
+    public static HyperparameterLearningRate CreateMultiplier(double learningRateMultiplier) => new(learningRateMultiplier);
 
-    public static implicit operator HyperparameterLearningRateMultiplier(double learningRateMultiplier) => new(learningRateMultiplier);
+    public static implicit operator HyperparameterLearningRate(double learningRateMultiplier) => new(learningRateMultiplier);
     
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static bool operator ==(HyperparameterLearningRateMultiplier first, HyperparameterLearningRateMultiplier second)
+    public static bool operator ==(HyperparameterLearningRate first, HyperparameterLearningRate second)
     {
         if (first is null && second is null) return true;
         if (first is null || second is null) return false;
@@ -39,25 +39,28 @@ public partial class HyperparameterLearningRateMultiplier : IEquatable<double>, 
         return first._stringValue == second._stringValue;
     }
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static bool operator !=(HyperparameterLearningRateMultiplier first, HyperparameterLearningRateMultiplier second) => !(first == second);
+    public static bool operator !=(HyperparameterLearningRate first, HyperparameterLearningRate second) => !(first == second);
     [EditorBrowsable(EditorBrowsableState.Never)]
     public bool Equals(double other) => _doubleValue == other;
     [EditorBrowsable(EditorBrowsableState.Never)]
     public bool Equals(string other) => _doubleValue is null && _stringValue == other;
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public override bool Equals(object other) => other is HyperparameterLearningRateMultiplier cc && cc == this;
+    public override bool Equals(object other) => other is HyperparameterLearningRate cc && cc == this;
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public override double GetHashCode() => _doubleValue?.GetHashCode() ?? _stringValue.GetHashCode();
+    public override int GetHashCode() => _doubleValue?.GetHashCode() ?? _stringValue.GetHashCode();
 
-    void IJsonModel<HyperparameterLearningRateMultiplier>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+    void IJsonModel<HyperparameterLearningRate>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
     {
-        throw new NotImplementedException();
+        SerializeHyperparameterLearningRate(this, writer, options);
     }
 
-    HyperparameterLearningRateMultiplier IJsonModel<HyperparameterLearningRateMultiplier>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
-        => CustomSerializationHelpers.SerializeInstance(this, SerializeHyperparameterLearningRateMultiplier, writer, options);
+    HyperparameterLearningRate IJsonModel<HyperparameterLearningRate>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+    {
+        using JsonDocument document = JsonDocument.ParseValue(ref reader);
+        return DeserializeHyperparameterLearningRate(document.RootElement, options);
+    }
 
-    internal static void SerializeHyperparameterLearningRateMultiplier(HyperparameterLearningRateMultiplier instance, Utf8JsonWriter writer, ModelReaderWriterOptions options)
+    internal static void SerializeHyperparameterLearningRate(HyperparameterLearningRate instance, Utf8JsonWriter writer, ModelReaderWriterOptions options)
     {
         if (instance._doubleValue is not null)
         {
@@ -69,23 +72,23 @@ public partial class HyperparameterLearningRateMultiplier : IEquatable<double>, 
         }
     }
 
-    BinaryData IPersistableModel<HyperparameterLearningRateMultiplier>.Write(ModelReaderWriterOptions options)
+    BinaryData IPersistableModel<HyperparameterLearningRate>.Write(ModelReaderWriterOptions options)
         => CustomSerializationHelpers.SerializeInstance(this, options);
 
-    HyperparameterLearningRateMultiplier IPersistableModel<HyperparameterLearningRateMultiplier>.Create(BinaryData data, ModelReaderWriterOptions options)
-        => CustomSerializationHelpers.DeserializeNewInstance(this, DeserializeHyperparameterLearningRateMultiplier, data, options);
+    HyperparameterLearningRate IPersistableModel<HyperparameterLearningRate>.Create(BinaryData data, ModelReaderWriterOptions options)
+        => CustomSerializationHelpers.DeserializeNewInstance(this, DeserializeHyperparameterLearningRate, data, options);
 
-    internal static HyperparameterLearningRateMultiplier DeserializeHyperparameterLearningRateMultiplier(JsonElement element, ModelReaderWriterOptions options = null)
+    internal static HyperparameterLearningRate DeserializeHyperparameterLearningRate(JsonElement element, ModelReaderWriterOptions options = null)
     {
         options ??= ModelSerializationExtensions.WireOptions;
 
         return element.ValueKind switch
         {
-            JsonValueKind.Number => new(element.Getdouble32()),
+            JsonValueKind.Number => new(element.GetDouble()),
             JsonValueKind.String => new(element.GetString()),
-            _ => throw new ArgumentException($"Unsupported JsonValueKind", nameof(HyperparameterLearningRateMultiplier))
+            _ => throw new ArgumentException($"Unsupported JsonValueKind", nameof(HyperparameterLearningRate))
         };
     }
 
-    string IPersistableModel<HyperparameterLearningRateMultiplier>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+    string IPersistableModel<HyperparameterLearningRate>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
 }

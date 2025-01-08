@@ -46,6 +46,9 @@ public partial class FineTuningOptions
     [CodeGenMember("Seed")]
     public int? Seed { get; set; }
 
+    [CodeGenMember("Method")]
+    public FineTuningTrainingMethod TrainingMethod { get; set; }
+
     public FineTuningOptions()
     {
         Integrations = new ChangeTrackingList<FineTuningIntegration>();

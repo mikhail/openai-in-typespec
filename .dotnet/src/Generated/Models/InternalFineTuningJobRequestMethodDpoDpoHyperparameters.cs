@@ -15,22 +15,22 @@ namespace OpenAI.FineTuning
         {
         }
 
-        internal InternalFineTuningJobRequestMethodDpoDpoHyperparameters(BinaryData nEpochs, BinaryData batchSize, BinaryData learningRateMultiplier, BinaryData beta, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        internal InternalFineTuningJobRequestMethodDpoDpoHyperparameters(BinaryData beta, BinaryData batchSize, BinaryData learningRateMultiplier, BinaryData nEpochs, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            NEpochs = nEpochs;
+            Beta = beta;
             BatchSize = batchSize;
             LearningRateMultiplier = learningRateMultiplier;
-            Beta = beta;
+            NEpochs = nEpochs;
             _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        public BinaryData NEpochs { get; set; }
+        public BinaryData Beta { get; set; }
 
         public BinaryData BatchSize { get; set; }
 
         public BinaryData LearningRateMultiplier { get; set; }
 
-        public BinaryData Beta { get; set; }
+        public BinaryData NEpochs { get; set; }
 
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData
         {

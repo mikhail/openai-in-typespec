@@ -4,24 +4,29 @@
 
 using System;
 using System.Collections.Generic;
-using OpenAI;
 
 namespace OpenAI.FineTuning
 {
-    internal partial class InternalFineTuningJobRequestMethodDpo : FineTuningTrainingMethod
+    internal partial class InternalFineTuningJobRequestMethodDpo
     {
-        public InternalFineTuningJobRequestMethodDpo(InternalFineTuningJobRequestMethodDpoDpo dpo) : base(InternalCreateFineTuningJobRequestMethodType.Dpo)
-        {
-            Argument.AssertNotNull(dpo, nameof(dpo));
+        private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-            Dpo = dpo;
+        public InternalFineTuningJobRequestMethodDpo()
+        {
         }
 
-        internal InternalFineTuningJobRequestMethodDpo(InternalCreateFineTuningJobRequestMethodType @type, IDictionary<string, BinaryData> additionalBinaryDataProperties, InternalFineTuningJobRequestMethodDpoDpo dpo) : base(@type, additionalBinaryDataProperties)
+        internal InternalFineTuningJobRequestMethodDpo(InternalFineTuningJobRequestMethodDpoDpoHyperparameters hyperparameters, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            Dpo = dpo;
+            Hyperparameters = hyperparameters;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        public InternalFineTuningJobRequestMethodDpoDpo Dpo { get; set; }
+        public InternalFineTuningJobRequestMethodDpoDpoHyperparameters Hyperparameters { get; set; }
+
+        internal IDictionary<string, BinaryData> SerializedAdditionalRawData
+        {
+            get => _additionalBinaryDataProperties;
+            set => _additionalBinaryDataProperties = value;
+        }
     }
 }

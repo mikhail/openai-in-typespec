@@ -12,25 +12,25 @@ namespace OpenAI.FineTuning
     {
         private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        internal InternalListFineTuningJobEventsResponse(IEnumerable<FineTuningEvent> data, bool hasMore)
+        internal InternalListFineTuningJobEventsResponse(bool hasMore, IEnumerable<FineTuningEvent> data)
         {
-            Data = data.ToList();
             HasMore = hasMore;
+            Data = data.ToList();
         }
 
-        internal InternalListFineTuningJobEventsResponse(IList<FineTuningEvent> data, InternalListFineTuningJobEventsResponseObject @object, bool hasMore, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        internal InternalListFineTuningJobEventsResponse(bool hasMore, IList<FineTuningEvent> data, InternalListFineTuningJobEventsResponseObject @object, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
+            HasMore = hasMore;
             Data = data;
             Object = @object;
-            HasMore = hasMore;
             _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
+
+        public bool HasMore { get; }
 
         public IList<FineTuningEvent> Data { get; }
 
         public InternalListFineTuningJobEventsResponseObject Object { get; } = "list";
-
-        public bool HasMore { get; }
 
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData
         {

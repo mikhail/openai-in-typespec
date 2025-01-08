@@ -94,17 +94,10 @@ namespace OpenAI.FineTuning
                 writer.WritePropertyName("seed"u8);
                 writer.WriteNumberValue(Seed);
             }
-            if (_additionalBinaryDataProperties?.ContainsKey("method") != true)
+            if (Optional.IsDefined(Method) && _additionalBinaryDataProperties?.ContainsKey("method") != true)
             {
-                if (Method != null)
-                {
-                    writer.WritePropertyName("method"u8);
-                    writer.WriteObjectValue(Method, options);
-                }
-                else
-                {
-                    writer.WriteNull("method"u8);
-                }
+                writer.WritePropertyName("method"u8);
+                writer.WriteObjectValue(Method, options);
             }
             if (_additionalBinaryDataProperties?.ContainsKey("id") != true)
             {
@@ -325,7 +318,6 @@ namespace OpenAI.FineTuning
                 {
                     if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        @method = null;
                         continue;
                     }
                     @method = FineTuningTrainingMethod.DeserializeFineTuningTrainingMethod(prop.Value, options);
@@ -395,10 +387,6 @@ namespace OpenAI.FineTuning
                 }
                 if (prop.NameEquals("hyperparameters"u8))
                 {
-                    if (prop.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        continue;
-                    }
                     hyperparameters = FineTuningHyperparameters.DeserializeFineTuningHyperparameters(prop.Value, options);
                     continue;
                 }

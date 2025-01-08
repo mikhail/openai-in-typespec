@@ -13,5 +13,5 @@ internal partial class HyperparameterOptions
     public HyperparameterBatchSize BatchSize { get; set; }
 
     [CodeGenMember("LearningRateMultiplier")]
-    public HyperparameterLearningRateMultiplier LearningRate { get; set; }
+    public HyperparameterLearningRate LearningRate { get; set; }
 }

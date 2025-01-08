@@ -9,7 +9,7 @@ namespace OpenAI.FineTuning;
 internal readonly partial struct InternalCreateFineTuningJobRequestHyperparametersBatchSizeChoiceEnum { }
 
 [CodeGenModel("CreateFineTuningJobRequestHyperparametersBatchSizeOption")]
-public partial class HyperparameterBatchSize : IEquatable<int>, IEquatable<string>, IJsonModel<HyperparameterBatchSize> {
+public partial class HyperparameterBatchSize : IEquatable<int>, IEquatable<string>, IJsonModel<HyperparameterBatchSize>
 {
     private readonly string _stringValue;
     private readonly int? _intValue;
@@ -19,7 +19,7 @@ public partial class HyperparameterBatchSize : IEquatable<int>, IEquatable<strin
         _stringValue = predefinedLabel;
     }
 
-    internal HyperparameterBatchSize(int batchSize)
+    public HyperparameterBatchSize(int batchSize)
     {
         _intValue = batchSize;
     }
@@ -51,11 +51,14 @@ public partial class HyperparameterBatchSize : IEquatable<int>, IEquatable<strin
 
     void IJsonModel<HyperparameterBatchSize>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
     {
-        throw new NotImplementedException();
+        SerializeHyperparameterBatchSize(this, writer, options);
     }
 
     HyperparameterBatchSize IJsonModel<HyperparameterBatchSize>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
-        => CustomSerializationHelpers.SerializeInstance(this, SerializeHyperparameterBatchSize, writer, options);
+    {
+        using JsonDocument document = JsonDocument.ParseValue(ref reader);
+        return DeserializeHyperparameterBatchSize(document.RootElement, options);
+    }
 
     internal static void SerializeHyperparameterBatchSize(HyperparameterBatchSize instance, Utf8JsonWriter writer, ModelReaderWriterOptions options)
     {

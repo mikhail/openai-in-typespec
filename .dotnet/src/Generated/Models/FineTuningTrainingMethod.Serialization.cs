@@ -5,18 +5,14 @@
 using System;
 using System.ClientModel;
 using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using OpenAI;
 
 namespace OpenAI.FineTuning
 {
-    [PersistableModelProxy(typeof(UnknownFineTuningJobRequestMethod))]
-    public abstract partial class FineTuningTrainingMethod : IJsonModel<FineTuningTrainingMethod>
+    public partial class FineTuningTrainingMethod : IJsonModel<FineTuningTrainingMethod>
     {
-        internal FineTuningTrainingMethod()
-        {
-        }
-
         void IJsonModel<FineTuningTrainingMethod>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
@@ -31,10 +27,20 @@ namespace OpenAI.FineTuning
             {
                 throw new FormatException($"The model {nameof(FineTuningTrainingMethod)} does not support writing '{format}' format.");
             }
-            if (_additionalBinaryDataProperties?.ContainsKey("type") != true)
+            if (Optional.IsDefined(Type) && _additionalBinaryDataProperties?.ContainsKey("type") != true)
             {
                 writer.WritePropertyName("type"u8);
-                writer.WriteStringValue(Type.ToString());
+                writer.WriteStringValue(Type.Value.ToString());
+            }
+            if (Optional.IsDefined(Supervised) && _additionalBinaryDataProperties?.ContainsKey("supervised") != true)
+            {
+                writer.WritePropertyName("supervised"u8);
+                writer.WriteObjectValue<InternalFineTuningJobRequestMethodSupervised>(Supervised, options);
+            }
+            if (Optional.IsDefined(Dpo) && _additionalBinaryDataProperties?.ContainsKey("dpo") != true)
+            {
+                writer.WritePropertyName("dpo"u8);
+                writer.WriteObjectValue<InternalFineTuningJobRequestMethodDpo>(Dpo, options);
             }
             if (true && _additionalBinaryDataProperties != null)
             {
@@ -76,19 +82,45 @@ namespace OpenAI.FineTuning
             {
                 return null;
             }
-            if (element.TryGetProperty("type"u8, out JsonElement discriminator))
+            InternalFineTuneMethodType? @type = default;
+            InternalFineTuningJobRequestMethodSupervised supervised = default;
+            InternalFineTuningJobRequestMethodDpo dpo = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
             {
-                switch (discriminator.GetString())
+                if (prop.NameEquals("type"u8))
                 {
-                    case "supervised":
-                        return InternalFineTuningJobRequestMethodSupervised.DeserializeInternalFineTuningJobRequestMethodSupervised(element, options);
-                    case "dpo":
-                        return InternalFineTuningJobRequestMethodDpo.DeserializeInternalFineTuningJobRequestMethodDpo(element, options);
-                    case "reinforcement":
-                        return InternalFineTuningJobRequestMethodReinforcement.DeserializeInternalFineTuningJobRequestMethodReinforcement(element, options);
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    @type = new InternalFineTuneMethodType(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("supervised"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    supervised = InternalFineTuningJobRequestMethodSupervised.DeserializeInternalFineTuningJobRequestMethodSupervised(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("dpo"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    dpo = InternalFineTuningJobRequestMethodDpo.DeserializeInternalFineTuningJobRequestMethodDpo(prop.Value, options);
+                    continue;
+                }
+                if (true)
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return UnknownFineTuningJobRequestMethod.DeserializeUnknownFineTuningJobRequestMethod(element, options);
+            return new FineTuningTrainingMethod(@type, supervised, dpo, additionalBinaryDataProperties);
         }
 
         BinaryData IPersistableModel<FineTuningTrainingMethod>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);

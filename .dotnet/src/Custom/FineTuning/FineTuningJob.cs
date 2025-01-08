@@ -30,7 +30,7 @@ public partial class FineTuningJob : OperationResult
     public int? BillableTrainedTokens { get; private set; }
     public string? UserProvidedSuffix { get; private set; }
     public int? Seed { get; private set; }
-    public FineTuningTrainingMethod TrainingMethod { get; private set; } = default;
+    public FineTuningTrainingMethod? TrainingMethod { get; private set; } = default;
 
     /// <summary>
     /// Creates a new <see cref="FineTuningJob"/> from a <see cref="PipelineResponse"/>.

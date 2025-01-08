@@ -13,7 +13,7 @@ namespace OpenAI.FineTuning
     {
         private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        internal InternalFineTuningJob(DateTimeOffset createdAt, FineTuningError error, string fineTunedModel, DateTimeOffset? finishedAt, string organizationId, int seed, FineTuningTrainingMethod @method, string jobId, string baseModel, string validationFileId, string trainingFileId, IEnumerable<string> resultFileIds, FineTuningStatus status, int? billableTrainedTokens)
+        internal InternalFineTuningJob(DateTimeOffset createdAt, FineTuningError error, string fineTunedModel, DateTimeOffset? finishedAt, string organizationId, int seed, string jobId, string baseModel, string validationFileId, string trainingFileId, IEnumerable<string> resultFileIds, FineTuningStatus status, FineTuningHyperparameters hyperparameters, int? billableTrainedTokens)
         {
             CreatedAt = createdAt;
             Error = error;
@@ -21,13 +21,13 @@ namespace OpenAI.FineTuning
             FinishedAt = finishedAt;
             OrganizationId = organizationId;
             Seed = seed;
-            Method = @method;
             JobId = jobId;
             BaseModel = baseModel;
             ValidationFileId = validationFileId;
             TrainingFileId = trainingFileId;
             ResultFileIds = resultFileIds.ToList();
             Status = status;
+            Hyperparameters = hyperparameters;
             Integrations = new ChangeTrackingList<FineTuningIntegration>();
             BillableTrainedTokens = billableTrainedTokens;
         }

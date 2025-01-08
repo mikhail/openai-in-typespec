@@ -27,10 +27,10 @@ namespace OpenAI.FineTuning
             {
                 throw new FormatException($"The model {nameof(FineTuningOptions)} does not support writing '{format}' format.");
             }
-            if (Optional.IsDefined(Method) && _additionalBinaryDataProperties?.ContainsKey("method") != true)
+            if (Optional.IsDefined(TrainingMethod) && _additionalBinaryDataProperties?.ContainsKey("method") != true)
             {
                 writer.WritePropertyName("method"u8);
-                writer.WriteObjectValue(Method, options);
+                writer.WriteObjectValue(TrainingMethod, options);
             }
             if (_additionalBinaryDataProperties?.ContainsKey("model") != true)
             {

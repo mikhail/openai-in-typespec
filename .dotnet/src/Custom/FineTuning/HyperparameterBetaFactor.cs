@@ -9,7 +9,7 @@ namespace OpenAI.FineTuning;
 internal readonly partial struct InternalCreateFineTuningJobRequestHyperparametersBetaChoiceEnum { }
 
 [CodeGenModel("CreateFineTuningJobRequestHyperparametersBetaOption")]
-public partial class HyperparameterBetaFactor : IEquatable<double>, IEquatable<string>, IJsonModel<HyperparameterBeta> {
+public partial class HyperparameterBetaFactor : IEquatable<double>, IEquatable<string>, IJsonModel<HyperparameterBetaFactor>
 {
     private readonly string _stringValue;
     private readonly int? _intValue;
@@ -19,15 +19,15 @@ public partial class HyperparameterBetaFactor : IEquatable<double>, IEquatable<s
         _stringValue = predefinedLabel;
     }
 
-    internal HyperparameterBetaFactor(int beta)
+    public HyperparameterBetaFactor(int beta)
     {
-        _intValue = epochCount;
+        _intValue = beta;
     }
 
     public static HyperparameterBetaFactor CreateAuto() => new(InternalCreateFineTuningJobRequestHyperparametersBetaChoiceEnum.Auto.ToString());
     public static HyperparameterBetaFactor CreateBeta(int beta) => new(beta);
 
-    public static implicit operator HyperparameterBetaFactor(double beta) => new(beta);
+    public static implicit operator HyperparameterBetaFactor(int beta) => new(beta);
     
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static bool operator ==(HyperparameterBetaFactor first, HyperparameterBetaFactor second)
@@ -47,7 +47,7 @@ public partial class HyperparameterBetaFactor : IEquatable<double>, IEquatable<s
     [EditorBrowsable(EditorBrowsableState.Never)]
     public override bool Equals(object other) => other is HyperparameterBetaFactor cc && cc == this;
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public override double GetHashCode() => _intValue?.GetHashCode() ?? _stringValue.GetHashCode();
+    public override int GetHashCode() => _intValue?.GetHashCode() ?? _stringValue.GetHashCode();
 
     void IJsonModel<HyperparameterBetaFactor>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
     {
@@ -55,7 +55,10 @@ public partial class HyperparameterBetaFactor : IEquatable<double>, IEquatable<s
     }
 
     HyperparameterBetaFactor IJsonModel<HyperparameterBetaFactor>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
-        => CustomSerializationHelpers.SerializeInstance(this, SerializeHyperparameterBeta, writer, options);
+    {
+        using JsonDocument document = JsonDocument.ParseValue(ref reader);
+        return DeserializeHyperparameterBeta(document.RootElement, options);
+    }
 
     internal static void SerializeHyperparameterBeta(HyperparameterBetaFactor instance, Utf8JsonWriter writer, ModelReaderWriterOptions options)
     {
@@ -81,9 +84,9 @@ public partial class HyperparameterBetaFactor : IEquatable<double>, IEquatable<s
 
         return element.ValueKind switch
         {
-            JsonValueKind.Number => new(element.Getdouble32()),
+            JsonValueKind.Number => new(element.GetInt32()),
             JsonValueKind.String => new(element.GetString()),
-            _ => throw new ArgumentException($"Unsupported JsonValueKind", nameof(HyperparameterBeta))
+            _ => throw new ArgumentException($"Unsupported JsonValueKind", "beta")
         };
     }
 

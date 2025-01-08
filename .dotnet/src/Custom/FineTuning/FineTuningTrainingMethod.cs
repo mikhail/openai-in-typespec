@@ -5,56 +5,55 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning;
 
-[CodeGenModel("CreateFineTuningJobRequestMethodType")]
-internal readonly partial struct InternalCreateFineTuningJobRequestMethodType { }
+[CodeGenModel("FineTuneMethodType")]
+internal readonly partial struct InternalFineTuneMethodType { }
 
-[CodeGenModel("FineTuningJobRequestMethodSupervised")]
+[CodeGenModel("FineTuneSupervisedMethod")]
 internal partial class InternalFineTuningJobRequestMethodSupervised { }
 
 [CodeGenModel("FineTuningJobRequestMethodSupervisedSupervised")]
 internal partial class InternalFineTuningJobRequestMethodSupervisedSupervised { }
 
-[CodeGenModel("FineTuningJobRequestMethodSupervisedSupervisedHyperparameters")]
-internal partial class InternalFineTuningJobRequestMethodSupervisedSupervisedHyperparameters { }
+[CodeGenModel("FineTuneSupervisedMethodHyperparameters")]
+internal partial class InternalFineTuneSupervisedMethodHyperparameters { }
 
-[CodeGenModel("FineTuningJobRequestMethodDpo")]
+[CodeGenModel("FineTuneDPOMethod")]
 internal partial class InternalFineTuningJobRequestMethodDpo { }
 
 [CodeGenModel("FineTuningJobRequestMethodDpoDpo")]
 internal partial class InternalFineTuningJobRequestMethodDpoDpo { }
 
-[CodeGenModel("FineTuningJobRequestMethodDpoDpoHyperparameters")]
+[CodeGenModel("FineTuneDPOMethodHyperparameters")]
 internal partial class InternalFineTuningJobRequestMethodDpoDpoHyperparameters { }
-
-[CodeGenModel("FineTuningJobRequestMethodReinforcement")]
-internal partial class InternalFineTuningJobRequestMethodReinforcement { }
-
-[CodeGenModel("FineTuningJobRequestMethodReinforcementReinforcement")]
-internal partial class InternalFineTuningJobRequestMethodReinforcementReinforcement { }
-
-[CodeGenModel("FineTuningJobRequestMethodReinforcementReinforcementHyperparameters")]
-internal partial class InternalFineTuningJobRequestMethodReinforcementReinforcementHyperparameters { }
 
 [CodeGenModel("UnknownFineTuningJobRequestMethod")]
 internal partial class UnknownFineTuningJobRequestMethod { }
 
-[CodeGenModel("FineTuningJobRequestMethod")]
+[CodeGenModel("FineTuneMethod")]
 public partial class FineTuningTrainingMethod
 {
+    internal InternalFineTuneMethodType? Type { get; set; }
+
+    internal InternalFineTuningJobRequestMethodSupervised Supervised { get; set; }
+
+    internal InternalFineTuningJobRequestMethodDpo Dpo { get; set; }
+
     public static FineTuningTrainingMethod CreateSupervised(
         HyperparameterBatchSize batchSize = null,
         HyperparameterCycleCount cycleCount = null,
         HyperparameterLearningRate learningRate = null)
     {
-        var hyperparameters = new InternalFineTuningJobRequestMethodSupervisedSupervisedHyperparameters
+        return new FineTuningTrainingMethod()
         {
-            BatchSize = batchSize,
-            CycleCount = cycleCount,
-            LearningRate = learningRate
-        };
-        return new InternalFineTuningJobRequestMethodSupervised
-        {
-            Hyperparameters = hyperparameters
+            Supervised = new InternalFineTuningJobRequestMethodSupervised()
+            {
+                Hyperparameters = new InternalFineTuneSupervisedMethodHyperparameters()
+                {
+                    BatchSize = batchSize is not null ? ModelReaderWriter.Write(batchSize) : null,
+                    NEpochs = cycleCount is not null ? ModelReaderWriter.Write(cycleCount) : null,
+                    LearningRateMultiplier = learningRate is not null ? ModelReaderWriter.Write(learningRate) : null,
+                },
+            },
         };
     }
 
@@ -64,33 +63,18 @@ public partial class FineTuningTrainingMethod
         HyperparameterLearningRate learningRate = null,
         HyperparameterBetaFactor betaFactor = null)
     {
-        var hyperparameters = new InternalFineTuningJobRequestMethodDpoDpoHyperparameters
+        return new FineTuningTrainingMethod()
         {
-            BatchSize = batchSize,
-            CycleCount = cycleCount,
-            LearningRate = learningRate,
-            BetaFactor = betaFactor
-        };
-        return new InternalFineTuningJobRequestMethodDpo
-        {
-            Hyperparameters = hyperparameters
-        };
-    }
-
-    public static FineTuningTrainingMethod CreateReinforcement(
-        HyperparameterBatchSize batchSize = null,
-        HyperparameterCycleCount cycleCount = null,
-        HyperparameterLearningRate learningRate = null)
-    {
-        var hyperparameters = new InternalFineTuningJobRequestMethodReinforcementReinforcementHyperparameters
-        {
-            BatchSize = batchSize,
-            CycleCount = cycleCount,
-            LearningRate = learningRate
-        };
-        return new InternalFineTuningJobRequestMethodReinforcement
-        {
-            Hyperparameters = hyperparameters
+            Dpo = new InternalFineTuningJobRequestMethodDpo()
+            {
+                Hyperparameters = new InternalFineTuningJobRequestMethodDpoDpoHyperparameters()
+                {
+                    Beta = betaFactor is not null ? ModelReaderWriter.Write(betaFactor) : null,
+                    BatchSize = batchSize is not null ? ModelReaderWriter.Write(batchSize) : null,
+                    NEpochs = cycleCount is not null ? ModelReaderWriter.Write(cycleCount) : null,
+                    LearningRateMultiplier = learningRate is not null ? ModelReaderWriter.Write(learningRate) : null,
+                },
+            },
         };
     }
 }

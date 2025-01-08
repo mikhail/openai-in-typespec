@@ -40,7 +40,7 @@ namespace OpenAI.FineTuning
             if (Optional.IsDefined(LearningRate) && _additionalBinaryDataProperties?.ContainsKey("learning_rate_multiplier") != true)
             {
                 writer.WritePropertyName("learning_rate_multiplier"u8);
-                writer.WriteObjectValue<FineTuning.HyperparameterLearningRateMultiplier>(LearningRate, options);
+                writer.WriteObjectValue<FineTuning.HyperparameterLearningRate>(LearningRate, options);
             }
             if (true && _additionalBinaryDataProperties != null)
             {
@@ -84,7 +84,7 @@ namespace OpenAI.FineTuning
             }
             FineTuning.HyperparameterCycleCount cycleCount = default;
             FineTuning.HyperparameterBatchSize batchSize = default;
-            FineTuning.HyperparameterLearningRateMultiplier learningRate = default;
+            FineTuning.HyperparameterLearningRate learningRate = default;
             IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
             foreach (var prop in element.EnumerateObject())
             {
@@ -112,7 +112,7 @@ namespace OpenAI.FineTuning
                     {
                         continue;
                     }
-                    learningRate = FineTuning.HyperparameterLearningRateMultiplier.DeserializeHyperparameterLearningRateMultiplier(prop.Value, options);
+                    learningRate = FineTuning.HyperparameterLearningRate.DeserializeHyperparameterLearningRate(prop.Value, options);
                     continue;
                 }
                 if (true)

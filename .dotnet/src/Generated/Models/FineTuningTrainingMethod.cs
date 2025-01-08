@@ -7,22 +7,21 @@ using System.Collections.Generic;
 
 namespace OpenAI.FineTuning
 {
-    public abstract partial class FineTuningTrainingMethod
+    public partial class FineTuningTrainingMethod
     {
         private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        private protected FineTuningTrainingMethod(InternalCreateFineTuningJobRequestMethodType @type)
+        public FineTuningTrainingMethod()
         {
-            Type = @type;
         }
 
-        internal FineTuningTrainingMethod(InternalCreateFineTuningJobRequestMethodType @type, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        internal FineTuningTrainingMethod(InternalFineTuneMethodType? @type, InternalFineTuningJobRequestMethodSupervised supervised, InternalFineTuningJobRequestMethodDpo dpo, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Type = @type;
+            Supervised = supervised;
+            Dpo = dpo;
             _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
-
-        internal InternalCreateFineTuningJobRequestMethodType Type { get; set; }
 
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData
         {
