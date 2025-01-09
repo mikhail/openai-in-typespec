@@ -823,11 +823,12 @@ namespace OpenAI
                 additionalBinaryDataProperties: null);
         }
 
-        public static FineTuningOptions FineTuningOptions(CreateFineTuningJobRequestModel model = default, string trainingFile = default, HyperparameterOptions hyperparameters = default, string suffix = default, string validationFile = default, IEnumerable<FineTuningIntegration> integrations = default, int? seed = default)
+        public static FineTuningOptions FineTuningOptions(FineTuningTrainingMethod @method = default, CreateFineTuningJobRequestModel model = default, string trainingFile = default, HyperparameterOptions hyperparameters = default, string suffix = default, string validationFile = default, IEnumerable<FineTuningIntegration> integrations = default, int? seed = default)
         {
             integrations ??= new ChangeTrackingList<FineTuningIntegration>();
 
             return new FineTuningOptions(
+                @method,
                 model,
                 trainingFile,
                 hyperparameters,
@@ -836,12 +837,6 @@ namespace OpenAI
                 integrations?.ToList(),
                 seed,
                 additionalBinaryDataProperties: null);
-        }
-
-        public static HyperparameterOptions HyperparameterOptions(HyperparameterCycleCount cycleCount = default, HyperparameterBatchSize batchSize = default, HyperparameterLearningRate learningRate = default)
-        {
-
-            return new HyperparameterOptions(cycleCount, batchSize, learningRate, additionalBinaryDataProperties: null);
         }
 
         public static FineTuningIntegration FineTuningIntegration(string @type = default)
@@ -854,6 +849,12 @@ namespace OpenAI
         {
 
             return new WeightsAndBiasesIntegration(@type, serializedAdditionalRawData: null, wandb);
+        }
+
+        public static FineTuningTrainingMethod FineTuningTrainingMethod(InternalFineTuneMethodType? @type = default, InternalFineTuningJobRequestMethodSupervised supervised = default, InternalFineTuningJobRequestMethodDpo dpo = default)
+        {
+
+            return new FineTuningTrainingMethod(@type, supervised, dpo, additionalBinaryDataProperties: null);
         }
 
         public static FineTuningError FineTuningError(string code = default, string message = default, string invalidParameter = default)
@@ -882,7 +883,7 @@ namespace OpenAI
                 additionalBinaryDataProperties: null);
         }
 
-        public static FineTuningCheckpointMetrics FineTuningCheckpointMetrics(float trainLoss = default, float trainMeanTokenAccuracy = default, float? validLoss = default, float? validMeanTokenAccuracy = default, float? fullValidLoss = default, float? fullValidMeanTokenAccuracy = default, int stepNumber = default)
+        public static FineTuningCheckpointMetrics FineTuningCheckpointMetrics(float? trainLoss = default, float? trainMeanTokenAccuracy = default, float? validLoss = default, float? validMeanTokenAccuracy = default, float? fullValidLoss = default, float? fullValidMeanTokenAccuracy = default, int stepNumber = default)
         {
 
             return new FineTuningCheckpointMetrics(
@@ -896,13 +897,15 @@ namespace OpenAI
                 additionalBinaryDataProperties: null);
         }
 
-        public static FineTuningEvent FineTuningEvent(string id = default, DateTimeOffset createdAt = default, string message = default, string level = default, string @object = default)
+        public static FineTuningEvent FineTuningEvent(string id = default, DateTimeOffset createdAt = default, string message = default, FineTuningJobEventType? @type = default, BinaryData data = default, string level = default, string @object = default)
         {
 
             return new FineTuningEvent(
                 id,
                 createdAt,
                 message,
+                @type,
+                data,
                 level,
                 @object,
                 additionalBinaryDataProperties: null);

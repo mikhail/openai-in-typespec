@@ -94,6 +94,11 @@ namespace OpenAI.FineTuning
                 writer.WritePropertyName("seed"u8);
                 writer.WriteNumberValue(Seed);
             }
+            if (Optional.IsDefined(Method) && _additionalBinaryDataProperties?.ContainsKey("method") != true)
+            {
+                writer.WritePropertyName("method"u8);
+                writer.WriteObjectValue(Method, options);
+            }
             if (_additionalBinaryDataProperties?.ContainsKey("id") != true)
             {
                 writer.WritePropertyName("id"u8);
@@ -239,6 +244,7 @@ namespace OpenAI.FineTuning
             DateTimeOffset? finishedAt = default;
             string organizationId = default;
             int seed = default;
+            FineTuningTrainingMethod @method = default;
             string jobId = default;
             string baseModel = default;
             DateTimeOffset? estimatedFinishAt = default;
@@ -308,6 +314,15 @@ namespace OpenAI.FineTuning
                     seed = prop.Value.GetInt32();
                     continue;
                 }
+                if (prop.NameEquals("method"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    @method = FineTuningTrainingMethod.DeserializeFineTuningTrainingMethod(prop.Value, options);
+                    continue;
+                }
                 if (prop.NameEquals("id"u8))
                 {
                     jobId = prop.Value.GetString();
@@ -372,10 +387,6 @@ namespace OpenAI.FineTuning
                 }
                 if (prop.NameEquals("hyperparameters"u8))
                 {
-                    if (prop.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        continue;
-                    }
                     hyperparameters = FineTuningHyperparameters.DeserializeFineTuningHyperparameters(prop.Value, options);
                     continue;
                 }
@@ -416,6 +427,7 @@ namespace OpenAI.FineTuning
                 finishedAt,
                 organizationId,
                 seed,
+                @method,
                 jobId,
                 baseModel,
                 estimatedFinishAt,

@@ -9,17 +9,8 @@ namespace OpenAI.FineTuning;
 [CodeGenModel("FineTuneChatCompletionRequestAssistantMessage")]
 internal partial class InternalFineTuneChatCompletionRequestAssistantMessage { }
 
-[CodeGenModel("FinetuneChatRequestInput")]
-internal partial class InternalFinetuneChatRequestInput { }
-
-[CodeGenModel("FinetuneCompletionRequestInput")]
-internal partial class InternalFinetuneCompletionRequestInput { }
-
 [CodeGenModel("FineTuningIntegration")]
 internal partial class InternalFineTuningIntegration { }
-
-[CodeGenModel("FineTuningIntegrationType")]
-internal readonly partial struct InternalFineTuningIntegrationType { }
 
 [CodeGenModel("FineTuningIntegrationWandb")]
 internal partial class InternalFineTuningIntegrationWandb { }
@@ -63,15 +54,6 @@ internal readonly partial struct InternalListPaginatedFineTuningJobsResponseObje
 [CodeGenModel("FineTuningIntegrationWandbWandb")]
 internal partial class FineTuningIntegrationWandbWandb { }
 
-[CodeGenModel("FineTuningJobHyperparametersBatchSizeChoiceEnum")]
-internal readonly partial struct FineTuningJobHyperparametersBatchSizeChoiceEnum { }
-
-[CodeGenModel("FineTuningJobHyperparametersLearningRateMultiplierChoiceEnum")]
-internal readonly partial struct FineTuningJobHyperparametersLearningRateMultiplierChoiceEnum { }
-
-[CodeGenModel("FineTuningJobHyperparametersNEpochsChoiceEnum")]
-internal readonly partial struct FineTuningJobHyperparametersNEpochsChoiceEnum { }
-
 [CodeGenModel("UnknownCreateFineTuningJobRequestIntegration")]
 internal partial class UnknownCreateFineTuningJobRequestIntegration { }
 
@@ -86,3 +68,18 @@ internal enum FineTuningJobEventLevel {Info, Warn, Error}
 
 [CodeGenModel("FineTuningJobEventLevelExtensions")]
 internal partial class FineTuningJobEventLevelExtensions { }
+
+[CodeGenModel("FineTuneMethodType")]
+internal readonly partial struct InternalFineTuneMethodType { }
+
+[CodeGenModel("FineTuneSupervisedMethod")]
+internal partial class InternalFineTuningJobRequestMethodSupervised { }
+
+[CodeGenModel("FineTuneSupervisedMethodHyperparameters")]
+internal partial class InternalFineTuneSupervisedMethodHyperparameters { }
+
+[CodeGenModel("FineTuneDPOMethod")]
+internal partial class InternalFineTuningJobRequestMethodDpo { }
+
+[CodeGenModel("FineTuneDPOMethodHyperparameters")]
+internal partial class InternalFineTuningJobRequestMethodDpoDpoHyperparameters { }

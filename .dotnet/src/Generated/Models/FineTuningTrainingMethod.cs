@@ -7,19 +7,19 @@ using System.Collections.Generic;
 
 namespace OpenAI.FineTuning
 {
-    internal partial class HyperparameterOptions
+    public partial class FineTuningTrainingMethod
     {
         private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        public HyperparameterOptions()
+        public FineTuningTrainingMethod()
         {
         }
 
-        internal HyperparameterOptions(FineTuning.HyperparameterCycleCount cycleCount, FineTuning.HyperparameterBatchSize batchSize, FineTuning.HyperparameterLearningRate learningRate, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        internal FineTuningTrainingMethod(InternalFineTuneMethodType? @type, InternalFineTuningJobRequestMethodSupervised supervised, InternalFineTuningJobRequestMethodDpo dpo, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            CycleCount = cycleCount;
-            BatchSize = batchSize;
-            LearningRate = learningRate;
+            Type = @type;
+            Supervised = supervised;
+            Dpo = dpo;
             _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 

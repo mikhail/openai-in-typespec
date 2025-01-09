@@ -25,11 +25,12 @@ public partial class FineTuningJob : OperationResult
     public IReadOnlyList<string> ResultFileIds { get; private set; } = null!;
     public FineTuningStatus Status { get; private set; }
 
-    public FineTuningHyperparameters Hyperparameters { get; private set; } = default;
+    internal FineTuningHyperparameters Hyperparameters { get; private set; } = default;
     public IReadOnlyList<FineTuningIntegration> Integrations { get; private set; } = null!;
     public int? BillableTrainedTokens { get; private set; }
     public string? UserProvidedSuffix { get; private set; }
     public int? Seed { get; private set; }
+    public FineTuningTrainingMethod? TrainingMethod { get; private set; } = default;
 
     /// <summary>
     /// Creates a new <see cref="FineTuningJob"/> from a <see cref="PipelineResponse"/>.
