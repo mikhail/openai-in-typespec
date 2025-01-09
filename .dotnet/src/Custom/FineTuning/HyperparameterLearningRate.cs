@@ -9,20 +9,14 @@ namespace OpenAI.FineTuning;
 internal readonly partial struct InternalCreateFineTuningJobRequestHyperparametersLearningRateMultiplierChoiceEnum { }
 
 [CodeGenModel("CreateFineTuningJobRequestHyperparametersLearningRateMultiplierOption")]
-public partial class HyperparameterLearningRate : IEquatable<double>, IEquatable<string>, IJsonModel<HyperparameterLearningRate>
+public partial class HyperparameterLearningRate : IEquatable<double>, IEquatable<int>, IEquatable<string>, IJsonModel<HyperparameterLearningRate>
 {
     private readonly string _stringValue;
     private readonly double? _doubleValue;
 
-    internal HyperparameterLearningRate(string predefinedLabel)
-    {
-        _stringValue = predefinedLabel;
-    }
+    internal HyperparameterLearningRate(string predefinedLabel) => _stringValue = predefinedLabel;
 
-    public HyperparameterLearningRate(double learningRateMultiplier)
-    {
-        _doubleValue = learningRateMultiplier;
-    }
+    public HyperparameterLearningRate(double learningRateMultiplier) => _doubleValue = learningRateMultiplier;
 
     public static HyperparameterLearningRate CreateAuto() => new(InternalCreateFineTuningJobRequestHyperparametersLearningRateMultiplierChoiceEnum.Auto.ToString());
     public static HyperparameterLearningRate CreateMultiplier(double learningRateMultiplier) => new(learningRateMultiplier);
@@ -38,14 +32,22 @@ public partial class HyperparameterLearningRate : IEquatable<double>, IEquatable
         if (first._doubleValue.HasValue) return first._doubleValue == second._doubleValue;
         return first._stringValue == second._stringValue;
     }
+
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static bool operator !=(HyperparameterLearningRate first, HyperparameterLearningRate second) => !(first == second);
+
     [EditorBrowsable(EditorBrowsableState.Never)]
     public bool Equals(double other) => _doubleValue == other;
+
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public bool Equals(int other) => _doubleValue == other;
+
     [EditorBrowsable(EditorBrowsableState.Never)]
     public bool Equals(string other) => _doubleValue is null && _stringValue == other;
+
     [EditorBrowsable(EditorBrowsableState.Never)]
     public override bool Equals(object other) => other is HyperparameterLearningRate cc && cc == this;
+
     [EditorBrowsable(EditorBrowsableState.Never)]
     public override int GetHashCode() => _doubleValue?.GetHashCode() ?? _stringValue.GetHashCode();
 

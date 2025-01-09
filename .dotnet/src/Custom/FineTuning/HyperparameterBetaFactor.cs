@@ -9,7 +9,7 @@ namespace OpenAI.FineTuning;
 internal readonly partial struct InternalCreateFineTuningJobRequestHyperparametersBetaChoiceEnum { }
 
 [CodeGenModel("CreateFineTuningJobRequestHyperparametersBetaOption")]
-public partial class HyperparameterBetaFactor : IEquatable<double>, IEquatable<string>, IJsonModel<HyperparameterBetaFactor>
+public partial class HyperparameterBetaFactor : IEquatable<int>, IEquatable<string>, IJsonModel<HyperparameterBetaFactor>
 {
     private readonly string _stringValue;
     private readonly int? _intValue;
@@ -41,7 +41,7 @@ public partial class HyperparameterBetaFactor : IEquatable<double>, IEquatable<s
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static bool operator !=(HyperparameterBetaFactor first, HyperparameterBetaFactor second) => !(first == second);
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public bool Equals(double other) => _intValue == other;
+    public bool Equals(int other) => _intValue == other;
     [EditorBrowsable(EditorBrowsableState.Never)]
     public bool Equals(string other) => _intValue is null && _stringValue == other;
     [EditorBrowsable(EditorBrowsableState.Never)]

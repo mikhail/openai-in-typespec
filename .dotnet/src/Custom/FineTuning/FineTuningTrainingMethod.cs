@@ -18,10 +18,9 @@ public partial class FineTuningTrainingMethod
     {
         return new FineTuningTrainingMethod()
         {
-            Supervised = new InternalFineTuningJobRequestMethodSupervised()
-            {
-                Hyperparameters = new InternalFineTuneSupervisedMethodHyperparameters()
-                {
+            Type = InternalFineTuneMethodType.Supervised,
+            Supervised = new() {
+                Hyperparameters = new() {
                     BatchSize = batchSize is not null ? ModelReaderWriter.Write(batchSize) : null,
                     NEpochs = cycleCount is not null ? ModelReaderWriter.Write(cycleCount) : null,
                     LearningRateMultiplier = learningRate is not null ? ModelReaderWriter.Write(learningRate) : null,
@@ -38,10 +37,9 @@ public partial class FineTuningTrainingMethod
     {
         return new FineTuningTrainingMethod()
         {
-            Dpo = new InternalFineTuningJobRequestMethodDpo()
-            {
-                Hyperparameters = new InternalFineTuningJobRequestMethodDpoDpoHyperparameters()
-                {
+            Type = InternalFineTuneMethodType.Dpo,
+            Dpo = new() {
+                Hyperparameters = new() {
                     Beta = betaFactor is not null ? ModelReaderWriter.Write(betaFactor) : null,
                     BatchSize = batchSize is not null ? ModelReaderWriter.Write(batchSize) : null,
                     NEpochs = cycleCount is not null ? ModelReaderWriter.Write(cycleCount) : null,
