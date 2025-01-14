@@ -14,6 +14,14 @@ global using OpenAI.Models;
 global using OpenAI.Moderations;
 global using OpenAI.VectorStores;
 
+#if !AZURE_OPENAI_GA
+global using OpenAI.RealtimeConversation;
+using Azure.AI.OpenAI.Assistants;
+using Azure.AI.OpenAI.FineTuning;
+using Azure.AI.OpenAI.RealtimeConversation;
+using Azure.AI.OpenAI.VectorStores;
+#endif
+
 using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.ComponentModel;
@@ -26,13 +34,6 @@ using Azure.AI.OpenAI.Files;
 using Azure.AI.OpenAI.Images;
 using Azure.Core;
 
-#if !AZURE_OPENAI_GA
-global using OpenAI.RealtimeConversation;
-using Azure.AI.OpenAI.Assistants;
-using Azure.AI.OpenAI.FineTuning;
-using Azure.AI.OpenAI.RealtimeConversation;
-using Azure.AI.OpenAI.VectorStores;
-#endif
 
 #pragma warning disable AZC0007
 

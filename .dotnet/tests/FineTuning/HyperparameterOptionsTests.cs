@@ -14,6 +14,11 @@ class HyperparameterOptionsTests
     [Parallelizable]
     public void OptionsCanEasilyCompare()
     {
+        Assert.AreEqual(HyperparameterCycleCount.CreateAuto(), "auto");
+        Assert.AreEqual(HyperparameterBatchSize.CreateAuto(), "auto");
+        Assert.AreEqual(HyperparameterLearningRate.CreateAuto(), "auto");
+        Assert.AreEqual(HyperparameterBetaFactor.CreateAuto(), "auto");
+
         Assert.AreEqual(new HyperparameterCycleCount(1), 1);
         Assert.AreEqual(new HyperparameterBatchSize(1), 1);
         Assert.AreEqual(new HyperparameterLearningRate(1), 1);

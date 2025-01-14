@@ -24,7 +24,7 @@ public partial class HyperparameterBatchSize : IEquatable<int>, IEquatable<strin
         _intValue = batchSize;
     }
 
-    public static HyperparameterBatchSize CreateAutoCount() => new(InternalCreateFineTuningJobRequestHyperparametersBatchSizeChoiceEnum.Auto.ToString());
+    public static HyperparameterBatchSize CreateAuto() => new(InternalCreateFineTuningJobRequestHyperparametersBatchSizeChoiceEnum.Auto.ToString());
     public static HyperparameterBatchSize CreateSize(int batchSize) => new(batchSize);
 
     public static implicit operator HyperparameterBatchSize(int batchSize) => new(batchSize);
