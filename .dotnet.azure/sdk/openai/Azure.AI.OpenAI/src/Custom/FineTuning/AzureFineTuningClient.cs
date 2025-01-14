@@ -37,6 +37,15 @@ internal partial class AzureFineTuningClient : FineTuningClient
     {
         return new AzureFineTuningJob(Pipeline, _endpoint, response, _apiVersion);
     }
+
+    /**
+     * Impl note: this is where the Azure-specific bound subclient thingamajigs are actually created
+     */
+    internal override IEnumerable<FineTuningJob> CreateJobsFromPageResponse(PipelineResponse response)
+    {
+        InternalListPaginatedFineTuningJobsResponse jobs = ModelReaderWriter.Read<InternalListPaginatedFineTuningJobsResponse>(response.Content)!;
+        return jobs.Data.Select(job => new AzureFineTuningJob(Pipeline, _endpoint, _apiVersion, job, response));
+    }
 }
 
 #endif
