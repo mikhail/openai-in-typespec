@@ -1131,11 +1131,13 @@ namespace OpenAI.Chat {
         [Obsolete("This constructor is obsolete. Please use the constructor that takes an IEnumerable<ChatToolCall> parameter instead.")]
         public AssistantChatMessage(ChatFunctionCall functionCall);
         public AssistantChatMessage(params ChatMessageContentPart[] contentParts);
+        public AssistantChatMessage(ChatOutputAudioReference outputAudioReference);
         public AssistantChatMessage(IEnumerable<ChatMessageContentPart> contentParts);
         public AssistantChatMessage(IEnumerable<ChatToolCall> toolCalls);
         public AssistantChatMessage(string content);
         [Obsolete("This property is obsolete. Please use ToolCalls instead.")]
         public ChatFunctionCall FunctionCall { get; set; }
+        public ChatOutputAudioReference OutputAudioReference { get; set; }
         public string ParticipantName { get; set; }
         public string Refusal { get; set; }
         public IList<ChatToolCall> ToolCalls { get; }
@@ -1145,6 +1147,13 @@ namespace OpenAI.Chat {
         public static implicit operator BinaryContent(AssistantChatMessage assistantChatMessage);
         protected override ChatMessage PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options);
         protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options);
+    }
+    public class ChatAudioOptions : IJsonModel<ChatAudioOptions>, IPersistableModel<ChatAudioOptions> {
+        public ChatAudioOptions(ChatOutputAudioVoice outputAudioVoice, ChatOutputAudioFormat outputAudioFormat);
+        public ChatOutputAudioFormat OutputAudioFormat { get; }
+        public ChatOutputAudioVoice OutputAudioVoice { get; }
+        public static explicit operator ChatAudioOptions(ClientResult result);
+        public static implicit operator BinaryContent(ChatAudioOptions chatAudioOptions);
     }
     public class ChatClient {
         protected ChatClient();
@@ -1175,6 +1184,7 @@ namespace OpenAI.Chat {
         public ChatFunctionCall FunctionCall { get; }
         public string Id { get; }
         public string Model { get; }
+        public ChatOutputAudio OutputAudio { get; }
         public string Refusal { get; }
         public IReadOnlyList<ChatTokenLogProbabilityDetails> RefusalTokenLogProbabilities { get; }
         public ChatMessageRole Role { get; }
@@ -1186,6 +1196,7 @@ namespace OpenAI.Chat {
     }
     public class ChatCompletionOptions : IJsonModel<ChatCompletionOptions>, IPersistableModel<ChatCompletionOptions> {
         public bool? AllowParallelToolCalls { get; set; }
+        public ChatAudioOptions AudioOptions { get; set; }
         public string EndUserId { get; set; }
         public float? FrequencyPenalty { get; set; }
         [Obsolete("This property is obsolete. Please use ToolChoice instead.")]
@@ -1198,6 +1209,7 @@ namespace OpenAI.Chat {
         public IDictionary<string, string> Metadata { get; }
         public float? PresencePenalty { get; set; }
         public ChatResponseFormat ResponseFormat { get; set; }
+        public ChatResponseModalities ResponseModalities { get; set; }
         public long? Seed { get; set; }
         public IList<string> StopSequences { get; }
         public bool? StoredOutputEnabled { get; set; }
@@ -1256,6 +1268,20 @@ namespace OpenAI.Chat {
         public static bool operator !=(ChatImageDetailLevel left, ChatImageDetailLevel right);
         public override readonly string ToString();
     }
+    public readonly partial struct ChatInputAudioFormat : IEquatable<ChatInputAudioFormat> {
+        public ChatInputAudioFormat(string value);
+        public static ChatInputAudioFormat Mp3 { get; }
+        public static ChatInputAudioFormat Wav { get; }
+        public readonly bool Equals(ChatInputAudioFormat other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(ChatInputAudioFormat left, ChatInputAudioFormat right);
+        public static implicit operator ChatInputAudioFormat(string value);
+        public static bool operator !=(ChatInputAudioFormat left, ChatInputAudioFormat right);
+        public override readonly string ToString();
+    }
     public class ChatInputTokenUsageDetails : IJsonModel<ChatInputTokenUsageDetails>, IPersistableModel<ChatInputTokenUsageDetails> {
         public int AudioTokenCount { get; }
         public int CachedTokenCount { get; }
@@ -1267,6 +1293,7 @@ namespace OpenAI.Chat {
         public static AssistantChatMessage CreateAssistantMessage(ChatCompletion chatCompletion);
         public static AssistantChatMessage CreateAssistantMessage(ChatFunctionCall functionCall);
         public static AssistantChatMessage CreateAssistantMessage(params ChatMessageContentPart[] contentParts);
+        public static AssistantChatMessage CreateAssistantMessage(ChatOutputAudioReference outputAudioReference);
         public static AssistantChatMessage CreateAssistantMessage(IEnumerable<ChatMessageContentPart> contentParts);
         public static AssistantChatMessage CreateAssistantMessage(IEnumerable<ChatToolCall> toolCalls);
         public static AssistantChatMessage CreateAssistantMessage(string content);
@@ -1296,11 +1323,14 @@ namespace OpenAI.Chat {
         public string ImageBytesMediaType { get; }
         public ChatImageDetailLevel? ImageDetailLevel { get; }
         public Uri ImageUri { get; }
+        public BinaryData InputAudioBytes { get; }
+        public ChatInputAudioFormat? InputAudioFormat { get; }
         public ChatMessageContentPartKind Kind { get; }
         public string Refusal { get; }
         public string Text { get; }
         public static ChatMessageContentPart CreateImagePart(BinaryData imageBytes, string imageBytesMediaType, ChatImageDetailLevel? imageDetailLevel = null);
         public static ChatMessageContentPart CreateImagePart(Uri imageUri, ChatImageDetailLevel? imageDetailLevel = null);
+        public static ChatMessageContentPart CreateInputAudioPart(BinaryData inputAudioBytes, ChatInputAudioFormat inputAudioFormat);
         public static ChatMessageContentPart CreateRefusalPart(string refusal);
         public static ChatMessageContentPart CreateTextPart(string text);
         public static explicit operator ChatMessageContentPart(ClientResult result);
@@ -1310,7 +1340,8 @@ namespace OpenAI.Chat {
     public enum ChatMessageContentPartKind {
         Text = 0,
         Refusal = 1,
-        Image = 2
+        Image = 2,
+        InputAudio = 3
     }
     public enum ChatMessageRole {
         System = 0,
@@ -1318,6 +1349,55 @@ namespace OpenAI.Chat {
         Assistant = 2,
         Tool = 3,
         Function = 4
+    }
+    public class ChatOutputAudio : IJsonModel<ChatOutputAudio>, IPersistableModel<ChatOutputAudio> {
+        public BinaryData AudioBytes { get; }
+        public DateTimeOffset ExpiresAt { get; }
+        public string Id { get; }
+        public string Transcript { get; }
+        public static explicit operator ChatOutputAudio(ClientResult result);
+        public static implicit operator BinaryContent(ChatOutputAudio chatOutputAudio);
+    }
+    public readonly partial struct ChatOutputAudioFormat : IEquatable<ChatOutputAudioFormat> {
+        public ChatOutputAudioFormat(string value);
+        public static ChatOutputAudioFormat Flac { get; }
+        public static ChatOutputAudioFormat Mp3 { get; }
+        public static ChatOutputAudioFormat Opus { get; }
+        public static ChatOutputAudioFormat Pcm16 { get; }
+        public static ChatOutputAudioFormat Wav { get; }
+        public readonly bool Equals(ChatOutputAudioFormat other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(ChatOutputAudioFormat left, ChatOutputAudioFormat right);
+        public static implicit operator ChatOutputAudioFormat(string value);
+        public static bool operator !=(ChatOutputAudioFormat left, ChatOutputAudioFormat right);
+        public override readonly string ToString();
+    }
+    public class ChatOutputAudioReference : IJsonModel<ChatOutputAudioReference>, IPersistableModel<ChatOutputAudioReference> {
+        public ChatOutputAudioReference(string id);
+        public string Id { get; }
+        public static explicit operator ChatOutputAudioReference(ClientResult result);
+        public static implicit operator BinaryContent(ChatOutputAudioReference chatOutputAudioReference);
+    }
+    public readonly partial struct ChatOutputAudioVoice : IEquatable<ChatOutputAudioVoice> {
+        public ChatOutputAudioVoice(string value);
+        public static ChatOutputAudioVoice Alloy { get; }
+        public static ChatOutputAudioVoice Echo { get; }
+        public static ChatOutputAudioVoice Fable { get; }
+        public static ChatOutputAudioVoice Nova { get; }
+        public static ChatOutputAudioVoice Onyx { get; }
+        public static ChatOutputAudioVoice Shimmer { get; }
+        public readonly bool Equals(ChatOutputAudioVoice other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(ChatOutputAudioVoice left, ChatOutputAudioVoice right);
+        public static implicit operator ChatOutputAudioVoice(string value);
+        public static bool operator !=(ChatOutputAudioVoice left, ChatOutputAudioVoice right);
+        public override readonly string ToString();
     }
     public class ChatOutputTokenUsageDetails : IJsonModel<ChatOutputTokenUsageDetails>, IPersistableModel<ChatOutputTokenUsageDetails> {
         public int AudioTokenCount { get; }
@@ -1331,6 +1411,12 @@ namespace OpenAI.Chat {
         public static ChatResponseFormat CreateTextFormat();
         public static explicit operator ChatResponseFormat(ClientResult result);
         public static implicit operator BinaryContent(ChatResponseFormat chatResponseFormat);
+    }
+    [Flags]
+    public enum ChatResponseModalities {
+        Default = 0,
+        Text = 1,
+        Audio = 2
     }
     public class ChatTokenLogProbabilityDetails : IJsonModel<ChatTokenLogProbabilityDetails>, IPersistableModel<ChatTokenLogProbabilityDetails> {
         public float LogProbability { get; }
@@ -1401,15 +1487,17 @@ namespace OpenAI.Chat {
         protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options);
     }
     public static class OpenAIChatModelFactory {
-        public static ChatCompletion ChatCompletion(string id = null, ChatFinishReason finishReason = ChatFinishReason.Stop, ChatMessageContent content = null, string refusal = null, IEnumerable<ChatToolCall> toolCalls = null, ChatMessageRole role = ChatMessageRole.System, ChatFunctionCall functionCall = null, IEnumerable<ChatTokenLogProbabilityDetails> contentTokenLogProbabilities = null, IEnumerable<ChatTokenLogProbabilityDetails> refusalTokenLogProbabilities = null, DateTimeOffset createdAt = default, string model = null, string systemFingerprint = null, ChatTokenUsage usage = null);
+        public static ChatCompletion ChatCompletion(string id = null, ChatFinishReason finishReason = ChatFinishReason.Stop, ChatMessageContent content = null, string refusal = null, IEnumerable<ChatToolCall> toolCalls = null, ChatMessageRole role = ChatMessageRole.System, ChatFunctionCall functionCall = null, IEnumerable<ChatTokenLogProbabilityDetails> contentTokenLogProbabilities = null, IEnumerable<ChatTokenLogProbabilityDetails> refusalTokenLogProbabilities = null, DateTimeOffset createdAt = default, string model = null, string systemFingerprint = null, ChatTokenUsage usage = null, ChatOutputAudio outputAudio = null);
         public static ChatInputTokenUsageDetails ChatInputTokenUsageDetails(int audioTokenCount = 0, int cachedTokenCount = 0);
+        public static ChatOutputAudio ChatOutputAudio(BinaryData audioBytes, string id = null, string transcript = null, DateTimeOffset expiresAt = default);
         public static ChatOutputTokenUsageDetails ChatOutputTokenUsageDetails(int reasoningTokenCount = 0, int audioTokenCount = 0);
         public static ChatTokenLogProbabilityDetails ChatTokenLogProbabilityDetails(string token = null, float logProbability = 0, ReadOnlyMemory<byte>? utf8Bytes = null, IEnumerable<ChatTokenTopLogProbabilityDetails> topLogProbabilities = null);
         public static ChatTokenTopLogProbabilityDetails ChatTokenTopLogProbabilityDetails(string token = null, float logProbability = 0, ReadOnlyMemory<byte>? utf8Bytes = null);
         public static ChatTokenUsage ChatTokenUsage(int outputTokenCount = 0, int inputTokenCount = 0, int totalTokenCount = 0, ChatOutputTokenUsageDetails outputTokenDetails = null, ChatInputTokenUsageDetails inputTokenDetails = null);
-        public static StreamingChatCompletionUpdate StreamingChatCompletionUpdate(string completionId = null, ChatMessageContent contentUpdate = null, StreamingChatFunctionCallUpdate functionCallUpdate = null, IEnumerable<StreamingChatToolCallUpdate> toolCallUpdates = null, ChatMessageRole? role = null, string refusalUpdate = null, IEnumerable<ChatTokenLogProbabilityDetails> contentTokenLogProbabilities = null, IEnumerable<ChatTokenLogProbabilityDetails> refusalTokenLogProbabilities = null, ChatFinishReason? finishReason = null, DateTimeOffset createdAt = default, string model = null, string systemFingerprint = null, ChatTokenUsage usage = null);
+        public static StreamingChatCompletionUpdate StreamingChatCompletionUpdate(string completionId = null, ChatMessageContent contentUpdate = null, StreamingChatFunctionCallUpdate functionCallUpdate = null, IEnumerable<StreamingChatToolCallUpdate> toolCallUpdates = null, ChatMessageRole? role = null, string refusalUpdate = null, IEnumerable<ChatTokenLogProbabilityDetails> contentTokenLogProbabilities = null, IEnumerable<ChatTokenLogProbabilityDetails> refusalTokenLogProbabilities = null, ChatFinishReason? finishReason = null, DateTimeOffset createdAt = default, string model = null, string systemFingerprint = null, ChatTokenUsage usage = null, StreamingChatOutputAudioUpdate outputAudioUpdate = null);
         [Obsolete("This class is obsolete. Please use StreamingChatToolCallUpdate instead.")]
         public static StreamingChatFunctionCallUpdate StreamingChatFunctionCallUpdate(string functionName = null, BinaryData functionArgumentsUpdate = null);
+        public static StreamingChatOutputAudioUpdate StreamingChatOutputAudioUpdate(string id = null, DateTimeOffset? expiresAt = null, string transcriptUpdate = null, BinaryData audioBytesUpdate = null);
         public static StreamingChatToolCallUpdate StreamingChatToolCallUpdate(int index = 0, string toolCallId = null, ChatToolCallKind kind = ChatToolCallKind.Function, string functionName = null, BinaryData functionArgumentsUpdate = null);
     }
     public class StreamingChatCompletionUpdate : IJsonModel<StreamingChatCompletionUpdate>, IPersistableModel<StreamingChatCompletionUpdate> {
@@ -1421,6 +1509,7 @@ namespace OpenAI.Chat {
         [Obsolete("This property is obsolete. Please use ToolCallUpdates instead.")]
         public StreamingChatFunctionCallUpdate FunctionCallUpdate { get; }
         public string Model { get; }
+        public StreamingChatOutputAudioUpdate OutputAudioUpdate { get; }
         public IReadOnlyList<ChatTokenLogProbabilityDetails> RefusalTokenLogProbabilities { get; }
         public string RefusalUpdate { get; }
         public ChatMessageRole? Role { get; }
@@ -1436,6 +1525,14 @@ namespace OpenAI.Chat {
         public string FunctionName { get; }
         public static explicit operator StreamingChatFunctionCallUpdate(ClientResult result);
         public static implicit operator BinaryContent(StreamingChatFunctionCallUpdate streamingChatFunctionCallUpdate);
+    }
+    public class StreamingChatOutputAudioUpdate : IJsonModel<StreamingChatOutputAudioUpdate>, IPersistableModel<StreamingChatOutputAudioUpdate> {
+        public BinaryData AudioBytesUpdate { get; }
+        public DateTimeOffset? ExpiresAt { get; }
+        public string Id { get; }
+        public string TranscriptUpdate { get; }
+        public static explicit operator StreamingChatOutputAudioUpdate(ClientResult result);
+        public static implicit operator BinaryContent(StreamingChatOutputAudioUpdate streamingChatOutputAudioUpdate);
     }
     public class StreamingChatToolCallUpdate : IJsonModel<StreamingChatToolCallUpdate>, IPersistableModel<StreamingChatToolCallUpdate> {
         public BinaryData FunctionArgumentsUpdate { get; }
@@ -1945,6 +2042,7 @@ namespace OpenAI.RealtimeConversation {
     }
     [Flags]
     public enum ConversationContentModalities {
+        Default = 0,
         Text = 1,
         Audio = 2
     }
