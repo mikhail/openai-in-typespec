@@ -124,8 +124,14 @@ namespace OpenAI
             if (_queryBuilder != null)
             {
                 UriBuilder.Query = _queryBuilder.ToString();
+                if (UriBuilder.Query.StartsWith("??"))
+                {
+                    string v = UriBuilder.Query.Substring(2); // If there were two question marks, that means assignment adds one anyway. So remove both.
+                    UriBuilder.Query = v;
+                }
             }
             return UriBuilder.Uri;
         }
+
     }
 }

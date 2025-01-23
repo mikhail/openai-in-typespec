@@ -10,7 +10,7 @@ namespace OpenAI.FineTuning
 {
     public partial class FineTuningClient
     {
-        private readonly Uri _endpoint;
+        internal readonly Uri _endpoint;
         private const string AuthorizationHeader = "Authorization";
         private readonly ApiKeyCredential _keyCredential;
         private const string AuthorizationApiKeyPrefix = "Bearer";

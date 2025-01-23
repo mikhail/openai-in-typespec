@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
 #nullable enable
 
@@ -93,7 +94,7 @@ public partial class FineTuningJob : OperationResult
     /// <inheritdoc/>
     public override async ValueTask<ClientResult> UpdateStatusAsync(RequestOptions? options)
     {
-        options = options ?? new RequestOptions();
+        options ??= new RequestOptions();
         ClientResult result = await GetJobAsync(options).ConfigureAwait(false);
         var response = result.GetRawResponse();
         SetRawResponse(response);
@@ -106,7 +107,7 @@ public partial class FineTuningJob : OperationResult
     /// <inheritdoc/>
     public override ClientResult UpdateStatus(RequestOptions? options)
     {
-        options = options ?? new RequestOptions();
+        options ??= new RequestOptions();
         ClientResult result = GetJob(options);
         var response = result.GetRawResponse();
         SetRawResponse(response);
@@ -308,20 +309,22 @@ public partial class FineTuningJob : OperationResult
         message.ResponseClassifier = PipelineMessageClassifier200;
         var request = message.Request;
         request.Method = "GET";
-        var uri = new ClientUriBuilder();
-        uri.Reset(_endpoint);
-        uri.AppendPath("/fine_tuning/jobs/", false);
-        uri.AppendPath(JobId, true);
-        uri.AppendPath("/checkpoints", false);
+
+        var uriBuilder = new UriBuilder(_endpoint);
+        var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+        
+        uriBuilder.Path += "fine_tuning/jobs/" + JobId + "/checkpoints";
+
         if (after != null)
         {
-            uri.AppendQuery("after", after, true);
+            query["after"] = after;
         }
         if (limit != null)
         {
-            uri.AppendQuery("limit", limit.Value, true);
+            query["limit"] = limit.ToString();
         }
-        request.Uri = uri.ToUri();
+        uriBuilder.Query = query.ToString();
+        request.Uri = uriBuilder.Uri;
         request.Headers.Set("Accept", "application/json");
         message.Apply(options);
         return message;

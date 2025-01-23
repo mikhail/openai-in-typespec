@@ -11,44 +11,8 @@ namespace Azure.AI.OpenAI.FineTuning;
 
 internal partial class AzureFineTuningClient : FineTuningClient
 {
-    public override async Task<FineTuningJob> FineTuneAsync(
-        BinaryContent content,
-        bool waitUntilCompleted,
-        RequestOptions options = null)
-    {
-        Argument.AssertNotNull(content, nameof(content));
-
-        using PipelineMessage message = PostJobPipelineMessage(content, options);
-        PipelineResponse response = await Pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false);
-
-        using JsonDocument doc = JsonDocument.Parse(response.Content);
-        string jobId = doc.RootElement.GetProperty("id"u8).GetString();
-        string status = doc.RootElement.GetProperty("status"u8).GetString();
-
-        AzureFineTuningJob operation = new(Pipeline, _endpoint, response, _apiVersion);
-        return await operation.WaitUntilAsync(waitUntilCompleted, options).ConfigureAwait(false);
-    }
-
-    public override FineTuningJob FineTune(
-        BinaryContent content,
-        bool waitUntilCompleted,
-        RequestOptions options = null)
-    {
-        Argument.AssertNotNull(content, nameof(content));
-
-        using PipelineMessage message = PostJobPipelineMessage(content, options);
-        PipelineResponse response = Pipeline.ProcessMessage(message, options);
-
-        using JsonDocument doc = JsonDocument.Parse(response.Content);
-        string jobId = doc.RootElement.GetProperty("id"u8).GetString();
-        string status = doc.RootElement.GetProperty("status"u8).GetString();
-
-        AzureFineTuningJob operation = new(Pipeline, _endpoint, response, _apiVersion);
-        return operation.WaitUntil(waitUntilCompleted, options);
-    }
-
     internal override PipelineMessage PostJobPipelineMessage(BinaryContent content, RequestOptions options)
-        => new AzureOpenAIPipelineMessageBuilder(Pipeline, _endpoint, _apiVersion)
+        => new AzureOpenAIPipelineMessageBuilder(Pipeline, _endpoint)
             .WithMethod("POST")
             .WithPath("fine_tuning", "jobs")
             .WithContent(content, "application/json")
@@ -57,7 +21,7 @@ internal partial class AzureFineTuningClient : FineTuningClient
             .Build();
 
     internal override PipelineMessage GetJobsPipelineMessage(string after, int? limit, RequestOptions options)
-        => new AzureOpenAIPipelineMessageBuilder(Pipeline, _endpoint, _apiVersion)
+        => new AzureOpenAIPipelineMessageBuilder(Pipeline, _endpoint)
             .WithMethod("GET")
             .WithPath("fine_tuning", "jobs")
             .WithOptionalQueryParameter("after", after)
@@ -65,36 +29,6 @@ internal partial class AzureFineTuningClient : FineTuningClient
             .WithAccept("application/json")
             .WithOptions(options)
             .Build();
-
-    //internal static new PipelineMessage GetJobPipelineMessage(ClientPipeline clientPipeline, Uri endpoint, string fineTuningJobId, RequestOptions options)
-    //    => new AzureOpenAIPipelineMessageBuilder(clientPipeline, endpoint, _apiVersion)
-    //        .WithMethod("GET")
-    //        .WithPath("fine_tuning", "jobs", fineTuningJobId)
-    //        .WithAccept("application/json")
-    //        .WithOptions(options)
-    //        .Build();
-
-    private static bool TryGetLastId(ClientResult previous, out string lastId)
-    {
-        Argument.AssertNotNull(previous, nameof(previous));
-
-        using JsonDocument json = JsonDocument.Parse(previous.GetRawResponse().Content);
-        if (!json.RootElement.GetProperty("has_more"u8).GetBoolean())
-        {
-            lastId = null;
-            return false;
-        }
-
-        if (json?.RootElement.TryGetProperty("data", out JsonElement dataElement) == true
-            && dataElement.EnumerateArray().LastOrDefault().TryGetProperty("id", out JsonElement idElement) == true)
-        {
-            lastId = idElement.GetString();
-            return true;
-        }
-
-        lastId = null;
-        return false;
-    }
 }
 
 #endif

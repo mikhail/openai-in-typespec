@@ -21,19 +21,16 @@ internal class AzureFineTuningJob : FineTuningJob
     private readonly ClientPipeline _pipeline;
     private readonly Uri _endpoint;
 
-    private readonly string _apiVersion;
-
     internal AzureFineTuningJob(
         ClientPipeline pipeline,
         Uri endpoint,
-        PipelineResponse response,
-        string apiVersion)
+        PipelineResponse response)
         : base(pipeline, endpoint, response)
     {
         _pipeline = pipeline;
         _endpoint = endpoint;
 
-        _apiVersion = apiVersion;
+        
         _deleteJobClassifier = PipelineMessageClassifier.Create(stackalloc ushort[] { 204 });
     }
 
@@ -53,7 +50,7 @@ internal class AzureFineTuningJob : FineTuningJob
     }
 
     private PipelineMessage CreateDeleteJobRequestMessage(string fineTuningJobId, RequestOptions? options)
-    => new AzureOpenAIPipelineMessageBuilder(_pipeline, _endpoint, _apiVersion)
+    => new AzureOpenAIPipelineMessageBuilder(_pipeline, _endpoint)
         .WithMethod("DELETE")
         .WithPath("fine_tuning", "jobs", fineTuningJobId)
         .WithAccept("application/json")
@@ -64,7 +61,7 @@ internal class AzureFineTuningJob : FineTuningJob
     
 
     internal override PipelineMessage CancelPipelineMessage(string fineTuningJobId, RequestOptions? options)
-    => new AzureOpenAIPipelineMessageBuilder(_pipeline, _endpoint, _apiVersion)
+    => new AzureOpenAIPipelineMessageBuilder(_pipeline, _endpoint)
         .WithMethod("POST")
         .WithPath("fine_tuning", "jobs", fineTuningJobId, "cancel")
         .WithAccept("application/json")
@@ -72,7 +69,7 @@ internal class AzureFineTuningJob : FineTuningJob
         .Build();
 
     internal override PipelineMessage GetCheckpointsPipelineMessage(string fineTuningJobId, string? after, int? limit, RequestOptions? options)
-    => new AzureOpenAIPipelineMessageBuilder(_pipeline, _endpoint, _apiVersion)
+    => new AzureOpenAIPipelineMessageBuilder(_pipeline, _endpoint)
         .WithMethod("GET")
         .WithPath("fine_tuning", "jobs", fineTuningJobId, "checkpoints")
         .WithOptionalQueryParameter("after", after)
@@ -82,7 +79,7 @@ internal class AzureFineTuningJob : FineTuningJob
         .Build();
 
     internal override PipelineMessage GetEventsPipelineMessage(string fineTuningJobId, string? after, int? limit, RequestOptions? options)
-    => new AzureOpenAIPipelineMessageBuilder(_pipeline, _endpoint, _apiVersion)
+    => new AzureOpenAIPipelineMessageBuilder(_pipeline, _endpoint)
         .WithMethod("GET")
         .WithPath("fine_tuning", "jobs", fineTuningJobId, "events")
         .WithOptionalQueryParameter("after", after)
