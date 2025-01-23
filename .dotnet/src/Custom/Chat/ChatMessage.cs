@@ -56,6 +56,11 @@ namespace OpenAI.Chat;
 [CodeGenSerialization(nameof(Content), SerializationValueHook = nameof(SerializeContentValue), DeserializationValueHook = nameof(DeserializeContentValue))]
 public partial class ChatMessage
 {
+    /// <summary>
+    /// The content associated with the message. The interpretation of this content will vary depending on the message type.
+    /// </summary>
+    public ChatMessageContent Content { get; } = new ChatMessageContent();
+
     // CUSTOM: Changed type from string to ChatMessageRole.
     [CodeGenMember("Role")]
     internal ChatMessageRole Role { get; set; }
@@ -88,11 +93,6 @@ public partial class ChatMessage
             Content.Add(ChatMessageContentPart.CreateTextPart(content));
         }
     }
-
-    /// <summary>
-    /// The content associated with the message. The interpretation of this content will vary depending on the message type.
-    /// </summary>
-    public ChatMessageContent Content { get; } = new ChatMessageContent();
 
     #region SystemChatMessage
     /// <inheritdoc cref="SystemChatMessage(string)"/>
@@ -134,6 +134,10 @@ public partial class ChatMessage
 
     /// <inheritdoc cref="AssistantChatMessage(ChatCompletion)"/>
     public static AssistantChatMessage CreateAssistantMessage(ChatCompletion chatCompletion) => new(chatCompletion);
+
+    /// <inheritdoc cref="AssistantChatMessage(ChatOutputAudioReference)"/>
+    public static AssistantChatMessage CreateAssistantMessage(ChatOutputAudioReference outputAudioReference) => new(outputAudioReference);
+
     #endregion
 
     #region ToolChatMessage
