@@ -26,7 +26,6 @@ public enum Method
 [TestFixture]
 [Parallelizable(ParallelScope.Fixtures)]
 [Category("FineTuning")]
-[Category("Smoke")]
 public class FineTuningClientTests
 {
 

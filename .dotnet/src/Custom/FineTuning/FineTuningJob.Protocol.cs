@@ -313,7 +313,7 @@ public partial class FineTuningJob : OperationResult
         var uriBuilder = new UriBuilder(_endpoint);
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
         
-        uriBuilder.Path += "fine_tuning/jobs/" + JobId + "/checkpoints";
+        uriBuilder.Path += "/fine_tuning/jobs/" + JobId + "/checkpoints";
 
         if (after != null)
         {

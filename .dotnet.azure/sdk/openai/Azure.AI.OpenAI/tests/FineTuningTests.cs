@@ -33,7 +33,7 @@ namespace Azure.AI.OpenAI.Tests;
 [Category("FineTuning")]
 public class FineTuningTests : AoaiTestBase<FineTuningClient>
 {
-    public FineTuningTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
+    public FineTuningTests(bool isAsync) : base(isAsync)
     {
         if (Mode == RecordedTestMode.Playback)
         {
@@ -151,7 +151,8 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
     [RecordedTest]
     public async Task CreateCancelDelete()
     {
-        FineTuningClient client = GetTestClient();
+        FineTuningClient openaiClient = GetTestClient(unwrapped: true);
+        AzureFineTuningClient client = (AzureFineTuningClient)openaiClient;
         OpenAIFileClient fileClient = GetTestClientFrom<OpenAIFileClient>(GetTestClient());
     
         var uploadedFile = await UploadAndWaitForCompleteOrFail(fileClient, Assets.FineTuning.RelativePath);

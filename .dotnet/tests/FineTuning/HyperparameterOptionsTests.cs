@@ -6,8 +6,7 @@ namespace OpenAI.Tests.FineTuning;
 
 [Parallelizable(ParallelScope.Fixtures)]
 [Category("FineTuning")]
-[Category("Unit")]
-
+[Category("Smoke")]
 class HyperparameterOptionsTests
 {
     [Test]
