@@ -53,7 +53,7 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
 
         int count = 25;
 
-        await foreach (FineTuningJob job in client.ListJobsAsync(options: new() { PageSize=10 }))
+        await foreach (FineTuningJob job in client.ListJobsAsync(options: new() { PageSize = 10 }))
         {
             if (count-- <= 0)
             {
@@ -121,14 +121,14 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
         await alljobs.ToListAsync();
 
         FineTuningJob job = await alljobs.FirstOrDefaultAsync(j => j.Value == fineTunedModel)!;
-        
+
         Assert.NotNull(job);
         Assert.AreEqual(job.Status, "succeeded");
 
         HashSet<string> ids = [];
 
         int count = 25;
-        var asyncEnum = job.GetEventsAsync(new(){ PageSize = count });
+        var asyncEnum = job.GetEventsAsync(new() { PageSize = count });
 
         await foreach (FineTuningEvent evt in asyncEnum)
         {
@@ -149,21 +149,23 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
     }
 
     [RecordedTest]
+    [Category("Live")]
     public async Task CreateCancelDelete()
     {
-        FineTuningClient openaiClient = GetTestClient(unwrapped: true);
-        AzureFineTuningClient client = (AzureFineTuningClient)openaiClient;
+        // [2025-01-24 mikhailsimin] Castle proxy has a bug with populating non-virtual properties on derived classes
+        // until that is fixed we have to use unwrapped client and tag this as Live.
+
+        FineTuningClient client = GetTestClient(unwrapped: true);
         OpenAIFileClient fileClient = GetTestClientFrom<OpenAIFileClient>(GetTestClient());
-    
+
         var uploadedFile = await UploadAndWaitForCompleteOrFail(fileClient, Assets.FineTuning.RelativePath);
 
-        // Create the fine tuning job
-        var requestContent = new FineTuningOptions()
-        {
-            TrainingMethod = FineTuningTrainingMethod.CreateSupervised()
-        };
 
-        FineTuningJob job = await client.FineTuneAsync("gpt-4o-mini", uploadedFile.Id, requestContent);
+        FineTuningJob job = await client.FineTuneAsync(
+            "gpt-4o-mini",
+            uploadedFile.Id,
+            new() { TrainingMethod = FineTuningTrainingMethod.CreateSupervised() });
+
         Assert.That(job.JobId, Is.Not.Null.Or.Empty);
         Assert.That(job.Status, !(Is.Null.Or.EqualTo("failed").Or.EqualTo("cancelled")));
 
