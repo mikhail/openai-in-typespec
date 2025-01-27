@@ -1,13 +1,16 @@
 using System;
 using System.ClientModel.Primitives;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
 namespace OpenAI.FineTuning;
 
+[Experimental("OPENAI001")]
 [CodeGenModel("CreateFineTuningJobRequestHyperparametersBatchSizeChoiceEnum")]
 internal readonly partial struct InternalCreateFineTuningJobRequestHyperparametersBatchSizeChoiceEnum { }
 
+[Experimental("OPENAI001")]
 [CodeGenModel("CreateFineTuningJobRequestHyperparametersBatchSizeOption")]
 public partial class HyperparameterBatchSize : IEquatable<int>, IEquatable<string>, IJsonModel<HyperparameterBatchSize>
 {

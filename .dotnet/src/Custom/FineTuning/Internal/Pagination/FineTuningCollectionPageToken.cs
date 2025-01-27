@@ -2,12 +2,14 @@
 using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
 #nullable enable
 
 namespace OpenAI.FineTuning;
 
+[Experimental("OPENAI001")]
 internal class FineTuningCollectionPageToken : ContinuationToken
 {
     protected FineTuningCollectionPageToken(int? limit, string? after)

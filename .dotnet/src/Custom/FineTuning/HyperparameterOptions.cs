@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenAI.FineTuning;
 
+[Experimental("OPENAI001")]
 [CodeGenModel("CreateFineTuningJobRequestHyperparameters")]
 internal partial class HyperparameterOptions
 {

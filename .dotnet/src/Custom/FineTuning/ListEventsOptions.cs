@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace OpenAI.FineTuning;
 
+[Experimental("OPENAI001")]
 [CodeGenModel("ListFineTuningJobEventsRequest")]
 public class ListEventsOptions
 {

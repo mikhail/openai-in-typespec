@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ClientModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.Json;
 
@@ -8,6 +9,7 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning;
 
+[Experimental("OPENAI001")]
 internal class FineTuningEventsPageToken : ContinuationToken
 {
     protected FineTuningEventsPageToken(string jobId, string? after, int? limit)

@@ -1,6 +1,7 @@
 ﻿using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 
@@ -8,6 +9,7 @@ using System.Text.Json;
 
 namespace OpenAI.FineTuning;
 
+[Experimental("OPENAI001")]
 internal class FineTuningEventCollectionResult : CollectionResult<FineTuningEvent>
 {
     private readonly FineTuningJob _job;

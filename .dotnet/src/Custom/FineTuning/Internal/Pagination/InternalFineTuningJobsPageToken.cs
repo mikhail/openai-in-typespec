@@ -1,9 +1,11 @@
 ﻿#nullable enable
 
 using System.ClientModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenAI.FineTuning;
 
+[Experimental("OPENAI001")]
 [CodeGenModel("FineTuningJobsPageToken")]
 internal partial class InternalFineTuningJobsPageToken : ContinuationToken
 {

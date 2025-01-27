@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenAI.FineTuning;
 
 
 
+[Experimental("OPENAI001")]
 [CodeGenModel("FineTuningJob")]
-
 internal partial class InternalFineTuningJob
 {
     [CodeGenMember("Id")]

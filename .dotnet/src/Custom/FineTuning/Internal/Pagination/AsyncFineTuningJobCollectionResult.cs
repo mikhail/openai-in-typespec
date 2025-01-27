@@ -4,6 +4,7 @@ using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace OpenAI.FineTuning;
 
+[Experimental("OPENAI001")]
 internal class AsyncFineTuningJobCollectionResult : AsyncCollectionResult<FineTuningJob>
 {
     private readonly FineTuningClient _fineTuningClient;

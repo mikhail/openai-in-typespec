@@ -1,7 +1,9 @@
 using System.ClientModel.Primitives;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenAI.FineTuning;
 
+[Experimental("OPENAI001")]
 [CodeGenModel("FineTuneMethod")]
 public partial class FineTuningTrainingMethod
 {

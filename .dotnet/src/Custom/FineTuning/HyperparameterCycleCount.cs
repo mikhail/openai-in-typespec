@@ -1,13 +1,16 @@
 using System;
 using System.ClientModel.Primitives;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
 namespace OpenAI.FineTuning;
 
+[Experimental("OPENAI001")]
 [CodeGenModel("CreateFineTuningJobRequestHyperparametersNEpochsChoiceEnum")]
 internal readonly partial struct InternalCreateFineTuningJobRequestHyperparametersNEpochsChoiceEnum { }
 
+[Experimental("OPENAI001")]
 [CodeGenModel("CreateFineTuningJobRequestHyperparametersNEpochsOption")]
 public partial class HyperparameterCycleCount : IEquatable<int>, IEquatable<string>, IJsonModel<HyperparameterCycleCount>
 {
