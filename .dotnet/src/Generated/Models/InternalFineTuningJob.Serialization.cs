@@ -187,10 +187,10 @@ namespace OpenAI.FineTuning
             }
             if (_additionalBinaryDataProperties?.ContainsKey("trained_tokens") != true)
             {
-                if (BillableTrainedTokens != null)
+                if (BillableTrainedTokenCount != null)
                 {
                     writer.WritePropertyName("trained_tokens"u8);
-                    writer.WriteNumberValue(BillableTrainedTokens.Value);
+                    writer.WriteNumberValue(BillableTrainedTokenCount);
                 }
                 else
                 {
@@ -255,7 +255,7 @@ namespace OpenAI.FineTuning
             string @object = default;
             FineTuningHyperparameters hyperparameters = default;
             IReadOnlyList<FineTuningIntegration> integrations = default;
-            int? billableTrainedTokens = default;
+            int billableTrainedTokenCount = default;
             IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
             foreach (var prop in element.EnumerateObject())
             {
@@ -406,12 +406,7 @@ namespace OpenAI.FineTuning
                 }
                 if (prop.NameEquals("trained_tokens"u8))
                 {
-                    if (prop.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        billableTrainedTokens = null;
-                        continue;
-                    }
-                    billableTrainedTokens = prop.Value.GetInt32();
+                    billableTrainedTokenCount = prop.Value.GetInt32();
                     continue;
                 }
                 if (true)
@@ -438,7 +433,7 @@ namespace OpenAI.FineTuning
                 @object,
                 hyperparameters,
                 integrations ?? new ChangeTrackingList<FineTuningIntegration>(),
-                billableTrainedTokens,
+                billableTrainedTokenCount,
                 additionalBinaryDataProperties);
         }
 

@@ -8,7 +8,7 @@ using OpenAI;
 
 namespace OpenAI.FineTuning
 {
-    public readonly partial struct CreateFineTuningJobRequestModel : IEquatable<CreateFineTuningJobRequestModel>
+    internal readonly partial struct CreateFineTuningJobRequestModel : IEquatable<CreateFineTuningJobRequestModel>
     {
         private readonly string _value;
         private const string Babbage002Value = "babbage-002";

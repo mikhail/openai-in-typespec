@@ -13,7 +13,7 @@ namespace OpenAI.FineTuning
     {
         private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        internal InternalFineTuningJob(DateTimeOffset createdAt, FineTuningError error, string fineTunedModel, DateTimeOffset? finishedAt, string organizationId, int seed, string jobId, string baseModel, string validationFileId, string trainingFileId, IEnumerable<string> resultFileIds, FineTuningStatus status, FineTuningHyperparameters hyperparameters, int? billableTrainedTokens)
+        internal InternalFineTuningJob(DateTimeOffset createdAt, FineTuningError error, string fineTunedModel, DateTimeOffset? finishedAt, string organizationId, int seed, string jobId, string baseModel, string validationFileId, string trainingFileId, IEnumerable<string> resultFileIds, FineTuningStatus status, FineTuningHyperparameters hyperparameters, int billableTrainedTokenCount)
         {
             CreatedAt = createdAt;
             Error = error;
@@ -29,10 +29,10 @@ namespace OpenAI.FineTuning
             Status = status;
             Hyperparameters = hyperparameters;
             Integrations = new ChangeTrackingList<FineTuningIntegration>();
-            BillableTrainedTokens = billableTrainedTokens;
+            BillableTrainedTokenCount = billableTrainedTokenCount;
         }
 
-        internal InternalFineTuningJob(string userProvidedSuffix, DateTimeOffset createdAt, FineTuningError error, string fineTunedModel, DateTimeOffset? finishedAt, string organizationId, int seed, FineTuningTrainingMethod @method, string jobId, string baseModel, DateTimeOffset? estimatedFinishAt, string validationFileId, string trainingFileId, IReadOnlyList<string> resultFileIds, FineTuningStatus status, string @object, FineTuningHyperparameters hyperparameters, IReadOnlyList<FineTuningIntegration> integrations, int? billableTrainedTokens, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        internal InternalFineTuningJob(string userProvidedSuffix, DateTimeOffset createdAt, FineTuningError error, string fineTunedModel, DateTimeOffset? finishedAt, string organizationId, int seed, FineTuningTrainingMethod @method, string jobId, string baseModel, DateTimeOffset? estimatedFinishAt, string validationFileId, string trainingFileId, IReadOnlyList<string> resultFileIds, FineTuningStatus status, string @object, FineTuningHyperparameters hyperparameters, IReadOnlyList<FineTuningIntegration> integrations, int billableTrainedTokenCount, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             UserProvidedSuffix = userProvidedSuffix;
             CreatedAt = createdAt;
@@ -52,7 +52,7 @@ namespace OpenAI.FineTuning
             _object = @object;
             Hyperparameters = hyperparameters;
             Integrations = integrations;
-            BillableTrainedTokens = billableTrainedTokens;
+            BillableTrainedTokenCount = billableTrainedTokenCount;
             _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 

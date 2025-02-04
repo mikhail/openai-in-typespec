@@ -41,7 +41,7 @@ internal partial class InternalFineTuningJob
     public IReadOnlyList<FineTuningIntegration> Integrations { get; }
 
     [CodeGenMember("TrainedTokens")]
-    public int? BillableTrainedTokens { get; }
+    public int BillableTrainedTokenCount { get; set; }
 
     public override string ToString()
     {

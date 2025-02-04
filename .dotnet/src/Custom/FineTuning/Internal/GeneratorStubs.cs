@@ -23,7 +23,7 @@ internal partial class InternalCreateFineTuningJobRequestWandbIntegrationWandb
 }
 
 [CodeGenModel("CreateFineTuningJobRequestModel")]
-public readonly partial struct CreateFineTuningJobRequestModel { }
+internal readonly partial struct CreateFineTuningJobRequestModel { }
 
 [CodeGenModel("FineTuningJobObject")]
 internal readonly partial struct InternalFineTuningJobObject { }

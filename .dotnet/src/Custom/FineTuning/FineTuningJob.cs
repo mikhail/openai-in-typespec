@@ -28,7 +28,7 @@ public partial class FineTuningJob : OperationResult
 
     internal FineTuningHyperparameters Hyperparameters { get; private set; } = default;
     public IReadOnlyList<FineTuningIntegration> Integrations { get; private set; } = null!;
-    public int? BillableTrainedTokens { get; private set; }
+    public int BillableTrainedTokenCount { get; private set; }
     public string? UserProvidedSuffix { get; private set; }
     public int? Seed { get; private set; }
     public FineTuningTrainingMethod? TrainingMethod { get; private set; } = default;

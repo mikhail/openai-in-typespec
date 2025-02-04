@@ -12,7 +12,7 @@ namespace OpenAI.FineTuning;
 public partial class FineTuningOptions
 {
     [CodeGenMember("CreateFineTuningJobRequestModel")]
-    internal CreateFineTuningJobRequestModel Model { get; set; }
+    internal string Model { get; set; }
 
     [CodeGenMember("TrainingFile")]
     internal string TrainingFile { get; set; }
@@ -56,7 +56,7 @@ public partial class FineTuningOptions
         Integrations = new ChangeTrackingList<FineTuningIntegration>();
     }
 
-    internal FineTuningOptions(CreateFineTuningJobRequestModel model, string trainingFile)
+    internal FineTuningOptions(string model, string trainingFile)
         : this()
     {
         Argument.AssertNotNull(trainingFile, nameof(trainingFile));

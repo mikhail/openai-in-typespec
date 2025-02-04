@@ -27,15 +27,10 @@ namespace OpenAI.FineTuning
             {
                 throw new FormatException($"The model {nameof(FineTuningOptions)} does not support writing '{format}' format.");
             }
-            if (Optional.IsDefined(TrainingMethod) && _additionalBinaryDataProperties?.ContainsKey("method") != true)
-            {
-                writer.WritePropertyName("method"u8);
-                writer.WriteObjectValue(TrainingMethod, options);
-            }
             if (_additionalBinaryDataProperties?.ContainsKey("model") != true)
             {
                 writer.WritePropertyName("model"u8);
-                writer.WriteStringValue(Model.ToString());
+                writer.WriteStringValue(Model);
             }
             if (_additionalBinaryDataProperties?.ContainsKey("training_file") != true)
             {
@@ -100,6 +95,11 @@ namespace OpenAI.FineTuning
                     writer.WriteNull("seed"u8);
                 }
             }
+            if (Optional.IsDefined(TrainingMethod) && _additionalBinaryDataProperties?.ContainsKey("method") != true)
+            {
+                writer.WritePropertyName("method"u8);
+                writer.WriteObjectValue<FineTuningTrainingMethod>(TrainingMethod, options);
+            }
             if (true && _additionalBinaryDataProperties != null)
             {
                 foreach (var item in _additionalBinaryDataProperties)
@@ -140,29 +140,20 @@ namespace OpenAI.FineTuning
             {
                 return null;
             }
-            FineTuningTrainingMethod @method = default;
-            CreateFineTuningJobRequestModel model = default;
+            string model = default;
             string trainingFile = default;
             HyperparameterOptions hyperparameters = default;
             string suffix = default;
             string validationFile = default;
             IList<FineTuningIntegration> integrations = default;
             int? seed = default;
+            FineTuningTrainingMethod trainingMethod = default;
             IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
             foreach (var prop in element.EnumerateObject())
             {
-                if (prop.NameEquals("method"u8))
-                {
-                    if (prop.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        continue;
-                    }
-                    @method = FineTuningTrainingMethod.DeserializeFineTuningTrainingMethod(prop.Value, options);
-                    continue;
-                }
                 if (prop.NameEquals("model"u8))
                 {
-                    model = new CreateFineTuningJobRequestModel(prop.Value.GetString());
+                    model = prop.Value.GetString();
                     continue;
                 }
                 if (prop.NameEquals("training_file"u8))
@@ -223,13 +214,21 @@ namespace OpenAI.FineTuning
                     seed = prop.Value.GetInt32();
                     continue;
                 }
+                if (prop.NameEquals("method"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    trainingMethod = FineTuningTrainingMethod.DeserializeFineTuningTrainingMethod(prop.Value, options);
+                    continue;
+                }
                 if (true)
                 {
                     additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
             return new FineTuningOptions(
-                @method,
                 model,
                 trainingFile,
                 hyperparameters,
@@ -237,6 +236,7 @@ namespace OpenAI.FineTuning
                 validationFile,
                 integrations ?? new ChangeTrackingList<FineTuningIntegration>(),
                 seed,
+                trainingMethod,
                 additionalBinaryDataProperties);
         }
 

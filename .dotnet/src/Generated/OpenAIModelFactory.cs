@@ -823,12 +823,11 @@ namespace OpenAI
                 additionalBinaryDataProperties: null);
         }
 
-        public static FineTuningOptions FineTuningOptions(FineTuningTrainingMethod @method = default, CreateFineTuningJobRequestModel model = default, string trainingFile = default, HyperparameterOptions hyperparameters = default, string suffix = default, string validationFile = default, IEnumerable<FineTuningIntegration> integrations = default, int? seed = default)
+        public static FineTuningOptions FineTuningOptions(string model = default, string trainingFile = default, HyperparameterOptions hyperparameters = default, string suffix = default, string validationFile = default, IEnumerable<FineTuningIntegration> integrations = default, int? seed = default, FineTuningTrainingMethod trainingMethod = default)
         {
             integrations ??= new ChangeTrackingList<FineTuningIntegration>();
 
             return new FineTuningOptions(
-                @method,
                 model,
                 trainingFile,
                 hyperparameters,
@@ -836,6 +835,7 @@ namespace OpenAI
                 validationFile,
                 integrations?.ToList(),
                 seed,
+                trainingMethod,
                 additionalBinaryDataProperties: null);
         }
 
