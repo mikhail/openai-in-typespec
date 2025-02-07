@@ -177,6 +177,15 @@ public partial class ChatCompletionOptions
     [CodeGenMember("Store")]
     public bool? StoredOutputEnabled { get; set; }
 
+    // CUSTOM: Renamed.
+    /// <summary>
+    /// (o1 and newer reasoning models only) Constrains effort on reasoning for reasoning models.
+    /// Currently supported values are <see cref="ChatReasoningEffortLevel.Low"/>, <see cref="ChatReasoningEffortLevel.Medium"/>, and <see cref="ChatReasoningEffortLevel.High"/>.
+    /// Reducing reasoning effort can result in faster responses and fewer tokens used on reasoning in a response.
+    /// </summary>
+    [CodeGenMember("ReasoningEffort")]
+    public ChatReasoningEffortLevel? ReasoningEffortLevel { get; set; }
+
     // CUSTOM: Made internal for automatic enablement via audio options.
     [CodeGenMember("Modalities")]
     private IList<InternalCreateChatCompletionRequestModality> _internalModalities = new ChangeTrackingList<InternalCreateChatCompletionRequestModality>();
@@ -210,4 +219,8 @@ public partial class ChatCompletionOptions
                 : [InternalCreateChatCompletionRequestModality.Text, InternalCreateChatCompletionRequestModality.Audio];
         }
     }
+
+    // CUSTOM: rename.
+    [CodeGenMember("Prediction")]
+    public ChatOutputPrediction OutputPrediction { get; set; }
 }

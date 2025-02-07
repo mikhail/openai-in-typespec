@@ -194,3 +194,15 @@ Update-In-File-With-Retry `
     ) `
     -OutputIndentation 12 `
     -RequirePresence
+
+Update-In-File-With-Retry `
+    -FilePath "$directory\InternalChatOutputPredictionContent.Serialization.cs" `
+    -SearchPatternLines @(
+        "if \(_additionalBinaryDataProperties\?\.ContainsKey\(`"content`"\) != true\)"
+    ) `
+    -ReplacePatternLines @(
+        "// CUSTOM: Check inner collection is defined."
+        "if (Content.IsInnerCollectionDefined() && _additionalBinaryDataProperties?.ContainsKey(`"content`") != true)"
+    ) `
+    -OutputIndentation 12 `
+    -RequirePresence

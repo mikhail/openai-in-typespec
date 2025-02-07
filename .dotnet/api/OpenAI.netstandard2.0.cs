@@ -224,7 +224,7 @@ namespace OpenAI.Assistants {
     public class AssistantCreationOptions : IJsonModel<AssistantCreationOptions>, IPersistableModel<AssistantCreationOptions> {
         public string Description { get; set; }
         public string Instructions { get; set; }
-        public IDictionary<string, string> Metadata { get; set; }
+        public IDictionary<string, string> Metadata { get; }
         public string Name { get; set; }
         public float? NucleusSamplingFactor { get; set; }
         public AssistantResponseFormat ResponseFormat { get; set; }
@@ -244,7 +244,7 @@ namespace OpenAI.Assistants {
         public IList<ToolDefinition> DefaultTools { get; }
         public string Description { get; set; }
         public string Instructions { get; set; }
-        public IDictionary<string, string> Metadata { get; set; }
+        public IDictionary<string, string> Metadata { get; }
         public string Model { get; set; }
         public string Name { get; set; }
         public float? NucleusSamplingFactor { get; set; }
@@ -406,7 +406,7 @@ namespace OpenAI.Assistants {
     }
     public class MessageCreationOptions : IJsonModel<MessageCreationOptions>, IPersistableModel<MessageCreationOptions> {
         public IList<MessageCreationAttachment> Attachments { get; set; }
-        public IDictionary<string, string> Metadata { get; set; }
+        public IDictionary<string, string> Metadata { get; }
         public static explicit operator MessageCreationOptions(ClientResult result);
         public static implicit operator BinaryContent(MessageCreationOptions messageCreationOptions);
     }
@@ -444,7 +444,7 @@ namespace OpenAI.Assistants {
         High = 2
     }
     public class MessageModificationOptions : IJsonModel<MessageModificationOptions>, IPersistableModel<MessageModificationOptions> {
-        public IDictionary<string, string> Metadata { get; set; }
+        public IDictionary<string, string> Metadata { get; }
         public static explicit operator MessageModificationOptions(ClientResult result);
         public static implicit operator BinaryContent(MessageModificationOptions messageModificationOptions);
     }
@@ -559,7 +559,7 @@ namespace OpenAI.Assistants {
         public override readonly string ToString();
     }
     public class RunModificationOptions : IJsonModel<RunModificationOptions>, IPersistableModel<RunModificationOptions> {
-        public IDictionary<string, string> Metadata { get; set; }
+        public IDictionary<string, string> Metadata { get; }
         public static explicit operator RunModificationOptions(ClientResult result);
         public static implicit operator BinaryContent(RunModificationOptions runModificationOptions);
     }
@@ -809,7 +809,7 @@ namespace OpenAI.Assistants {
     }
     public class ThreadCreationOptions : IJsonModel<ThreadCreationOptions>, IPersistableModel<ThreadCreationOptions> {
         public IList<ThreadInitializationMessage> InitialMessages { get; }
-        public IDictionary<string, string> Metadata { get; set; }
+        public IDictionary<string, string> Metadata { get; }
         public ToolResources ToolResources { get; set; }
         public static explicit operator ThreadCreationOptions(ClientResult result);
         public static implicit operator BinaryContent(ThreadCreationOptions threadCreationOptions);
@@ -842,7 +842,7 @@ namespace OpenAI.Assistants {
         public static implicit operator BinaryContent(ThreadMessage threadMessage);
     }
     public class ThreadModificationOptions : IJsonModel<ThreadModificationOptions>, IPersistableModel<ThreadModificationOptions> {
-        public IDictionary<string, string> Metadata { get; set; }
+        public IDictionary<string, string> Metadata { get; }
         public ToolResources ToolResources { get; set; }
         public static explicit operator ThreadModificationOptions(ClientResult result);
         public static implicit operator BinaryContent(ThreadModificationOptions threadModificationOptions);
@@ -1050,10 +1050,13 @@ namespace OpenAI.Audio {
     public readonly partial struct GeneratedSpeechVoice : IEquatable<GeneratedSpeechVoice> {
         public GeneratedSpeechVoice(string value);
         public static GeneratedSpeechVoice Alloy { get; }
+        public static GeneratedSpeechVoice Ash { get; }
+        public static GeneratedSpeechVoice Coral { get; }
         public static GeneratedSpeechVoice Echo { get; }
         public static GeneratedSpeechVoice Fable { get; }
         public static GeneratedSpeechVoice Nova { get; }
         public static GeneratedSpeechVoice Onyx { get; }
+        public static GeneratedSpeechVoice Sage { get; }
         public static GeneratedSpeechVoice Shimmer { get; }
         public readonly bool Equals(GeneratedSpeechVoice other);
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -1207,7 +1210,9 @@ namespace OpenAI.Chat {
         public IDictionary<int, int> LogitBiases { get; }
         public int? MaxOutputTokenCount { get; set; }
         public IDictionary<string, string> Metadata { get; }
+        public ChatOutputPrediction OutputPrediction { get; set; }
         public float? PresencePenalty { get; set; }
+        public ChatReasoningEffortLevel? ReasoningEffortLevel { get; set; }
         public ChatResponseFormat ResponseFormat { get; set; }
         public ChatResponseModalities ResponseModalities { get; set; }
         public long? Seed { get; set; }
@@ -1297,6 +1302,9 @@ namespace OpenAI.Chat {
         public static AssistantChatMessage CreateAssistantMessage(IEnumerable<ChatMessageContentPart> contentParts);
         public static AssistantChatMessage CreateAssistantMessage(IEnumerable<ChatToolCall> toolCalls);
         public static AssistantChatMessage CreateAssistantMessage(string content);
+        public static DeveloperChatMessage CreateDeveloperMessage(params ChatMessageContentPart[] contentParts);
+        public static DeveloperChatMessage CreateDeveloperMessage(IEnumerable<ChatMessageContentPart> contentParts);
+        public static DeveloperChatMessage CreateDeveloperMessage(string content);
         [Obsolete("This method is obsolete. Please use CreateToolMessage instead.")]
         public static FunctionChatMessage CreateFunctionMessage(string functionName, string content);
         public static SystemChatMessage CreateSystemMessage(params ChatMessageContentPart[] contentParts);
@@ -1348,7 +1356,8 @@ namespace OpenAI.Chat {
         User = 1,
         Assistant = 2,
         Tool = 3,
-        Function = 4
+        Function = 4,
+        Developer = 5
     }
     public class ChatOutputAudio : IJsonModel<ChatOutputAudio>, IPersistableModel<ChatOutputAudio> {
         public BinaryData AudioBytes { get; }
@@ -1384,11 +1393,13 @@ namespace OpenAI.Chat {
     public readonly partial struct ChatOutputAudioVoice : IEquatable<ChatOutputAudioVoice> {
         public ChatOutputAudioVoice(string value);
         public static ChatOutputAudioVoice Alloy { get; }
+        public static ChatOutputAudioVoice Ash { get; }
+        public static ChatOutputAudioVoice Ballad { get; }
+        public static ChatOutputAudioVoice Coral { get; }
         public static ChatOutputAudioVoice Echo { get; }
-        public static ChatOutputAudioVoice Fable { get; }
-        public static ChatOutputAudioVoice Nova { get; }
-        public static ChatOutputAudioVoice Onyx { get; }
+        public static ChatOutputAudioVoice Sage { get; }
         public static ChatOutputAudioVoice Shimmer { get; }
+        public static ChatOutputAudioVoice Verse { get; }
         public readonly bool Equals(ChatOutputAudioVoice other);
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override readonly bool Equals(object obj);
@@ -1399,11 +1410,34 @@ namespace OpenAI.Chat {
         public static bool operator !=(ChatOutputAudioVoice left, ChatOutputAudioVoice right);
         public override readonly string ToString();
     }
+    public class ChatOutputPrediction : IJsonModel<ChatOutputPrediction>, IPersistableModel<ChatOutputPrediction> {
+        public static ChatOutputPrediction CreateStaticContentPrediction(IEnumerable<ChatMessageContentPart> staticContentParts);
+        public static ChatOutputPrediction CreateStaticContentPrediction(string staticContent);
+        public static explicit operator ChatOutputPrediction(ClientResult result);
+        public static implicit operator BinaryContent(ChatOutputPrediction chatOutputPrediction);
+    }
     public class ChatOutputTokenUsageDetails : IJsonModel<ChatOutputTokenUsageDetails>, IPersistableModel<ChatOutputTokenUsageDetails> {
+        public int AcceptedPredictionTokenCount { get; }
         public int AudioTokenCount { get; }
         public int ReasoningTokenCount { get; }
+        public int RejectedPredictionTokenCount { get; }
         public static explicit operator ChatOutputTokenUsageDetails(ClientResult result);
         public static implicit operator BinaryContent(ChatOutputTokenUsageDetails chatOutputTokenUsageDetails);
+    }
+    public readonly partial struct ChatReasoningEffortLevel : IEquatable<ChatReasoningEffortLevel> {
+        public ChatReasoningEffortLevel(string value);
+        public static ChatReasoningEffortLevel High { get; }
+        public static ChatReasoningEffortLevel Low { get; }
+        public static ChatReasoningEffortLevel Medium { get; }
+        public readonly bool Equals(ChatReasoningEffortLevel other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(ChatReasoningEffortLevel left, ChatReasoningEffortLevel right);
+        public static implicit operator ChatReasoningEffortLevel(string value);
+        public static bool operator !=(ChatReasoningEffortLevel left, ChatReasoningEffortLevel right);
+        public override readonly string ToString();
     }
     public class ChatResponseFormat : IJsonModel<ChatResponseFormat>, IPersistableModel<ChatResponseFormat> {
         public static ChatResponseFormat CreateJsonObjectFormat();
@@ -1475,6 +1509,18 @@ namespace OpenAI.Chat {
     public enum ChatToolKind {
         Function = 0
     }
+    public class DeveloperChatMessage : ChatMessage, IJsonModel<DeveloperChatMessage>, IPersistableModel<DeveloperChatMessage> {
+        public DeveloperChatMessage(params ChatMessageContentPart[] contentParts);
+        public DeveloperChatMessage(IEnumerable<ChatMessageContentPart> contentParts);
+        public DeveloperChatMessage(string content);
+        public string ParticipantName { get; set; }
+        protected override ChatMessage JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options);
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
+        public new static explicit operator DeveloperChatMessage(ClientResult result);
+        public static implicit operator BinaryContent(DeveloperChatMessage developerChatMessage);
+        protected override ChatMessage PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options);
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options);
+    }
     [Obsolete("This class is obsolete. Please use ToolChatMessage instead.")]
     public class FunctionChatMessage : ChatMessage, IJsonModel<FunctionChatMessage>, IPersistableModel<FunctionChatMessage> {
         public FunctionChatMessage(string functionName, string content);
@@ -1490,7 +1536,7 @@ namespace OpenAI.Chat {
         public static ChatCompletion ChatCompletion(string id = null, ChatFinishReason finishReason = ChatFinishReason.Stop, ChatMessageContent content = null, string refusal = null, IEnumerable<ChatToolCall> toolCalls = null, ChatMessageRole role = ChatMessageRole.System, ChatFunctionCall functionCall = null, IEnumerable<ChatTokenLogProbabilityDetails> contentTokenLogProbabilities = null, IEnumerable<ChatTokenLogProbabilityDetails> refusalTokenLogProbabilities = null, DateTimeOffset createdAt = default, string model = null, string systemFingerprint = null, ChatTokenUsage usage = null, ChatOutputAudio outputAudio = null);
         public static ChatInputTokenUsageDetails ChatInputTokenUsageDetails(int audioTokenCount = 0, int cachedTokenCount = 0);
         public static ChatOutputAudio ChatOutputAudio(BinaryData audioBytes, string id = null, string transcript = null, DateTimeOffset expiresAt = default);
-        public static ChatOutputTokenUsageDetails ChatOutputTokenUsageDetails(int reasoningTokenCount = 0, int audioTokenCount = 0);
+        public static ChatOutputTokenUsageDetails ChatOutputTokenUsageDetails(int reasoningTokenCount = 0, int audioTokenCount = 0, int acceptedPredictionTokenCount = 0, int rejectedPredictionTokenCount = 0);
         public static ChatTokenLogProbabilityDetails ChatTokenLogProbabilityDetails(string token = null, float logProbability = 0, ReadOnlyMemory<byte>? utf8Bytes = null, IEnumerable<ChatTokenTopLogProbabilityDetails> topLogProbabilities = null);
         public static ChatTokenTopLogProbabilityDetails ChatTokenTopLogProbabilityDetails(string token = null, float logProbability = 0, ReadOnlyMemory<byte>? utf8Bytes = null);
         public static ChatTokenUsage ChatTokenUsage(int outputTokenCount = 0, int inputTokenCount = 0, int totalTokenCount = 0, ChatOutputTokenUsageDetails outputTokenDetails = null, ChatInputTokenUsageDetails inputTokenDetails = null);
@@ -2098,6 +2144,22 @@ namespace OpenAI.RealtimeConversation {
         protected override ConversationTool PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options);
         protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options);
     }
+    public readonly partial struct ConversationIncompleteReason : IEquatable<ConversationIncompleteReason> {
+        public ConversationIncompleteReason(string value);
+        public static ConversationIncompleteReason ClientCancelled { get; }
+        public static ConversationIncompleteReason ContentFilter { get; }
+        public static ConversationIncompleteReason MaxOutputTokens { get; }
+        public static ConversationIncompleteReason TurnDetected { get; }
+        public readonly bool Equals(ConversationIncompleteReason other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(ConversationIncompleteReason left, ConversationIncompleteReason right);
+        public static implicit operator ConversationIncompleteReason(string value);
+        public static bool operator !=(ConversationIncompleteReason left, ConversationIncompleteReason right);
+        public override readonly string ToString();
+    }
     public class ConversationInputAudioClearedUpdate : ConversationUpdate, IJsonModel<ConversationInputAudioClearedUpdate>, IPersistableModel<ConversationInputAudioClearedUpdate> {
         protected override ConversationUpdate JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options);
         protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options);
@@ -2137,9 +2199,9 @@ namespace OpenAI.RealtimeConversation {
         protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options);
     }
     public class ConversationInputTokenUsageDetails : IJsonModel<ConversationInputTokenUsageDetails>, IPersistableModel<ConversationInputTokenUsageDetails> {
-        public int AudioTokens { get; }
-        public int CachedTokens { get; }
-        public int TextTokens { get; }
+        public int AudioTokenCount { get; }
+        public int CachedTokenCount { get; }
+        public int TextTokenCount { get; }
         public static explicit operator ConversationInputTokenUsageDetails(ClientResult result);
         public static implicit operator BinaryContent(ConversationInputTokenUsageDetails conversationInputTokenUsageDetails);
     }
@@ -2355,8 +2417,8 @@ namespace OpenAI.RealtimeConversation {
         public override readonly string ToString();
     }
     public class ConversationOutputTokenUsageDetails : IJsonModel<ConversationOutputTokenUsageDetails>, IPersistableModel<ConversationOutputTokenUsageDetails> {
-        public int AudioTokens { get; }
-        public int TextTokens { get; }
+        public int AudioTokenCount { get; }
+        public int TextTokenCount { get; }
         public static explicit operator ConversationOutputTokenUsageDetails(ClientResult result);
         public static implicit operator BinaryContent(ConversationOutputTokenUsageDetails conversationOutputTokenUsageDetails);
     }
@@ -2391,6 +2453,21 @@ namespace OpenAI.RealtimeConversation {
         public static implicit operator BinaryContent(ConversationResponseFinishedUpdate conversationResponseFinishedUpdate);
         protected override ConversationUpdate PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options);
         protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options);
+    }
+    public class ConversationResponseOptions : IJsonModel<ConversationResponseOptions>, IPersistableModel<ConversationResponseOptions> {
+        public ConversationContentModalities ContentModalities { get; set; }
+        public ResponseConversationSelection? ConversationSelection { get; set; }
+        public string Instructions { get; set; }
+        public ConversationMaxTokensChoice MaxOutputTokens { get; set; }
+        public IDictionary<string, string> Metadata { get; }
+        public ConversationAudioFormat? OutputAudioFormat { get; set; }
+        public IList<ConversationItem> OverrideItems { get; }
+        public float? Temperature { get; set; }
+        public ConversationToolChoice ToolChoice { get; set; }
+        public IList<ConversationTool> Tools { get; }
+        public ConversationVoice? Voice { get; set; }
+        public static explicit operator ConversationResponseOptions(ClientResult result);
+        public static implicit operator BinaryContent(ConversationResponseOptions conversationResponseOptions);
     }
     public class ConversationResponseStartedUpdate : ConversationUpdate, IJsonModel<ConversationResponseStartedUpdate>, IPersistableModel<ConversationResponseStartedUpdate> {
         public IReadOnlyList<ConversationItem> CreatedItems { get; }
@@ -2468,7 +2545,6 @@ namespace OpenAI.RealtimeConversation {
         public static ConversationStatus Completed { get; }
         public static ConversationStatus Failed { get; }
         public static ConversationStatus Incomplete { get; }
-        public static ConversationStatus InProgress { get; }
         public readonly bool Equals(ConversationStatus other);
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override readonly bool Equals(object obj);
@@ -2479,17 +2555,20 @@ namespace OpenAI.RealtimeConversation {
         public static bool operator !=(ConversationStatus left, ConversationStatus right);
         public override readonly string ToString();
     }
-    public abstract class ConversationStatusDetails : IJsonModel<ConversationStatusDetails>, IPersistableModel<ConversationStatusDetails> {
+    public class ConversationStatusDetails : IJsonModel<ConversationStatusDetails>, IPersistableModel<ConversationStatusDetails> {
+        public string ErrorCode { get; }
+        public string ErrorKind { get; }
+        public ConversationIncompleteReason? IncompleteReason { get; }
         public ConversationStatus StatusKind { get; }
         public static explicit operator ConversationStatusDetails(ClientResult result);
         public static implicit operator BinaryContent(ConversationStatusDetails conversationStatusDetails);
     }
     public class ConversationTokenUsage : IJsonModel<ConversationTokenUsage>, IPersistableModel<ConversationTokenUsage> {
+        public int InputTokenCount { get; }
         public ConversationInputTokenUsageDetails InputTokenDetails { get; }
-        public int InputTokens { get; }
+        public int OutputTokenCount { get; }
         public ConversationOutputTokenUsageDetails OutputTokenDetails { get; }
-        public int OutputTokens { get; }
-        public int TotalTokens { get; }
+        public int TotalTokenCount { get; }
         public static explicit operator ConversationTokenUsage(ClientResult result);
         public static implicit operator BinaryContent(ConversationTokenUsage conversationTokenUsage);
     }
@@ -2547,7 +2626,7 @@ namespace OpenAI.RealtimeConversation {
     public abstract class ConversationTurnDetectionOptions : IJsonModel<ConversationTurnDetectionOptions>, IPersistableModel<ConversationTurnDetectionOptions> {
         public ConversationTurnDetectionKind Kind { get; protected internal set; }
         public static ConversationTurnDetectionOptions CreateDisabledTurnDetectionOptions();
-        public static ConversationTurnDetectionOptions CreateServerVoiceActivityTurnDetectionOptions(float? detectionThreshold = null, TimeSpan? prefixPaddingDuration = null, TimeSpan? silenceDuration = null);
+        public static ConversationTurnDetectionOptions CreateServerVoiceActivityTurnDetectionOptions(float? detectionThreshold = null, TimeSpan? prefixPaddingDuration = null, TimeSpan? silenceDuration = null, bool? enableAutomaticResponseCreation = null);
         public static explicit operator ConversationTurnDetectionOptions(ClientResult result);
         public static implicit operator BinaryContent(ConversationTurnDetectionOptions conversationTurnDetectionOptions);
     }
@@ -2592,8 +2671,13 @@ namespace OpenAI.RealtimeConversation {
     public readonly partial struct ConversationVoice : IEquatable<ConversationVoice> {
         public ConversationVoice(string value);
         public static ConversationVoice Alloy { get; }
+        public static ConversationVoice Ash { get; }
+        public static ConversationVoice Ballad { get; }
+        public static ConversationVoice Coral { get; }
         public static ConversationVoice Echo { get; }
+        public static ConversationVoice Sage { get; }
         public static ConversationVoice Shimmer { get; }
+        public static ConversationVoice Verse { get; }
         public readonly bool Equals(ConversationVoice other);
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override readonly bool Equals(object obj);
@@ -2654,12 +2738,26 @@ namespace OpenAI.RealtimeConversation {
         public virtual void SendInputAudio(Stream audio, CancellationToken cancellationToken = default);
         public virtual Task SendInputAudioAsync(BinaryData audio, CancellationToken cancellationToken = default);
         public virtual Task SendInputAudioAsync(Stream audio, CancellationToken cancellationToken = default);
-        public virtual void StartResponse(ConversationSessionOptions sessionOptionOverrides, CancellationToken cancellationToken = default);
-        public virtual void StartResponse(CancellationToken cancellationToken = default);
-        public virtual Task StartResponseAsync(ConversationSessionOptions sessionOptionOverrides, CancellationToken cancellationToken = default);
+        public virtual void StartResponse(ConversationResponseOptions options, CancellationToken cancellationToken = default);
+        public void StartResponse(CancellationToken cancellationToken = default);
+        public virtual Task StartResponseAsync(ConversationResponseOptions options, CancellationToken cancellationToken = default);
         public virtual Task StartResponseAsync(CancellationToken cancellationToken = default);
         public virtual void TruncateItem(string itemId, int contentPartIndex, TimeSpan audioDuration, CancellationToken cancellationToken = default);
         public virtual Task TruncateItemAsync(string itemId, int contentPartIndex, TimeSpan audioDuration, CancellationToken cancellationToken = default);
+    }
+    public readonly partial struct ResponseConversationSelection : IEquatable<ResponseConversationSelection> {
+        public ResponseConversationSelection(string value);
+        public static ResponseConversationSelection Auto { get; }
+        public static ResponseConversationSelection None { get; }
+        public readonly bool Equals(ResponseConversationSelection other);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object obj);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode();
+        public static bool operator ==(ResponseConversationSelection left, ResponseConversationSelection right);
+        public static implicit operator ResponseConversationSelection(string value);
+        public static bool operator !=(ResponseConversationSelection left, ResponseConversationSelection right);
+        public override readonly string ToString();
     }
 }
 namespace OpenAI.VectorStores {
@@ -2891,7 +2989,7 @@ namespace OpenAI.VectorStores {
         public FileChunkingStrategy ChunkingStrategy { get; set; }
         public VectorStoreExpirationPolicy ExpirationPolicy { get; set; }
         public IList<string> FileIds { get; }
-        public IDictionary<string, string> Metadata { get; set; }
+        public IDictionary<string, string> Metadata { get; }
         public string Name { get; set; }
         public static explicit operator VectorStoreCreationOptions(ClientResult result);
         public static implicit operator BinaryContent(VectorStoreCreationOptions vectorStoreCreationOptions);
@@ -3001,7 +3099,7 @@ namespace OpenAI.VectorStores {
     }
     public class VectorStoreModificationOptions : IJsonModel<VectorStoreModificationOptions>, IPersistableModel<VectorStoreModificationOptions> {
         public VectorStoreExpirationPolicy ExpirationPolicy { get; set; }
-        public IDictionary<string, string> Metadata { get; set; }
+        public IDictionary<string, string> Metadata { get; }
         public string Name { get; set; }
         public static explicit operator VectorStoreModificationOptions(ClientResult result);
         public static implicit operator BinaryContent(VectorStoreModificationOptions vectorStoreModificationOptions);
