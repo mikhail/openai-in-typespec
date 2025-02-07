@@ -71,6 +71,11 @@ internal static class AdditionalPropertyHelpers
         return GetAdditionalPropertyAsList(additionalProperties, additionalPropertyKey, RequestContentFilterResult.DeserializeRequestContentFilterResult);
     }
 
+    internal static UserSecurityContext GetAdditionalPropertyAsUserSecurityContext(IDictionary<string, BinaryData> additionalProperties, string additionalPropertyKey)
+    {
+        return GetAdditionalProperty(additionalProperties, additionalPropertyKey, UserSecurityContext.DeserializeUserSecurityContext);
+    }
+
     internal static void SetAdditionalProperty<T>(IDictionary<string, BinaryData> additionalProperties, string key, T value)
     {
         using MemoryStream stream = new();

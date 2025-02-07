@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Azure OpenAI Service
-  version: 2024-10-01-preview
+  version: 2025-01-01-preview
 tags:
   - name: Chat
   - name: Images
@@ -287,8 +287,9 @@ components:
             https://YOUR_RESOURCE_NAME.openai.azure.com/openai/deployments/YOUR_DEPLOYMENT_NAME/embeddings.
             The api-version query parameter is not allowed.
         authentication:
-          allOf:
+          anyOf:
             - $ref: '#/components/schemas/AzureChatDataSourceApiKeyAuthenticationOptions'
+            - $ref: '#/components/schemas/AzureChatDataSourceAccessTokenAuthenticationOptions'
           description: |-
             The authentication mechanism to use with the endpoint-based vectorization source.
             Endpoint authentication supports API key and access token mechanisms.
@@ -920,6 +921,41 @@ components:
             [model](/docs/models) you use, different message types (modalities) are
             supported, like [text](/docs/guides/text-generation),
             [images](/docs/guides/vision), and [audio](/docs/guides/audio).
+        store:
+          type: boolean
+          nullable: true
+          description: |-
+            Whether or not to store the output of this chat completion request for
+            use in our [model distillation](/docs/guides/distillation) or
+            [evals](/docs/guides/evals) products.
+          default: false
+        reasoning_effort:
+          type: string
+          enum:
+            - low
+            - medium
+            - high
+          description: |-
+            **o1 models only** 
+
+            Constrains effort on reasoning for 
+            [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+            Currently supported values are `low`, `medium`, and `high`. Reducing
+            reasoning effort can result in faster responses and fewer tokens used
+            on reasoning in a response.
+          default: medium
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: |-
+            Set of 16 key-value pairs that can be attached to an object. This can be
+            useful for storing additional information about the object in a structured
+            format, and querying for objects via API or the dashboard.
+
+            Keys are strings with a maximum length of 64 characters. Values are strings
+            with a maximum length of 512 characters.
+          x-oaiTypeLabel: map
         frequency_penalty:
           type: number
           format: float
@@ -991,6 +1027,56 @@ components:
           maximum: 128
           description: How many chat completion choices to generate for each input message. Note that you will be charged based on the number of generated tokens across all of the choices. Keep `n` as `1` to minimize costs.
           default: 1
+        modalities:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ChatCompletionModalities'
+          nullable: true
+        prediction:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/OpenAI.ChatOutputPrediction'
+          nullable: true
+          description: |-
+            Configuration for a [Predicted Output](/docs/guides/predicted-outputs),
+            which can greatly improve response times when large parts of the model
+            response are known ahead of time. This is most common when you are
+            regenerating a file with only minor changes to most of the content.
+          x-oaiExpandable: true
+        audio:
+          type: object
+          properties:
+            voice:
+              type: string
+              enum:
+                - alloy
+                - ash
+                - ballad
+                - coral
+                - echo
+                - sage
+                - shimmer
+                - verse
+              description: The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`, `sage`, and `verse` (also supported but not recommended are `alloy`, `echo`, and `shimmer`; these voices are less expressive).
+            format:
+              type: string
+              enum:
+                - wav
+                - mp3
+                - flac
+                - opus
+                - pcm16
+              description: |-
+                Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`,
+                `opus`, or `pcm16`.
+          required:
+            - voice
+            - format
+          nullable: true
+          description: |-
+            Parameters for audio output. Required when audio output is requested with
+            `modalities: ["audio"]`. [Learn more](/docs/guides/audio).
+          x-oaiExpandable: true
         presence_penalty:
           type: number
           format: float
@@ -1131,6 +1217,8 @@ components:
           items:
             $ref: '#/components/schemas/AzureChatDataSource'
           description: The data sources to use for the On Your Data feature, exclusive to Azure OpenAI.
+        user_security_context:
+          $ref: '#/components/schemas/AzureUserSecurityContext'
       description: |-
         The extended request model for chat completions against the Azure OpenAI service.
         This adds the ability to provide data sources for the On Your Data feature.
@@ -1407,6 +1495,7 @@ components:
                 - $ref: '#/components/schemas/AzureChatDataSourceApiKeyAuthenticationOptions'
                 - $ref: '#/components/schemas/AzureChatDataSourceSystemAssignedManagedIdentityAuthenticationOptions'
                 - $ref: '#/components/schemas/AzureChatDataSourceUserAssignedManagedIdentityAuthenticationOptions'
+                - $ref: '#/components/schemas/AzureChatDataSourceAccessTokenAuthenticationOptions'
               description: The authentication mechanism to use with Azure Search.
             fields_mapping:
               type: object
@@ -1468,11 +1557,45 @@ components:
       allOf:
         - $ref: '#/components/schemas/AzureChatDataSource'
       description: Represents a data source configuration that will use an Azure Search resource.
+    AzureUserSecurityContext:
+      type: object
+      properties:
+        application_name:
+          type: string
+          description: The name of the application. Sensitive personal information should not be included in this field.
+        end_user_id:
+          type: string
+          description: This identifier is the Microsoft Entra ID (formerly Azure Active Directory) user object ID used to authenticate end-users within the generative AI application. Sensitive personal information should not be included in this field.
+        end_user_tenant_id:
+          type: string
+          description: The Microsoft 365 tenant ID the end user belongs to. It's required when the generative AI application is multitenant.
+        source_ip:
+          type: string
+          description: Captures the original client's IP address.
+      description: User security context contains several parameters that describe the application itself, and the end user that interacts with the application. These fields assist your security operations teams to investigate and mitigate security incidents by providing a comprehensive approach to protecting your AI applications. [Learn more](https://aka.ms/TP4AI/Documentation/EndUserContext) about protecting AI applications using Microsoft Defender for Cloud.
     ChatCompletionMessageToolCallsItem:
       type: array
       items:
         $ref: '#/components/schemas/OpenAI.ChatCompletionMessageToolCall'
       description: The tool calls generated by the model, such as function calls.
+    ChatCompletionModalities:
+      type: array
+      items:
+        type: string
+        enum:
+          - text
+          - audio
+      description: |-
+        Output types that you would like the model to generate for this request.
+        Most models are capable of generating text, which is the default:
+
+        `["text"]`
+
+        The `gpt-4o-audio-preview` model can also be used to [generate audio](/docs/guides/audio). To
+        request that this model generate both text and audio responses, you can
+        use:
+
+        `["text", "audio"]`
     ElasticsearchChatDataSource:
       type: object
       required:
@@ -1942,6 +2065,33 @@ components:
         - $ref: '#/components/schemas/OpenAI.ChatCompletionRequestMessageContentPartText'
         - $ref: '#/components/schemas/OpenAI.ChatCompletionRequestMessageContentPartRefusal'
       x-oaiExpandable: true
+    OpenAI.ChatCompletionRequestDeveloperMessage:
+      type: object
+      required:
+        - content
+        - role
+      properties:
+        content:
+          anyOf:
+            - type: string
+            - type: array
+              items:
+                $ref: '#/components/schemas/OpenAI.ChatCompletionRequestMessageContentPartText'
+          description: The contents of the developer message.
+        role:
+          type: string
+          enum:
+            - developer
+          description: The role of the messages author, in this case `developer`.
+        name:
+          type: string
+          description: An optional name for the participant. Provides the model information to differentiate between participants of the same role.
+      allOf:
+        - $ref: '#/components/schemas/OpenAI.ChatCompletionRequestMessage'
+      description: |-
+        Developer-provided instructions that the model should follow, regardless of
+        messages sent by the user. With o1 models and newer, `developer` messages
+        replace the previous `system` messages.
     OpenAI.ChatCompletionRequestFunctionMessage:
       type: object
       required:
@@ -1976,6 +2126,7 @@ components:
         propertyName: role
         mapping:
           system: '#/components/schemas/OpenAI.ChatCompletionRequestSystemMessage'
+          developer: '#/components/schemas/OpenAI.ChatCompletionRequestDeveloperMessage'
           user: '#/components/schemas/OpenAI.ChatCompletionRequestUserMessage'
           assistant: '#/components/schemas/OpenAI.ChatCompletionRequestAssistantMessage'
           tool: '#/components/schemas/OpenAI.ChatCompletionRequestToolMessage'
@@ -2311,6 +2462,51 @@ components:
 
         `none` is the default when no tools are present. `auto` is the default if tools are present.
       x-oaiExpandable: true
+    OpenAI.ChatOutputPrediction:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          anyOf:
+            - type: string
+            - type: string
+              enum:
+                - content
+      discriminator:
+        propertyName: type
+        mapping:
+          content: '#/components/schemas/OpenAI.ChatOutputPredictionContent'
+      description: Base representation of predicted output from a model.
+    OpenAI.ChatOutputPredictionContent:
+      type: object
+      required:
+        - type
+        - content
+      properties:
+        type:
+          type: string
+          enum:
+            - content
+          description: |-
+            The type of the predicted content you want to provide. This type is
+            currently always `content`.
+        content:
+          anyOf:
+            - type: string
+            - type: array
+              items:
+                $ref: '#/components/schemas/OpenAI.ChatCompletionRequestMessageContentPartText'
+          description: |-
+            The content that should be matched when generating a model response.
+            If generated tokens would match this content, the entire model response
+            can be returned much more quickly.
+          x-oaiExpandable: true
+      allOf:
+        - $ref: '#/components/schemas/OpenAI.ChatOutputPrediction'
+      description: |-
+        Static predicted output content, such as the content of a text file that is
+        being regenerated.
     OpenAI.ChatResponseFormat:
       type: object
       required:
