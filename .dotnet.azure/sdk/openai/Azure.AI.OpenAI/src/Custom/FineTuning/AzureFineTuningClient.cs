@@ -31,7 +31,6 @@ internal partial class AzureFineTuningClient : FineTuningClient
     {
         return new AzureFineTuningJob(Pipeline, _endpoint, response);
     }
-
 }
 
 #endif

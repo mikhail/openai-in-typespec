@@ -13,14 +13,8 @@ namespace OpenAI.FineTuning
     {
         private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        internal InternalFineTuningJob(DateTimeOffset createdAt, FineTuningError error, string fineTunedModel, DateTimeOffset? finishedAt, string organizationId, int seed, string jobId, string baseModel, string validationFileId, string trainingFileId, IEnumerable<string> resultFileIds, FineTuningStatus status, FineTuningHyperparameters hyperparameters, int billableTrainedTokenCount)
+        internal InternalFineTuningJob(string jobId, string baseModel, string validationFileId, string trainingFileId, IEnumerable<string> resultFileIds, FineTuningStatus status, FineTuningHyperparameters hyperparameters, int? billableTrainedTokenCount, DateTimeOffset createdAt, FineTuningError error, string fineTunedModel, DateTimeOffset? finishedAt, string organizationId, int seed)
         {
-            CreatedAt = createdAt;
-            Error = error;
-            FineTunedModel = fineTunedModel;
-            FinishedAt = finishedAt;
-            OrganizationId = organizationId;
-            Seed = seed;
             JobId = jobId;
             BaseModel = baseModel;
             ValidationFileId = validationFileId;
@@ -30,18 +24,16 @@ namespace OpenAI.FineTuning
             Hyperparameters = hyperparameters;
             Integrations = new ChangeTrackingList<FineTuningIntegration>();
             BillableTrainedTokenCount = billableTrainedTokenCount;
-        }
-
-        internal InternalFineTuningJob(string userProvidedSuffix, DateTimeOffset createdAt, FineTuningError error, string fineTunedModel, DateTimeOffset? finishedAt, string organizationId, int seed, FineTuningTrainingMethod @method, string jobId, string baseModel, DateTimeOffset? estimatedFinishAt, string validationFileId, string trainingFileId, IReadOnlyList<string> resultFileIds, FineTuningStatus status, string @object, FineTuningHyperparameters hyperparameters, IReadOnlyList<FineTuningIntegration> integrations, int billableTrainedTokenCount, IDictionary<string, BinaryData> additionalBinaryDataProperties)
-        {
-            UserProvidedSuffix = userProvidedSuffix;
             CreatedAt = createdAt;
             Error = error;
             FineTunedModel = fineTunedModel;
             FinishedAt = finishedAt;
             OrganizationId = organizationId;
             Seed = seed;
-            Method = @method;
+        }
+
+        internal InternalFineTuningJob(string jobId, string baseModel, DateTimeOffset? estimatedFinishAt, string validationFileId, string trainingFileId, IReadOnlyList<string> resultFileIds, FineTuningStatus status, string @object, FineTuningHyperparameters hyperparameters, IReadOnlyList<FineTuningIntegration> integrations, int? billableTrainedTokenCount, string userProvidedSuffix, DateTimeOffset createdAt, FineTuningError error, string fineTunedModel, DateTimeOffset? finishedAt, string organizationId, int seed, FineTuningTrainingMethod @method, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
             JobId = jobId;
             BaseModel = baseModel;
             EstimatedFinishAt = estimatedFinishAt;
@@ -53,24 +45,16 @@ namespace OpenAI.FineTuning
             Hyperparameters = hyperparameters;
             Integrations = integrations;
             BillableTrainedTokenCount = billableTrainedTokenCount;
+            UserProvidedSuffix = userProvidedSuffix;
+            CreatedAt = createdAt;
+            Error = error;
+            FineTunedModel = fineTunedModel;
+            FinishedAt = finishedAt;
+            OrganizationId = organizationId;
+            Seed = seed;
+            Method = @method;
             _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
-
-        public string UserProvidedSuffix { get; }
-
-        public DateTimeOffset CreatedAt { get; }
-
-        public FineTuningError Error { get; }
-
-        public string FineTunedModel { get; }
-
-        public DateTimeOffset? FinishedAt { get; }
-
-        public string OrganizationId { get; }
-
-        public int Seed { get; }
-
-        public FineTuningTrainingMethod Method { get; }
 
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData
         {

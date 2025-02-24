@@ -23,6 +23,10 @@ namespace OpenAI.FineTuning;
 [CodeGenSuppress("ListFineTuningJobCheckpoints", typeof(string), typeof(string), typeof(int?), typeof(RequestOptions))]
 public partial class FineTuningClient
 {
+    // CUSTOM:
+    // - Converted from private to internal.
+    internal readonly Uri _endpoint;
+
     /// <summary>
     /// [Protocol Method] Creates a fine-tuning job which begins the process of creating a new model from a given dataset.
     ///
@@ -81,7 +85,7 @@ public partial class FineTuningClient
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    private AsyncCollectionResult ListJobsAsync(string afterJobId, int? pageSize, RequestOptions options)
+    private AsyncCollectionResult GetJobsAsync(string afterJobId, int? pageSize, RequestOptions options)
     {
         return new AsyncFineTuningJobCollectionResult(this, Pipeline, options, pageSize, afterJobId);
     }
@@ -98,7 +102,7 @@ public partial class FineTuningClient
     /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    private CollectionResult ListJobs(string after, int? pageSize, RequestOptions options)
+    private CollectionResult GetJobs(string after, int? pageSize, RequestOptions options)
     {
         return new FineTuningJobCollectionResult(this, Pipeline, options, pageSize, after);
     }

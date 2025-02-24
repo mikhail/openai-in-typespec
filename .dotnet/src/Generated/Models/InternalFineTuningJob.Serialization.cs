@@ -31,74 +31,6 @@ namespace OpenAI.FineTuning
             {
                 throw new FormatException($"The model {nameof(InternalFineTuningJob)} does not support writing '{format}' format.");
             }
-            if (Optional.IsDefined(UserProvidedSuffix) && _additionalBinaryDataProperties?.ContainsKey("user_provided_suffix") != true)
-            {
-                if (UserProvidedSuffix != null)
-                {
-                    writer.WritePropertyName("user_provided_suffix"u8);
-                    writer.WriteStringValue(UserProvidedSuffix);
-                }
-                else
-                {
-                    writer.WriteNull("userProvidedSuffix"u8);
-                }
-            }
-            if (_additionalBinaryDataProperties?.ContainsKey("created_at") != true)
-            {
-                writer.WritePropertyName("created_at"u8);
-                writer.WriteNumberValue(CreatedAt, "U");
-            }
-            if (_additionalBinaryDataProperties?.ContainsKey("error") != true)
-            {
-                if (Error != null)
-                {
-                    writer.WritePropertyName("error"u8);
-                    writer.WriteObjectValue(Error, options);
-                }
-                else
-                {
-                    writer.WriteNull("error"u8);
-                }
-            }
-            if (_additionalBinaryDataProperties?.ContainsKey("fine_tuned_model") != true)
-            {
-                if (FineTunedModel != null)
-                {
-                    writer.WritePropertyName("fine_tuned_model"u8);
-                    writer.WriteStringValue(FineTunedModel);
-                }
-                else
-                {
-                    writer.WriteNull("fineTunedModel"u8);
-                }
-            }
-            if (_additionalBinaryDataProperties?.ContainsKey("finished_at") != true)
-            {
-                if (FinishedAt != null)
-                {
-                    writer.WritePropertyName("finished_at"u8);
-                    writer.WriteNumberValue(FinishedAt.Value, "U");
-                }
-                else
-                {
-                    writer.WriteNull("finishedAt"u8);
-                }
-            }
-            if (_additionalBinaryDataProperties?.ContainsKey("organization_id") != true)
-            {
-                writer.WritePropertyName("organization_id"u8);
-                writer.WriteStringValue(OrganizationId);
-            }
-            if (_additionalBinaryDataProperties?.ContainsKey("seed") != true)
-            {
-                writer.WritePropertyName("seed"u8);
-                writer.WriteNumberValue(Seed);
-            }
-            if (Optional.IsDefined(Method) && _additionalBinaryDataProperties?.ContainsKey("method") != true)
-            {
-                writer.WritePropertyName("method"u8);
-                writer.WriteObjectValue(Method, options);
-            }
             if (_additionalBinaryDataProperties?.ContainsKey("id") != true)
             {
                 writer.WritePropertyName("id"u8);
@@ -190,12 +122,80 @@ namespace OpenAI.FineTuning
                 if (BillableTrainedTokenCount != null)
                 {
                     writer.WritePropertyName("trained_tokens"u8);
-                    writer.WriteNumberValue(BillableTrainedTokenCount);
+                    writer.WriteNumberValue(BillableTrainedTokenCount.Value);
                 }
                 else
                 {
                     writer.WriteNull("trainedTokens"u8);
                 }
+            }
+            if (Optional.IsDefined(UserProvidedSuffix) && _additionalBinaryDataProperties?.ContainsKey("user_provided_suffix") != true)
+            {
+                if (UserProvidedSuffix != null)
+                {
+                    writer.WritePropertyName("user_provided_suffix"u8);
+                    writer.WriteStringValue(UserProvidedSuffix);
+                }
+                else
+                {
+                    writer.WriteNull("userProvidedSuffix"u8);
+                }
+            }
+            if (_additionalBinaryDataProperties?.ContainsKey("created_at") != true)
+            {
+                writer.WritePropertyName("created_at"u8);
+                writer.WriteNumberValue(CreatedAt, "U");
+            }
+            if (_additionalBinaryDataProperties?.ContainsKey("error") != true)
+            {
+                if (Error != null)
+                {
+                    writer.WritePropertyName("error"u8);
+                    writer.WriteObjectValue<FineTuningError>(Error, options);
+                }
+                else
+                {
+                    writer.WriteNull("error"u8);
+                }
+            }
+            if (_additionalBinaryDataProperties?.ContainsKey("fine_tuned_model") != true)
+            {
+                if (FineTunedModel != null)
+                {
+                    writer.WritePropertyName("fine_tuned_model"u8);
+                    writer.WriteStringValue(FineTunedModel);
+                }
+                else
+                {
+                    writer.WriteNull("fineTunedModel"u8);
+                }
+            }
+            if (_additionalBinaryDataProperties?.ContainsKey("finished_at") != true)
+            {
+                if (FinishedAt != null)
+                {
+                    writer.WritePropertyName("finished_at"u8);
+                    writer.WriteNumberValue(FinishedAt.Value, "U");
+                }
+                else
+                {
+                    writer.WriteNull("finishedAt"u8);
+                }
+            }
+            if (_additionalBinaryDataProperties?.ContainsKey("organization_id") != true)
+            {
+                writer.WritePropertyName("organization_id"u8);
+                writer.WriteStringValue(OrganizationId);
+            }
+            if (_additionalBinaryDataProperties?.ContainsKey("seed") != true)
+            {
+                writer.WritePropertyName("seed"u8);
+                writer.WriteNumberValue(Seed);
+            }
+            if (Optional.IsDefined(Method) && _additionalBinaryDataProperties?.ContainsKey("method") != true)
+            {
+                writer.WritePropertyName("method"u8);
+                writer.WriteObjectValue<FineTuningTrainingMethod>(Method, options);
             }
             if (true && _additionalBinaryDataProperties != null)
             {
@@ -237,14 +237,6 @@ namespace OpenAI.FineTuning
             {
                 return null;
             }
-            string userProvidedSuffix = default;
-            DateTimeOffset createdAt = default;
-            FineTuningError error = default;
-            string fineTunedModel = default;
-            DateTimeOffset? finishedAt = default;
-            string organizationId = default;
-            int seed = default;
-            FineTuningTrainingMethod @method = default;
             string jobId = default;
             string baseModel = default;
             DateTimeOffset? estimatedFinishAt = default;
@@ -255,74 +247,18 @@ namespace OpenAI.FineTuning
             string @object = default;
             FineTuningHyperparameters hyperparameters = default;
             IReadOnlyList<FineTuningIntegration> integrations = default;
-            int billableTrainedTokenCount = default;
+            int? billableTrainedTokenCount = default;
+            string userProvidedSuffix = default;
+            DateTimeOffset createdAt = default;
+            FineTuningError error = default;
+            string fineTunedModel = default;
+            DateTimeOffset? finishedAt = default;
+            string organizationId = default;
+            int seed = default;
+            FineTuningTrainingMethod @method = default;
             IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
             foreach (var prop in element.EnumerateObject())
             {
-                if (prop.NameEquals("user_provided_suffix"u8))
-                {
-                    if (prop.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        userProvidedSuffix = null;
-                        continue;
-                    }
-                    userProvidedSuffix = prop.Value.GetString();
-                    continue;
-                }
-                if (prop.NameEquals("created_at"u8))
-                {
-                    createdAt = DateTimeOffset.FromUnixTimeSeconds(prop.Value.GetInt64());
-                    continue;
-                }
-                if (prop.NameEquals("error"u8))
-                {
-                    if (prop.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        error = null;
-                        continue;
-                    }
-                    error = FineTuningError.DeserializeFineTuningError(prop.Value, options);
-                    continue;
-                }
-                if (prop.NameEquals("fine_tuned_model"u8))
-                {
-                    if (prop.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        fineTunedModel = null;
-                        continue;
-                    }
-                    fineTunedModel = prop.Value.GetString();
-                    continue;
-                }
-                if (prop.NameEquals("finished_at"u8))
-                {
-                    if (prop.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        finishedAt = null;
-                        continue;
-                    }
-                    finishedAt = DateTimeOffset.FromUnixTimeSeconds(prop.Value.GetInt64());
-                    continue;
-                }
-                if (prop.NameEquals("organization_id"u8))
-                {
-                    organizationId = prop.Value.GetString();
-                    continue;
-                }
-                if (prop.NameEquals("seed"u8))
-                {
-                    seed = prop.Value.GetInt32();
-                    continue;
-                }
-                if (prop.NameEquals("method"u8))
-                {
-                    if (prop.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        continue;
-                    }
-                    @method = FineTuningTrainingMethod.DeserializeFineTuningTrainingMethod(prop.Value, options);
-                    continue;
-                }
                 if (prop.NameEquals("id"u8))
                 {
                     jobId = prop.Value.GetString();
@@ -406,7 +342,76 @@ namespace OpenAI.FineTuning
                 }
                 if (prop.NameEquals("trained_tokens"u8))
                 {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        billableTrainedTokenCount = null;
+                        continue;
+                    }
                     billableTrainedTokenCount = prop.Value.GetInt32();
+                    continue;
+                }
+                if (prop.NameEquals("user_provided_suffix"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        userProvidedSuffix = null;
+                        continue;
+                    }
+                    userProvidedSuffix = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("created_at"u8))
+                {
+                    createdAt = DateTimeOffset.FromUnixTimeSeconds(prop.Value.GetInt64());
+                    continue;
+                }
+                if (prop.NameEquals("error"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        error = null;
+                        continue;
+                    }
+                    error = FineTuningError.DeserializeFineTuningError(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("fine_tuned_model"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        fineTunedModel = null;
+                        continue;
+                    }
+                    fineTunedModel = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("finished_at"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        finishedAt = null;
+                        continue;
+                    }
+                    finishedAt = DateTimeOffset.FromUnixTimeSeconds(prop.Value.GetInt64());
+                    continue;
+                }
+                if (prop.NameEquals("organization_id"u8))
+                {
+                    organizationId = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("seed"u8))
+                {
+                    seed = prop.Value.GetInt32();
+                    continue;
+                }
+                if (prop.NameEquals("method"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    @method = FineTuningTrainingMethod.DeserializeFineTuningTrainingMethod(prop.Value, options);
                     continue;
                 }
                 if (true)
@@ -415,14 +420,6 @@ namespace OpenAI.FineTuning
                 }
             }
             return new InternalFineTuningJob(
-                userProvidedSuffix,
-                createdAt,
-                error,
-                fineTunedModel,
-                finishedAt,
-                organizationId,
-                seed,
-                @method,
                 jobId,
                 baseModel,
                 estimatedFinishAt,
@@ -434,6 +431,14 @@ namespace OpenAI.FineTuning
                 hyperparameters,
                 integrations ?? new ChangeTrackingList<FineTuningIntegration>(),
                 billableTrainedTokenCount,
+                userProvidedSuffix,
+                createdAt,
+                error,
+                fineTunedModel,
+                finishedAt,
+                organizationId,
+                seed,
+                @method,
                 additionalBinaryDataProperties);
         }
 

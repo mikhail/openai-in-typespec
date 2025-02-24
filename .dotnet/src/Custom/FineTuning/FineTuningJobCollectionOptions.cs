@@ -3,7 +3,7 @@
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-public class ListJobsOptions
+public class FineTuningJobCollectionOptions
 {
     public string AfterJobId { get; set; }
 

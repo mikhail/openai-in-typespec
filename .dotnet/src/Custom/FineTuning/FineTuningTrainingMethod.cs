@@ -1,3 +1,4 @@
+using System;
 using System.ClientModel.Primitives;
 using System.Diagnostics.CodeAnalysis;
 
@@ -7,6 +8,8 @@ namespace OpenAI.FineTuning;
 [CodeGenModel("FineTuneMethod")]
 public partial class FineTuningTrainingMethod
 {
+    private static readonly BinaryData Auto = new("\"auto\"");
+
     internal InternalFineTuneMethodType? Type { get; set; }
 
     internal InternalFineTuningJobRequestMethodSupervised Supervised { get; set; }
@@ -23,9 +26,9 @@ public partial class FineTuningTrainingMethod
             Type = InternalFineTuneMethodType.Supervised,
             Supervised = new() {
                 Hyperparameters = new() {
-                    BatchSize = batchSize is not null ? ModelReaderWriter.Write(batchSize) : null,
-                    NEpochs = cycleCount is not null ? ModelReaderWriter.Write(cycleCount) : null,
-                    LearningRateMultiplier = learningRate is not null ? ModelReaderWriter.Write(learningRate) : null,
+                    _BatchSize = batchSize is not null ? ModelReaderWriter.Write(batchSize) : null,
+                    _NEpochs = cycleCount is not null ? ModelReaderWriter.Write(cycleCount) : null,
+                    _LearningRateMultiplier = learningRate is not null ? ModelReaderWriter.Write(learningRate) : null,
                 },
             },
         };
@@ -42,10 +45,10 @@ public partial class FineTuningTrainingMethod
             Type = InternalFineTuneMethodType.Dpo,
             Dpo = new() {
                 Hyperparameters = new() {
-                    Beta = betaFactor is not null ? ModelReaderWriter.Write(betaFactor) : null,
-                    BatchSize = batchSize is not null ? ModelReaderWriter.Write(batchSize) : null,
-                    NEpochs = cycleCount is not null ? ModelReaderWriter.Write(cycleCount) : null,
-                    LearningRateMultiplier = learningRate is not null ? ModelReaderWriter.Write(learningRate) : null,
+                    _Beta = betaFactor is not null ? ModelReaderWriter.Write(betaFactor) : null,
+                    _BatchSize = batchSize is not null ? ModelReaderWriter.Write(batchSize) : null,
+                    _NEpochs = cycleCount is not null ? ModelReaderWriter.Write(cycleCount) : null,
+                    _LearningRateMultiplier = learningRate is not null ? ModelReaderWriter.Write(learningRate) : null,
                 },
             },
         };

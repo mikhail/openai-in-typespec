@@ -26,13 +26,34 @@ public partial class FineTuningJob : OperationResult
     public IReadOnlyList<string> ResultFileIds { get; private set; } = null!;
     public FineTuningStatus Status { get; private set; }
 
-    internal FineTuningHyperparameters Hyperparameters { get; private set; } = default;
+    [Obsolete("This property is deprecated. Use the MethodHyperparameters property instead.")]
+    public FineTuningHyperparameters Hyperparameters { get; private set; } = default;
     public IReadOnlyList<FineTuningIntegration> Integrations { get; private set; } = null!;
     public int BillableTrainedTokenCount { get; private set; }
     public string? UserProvidedSuffix { get; private set; }
     public int? Seed { get; private set; }
     public FineTuningTrainingMethod? TrainingMethod { get; private set; } = default;
 
+    public MethodHyperparameters? MethodHyperparameters
+    {
+        get
+        {
+            if (TrainingMethod == null)
+            {
+                return null;
+            }
+            if (TrainingMethod.Type == InternalFineTuneMethodType.Supervised)
+            {
+                return TrainingMethod.Supervised.Hyperparameters;
+            }
+            else if (TrainingMethod.Type == InternalFineTuneMethodType.Dpo)
+            {
+                return TrainingMethod.Dpo.Hyperparameters;
+            }
+
+            return null;
+        }
+    }
     /// <summary>
     /// Creates a new <see cref="FineTuningJob"/> from a <see cref="PipelineResponse"/>.
     /// </summary>
@@ -85,6 +106,7 @@ public partial class FineTuningJob : OperationResult
         TrainingFileId = job.TrainingFileId;
         UserProvidedSuffix = job.UserProvidedSuffix;
         ValidationFileId = job.ValidationFileId;
+        TrainingMethod = job.Method;
 
         HasCompleted = GetHasCompleted(Status);
         SetRawResponse(response);
@@ -100,33 +122,33 @@ public partial class FineTuningJob : OperationResult
     /// <summary>
     /// Get status updates (events) for a fine-tuning job.
     /// </summary>
-    /// <param name="options"> Filter parameters via <see cref="ListEventsOptions"/>. </param>
+    /// <param name="options"> Filter parameters via <see cref="GetEventsOptions"/>. </param>
     /// <param name="cancellationToken"> The cancellation token to use. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual AsyncCollectionResult<FineTuningEvent> GetEventsAsync(ListEventsOptions options, CancellationToken cancellationToken = default)
+    public virtual AsyncCollectionResult<FineTuningEvent> GetEventsAsync(GetEventsOptions options, CancellationToken cancellationToken = default)
     {
-        options ??= new ListEventsOptions();
+        options ??= new GetEventsOptions();
         return (AsyncCollectionResult<FineTuningEvent>)GetEventsAsync(options.AfterEventId, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
-    /// <inheritdoc cref="GetEventsAsync(ListEventsOptions, CancellationToken)"/>
-    public virtual CollectionResult<FineTuningEvent> GetEvents(ListEventsOptions options, CancellationToken cancellationToken = default)
+    /// <inheritdoc cref="GetEventsAsync(GetEventsOptions, CancellationToken)"/>
+    public virtual CollectionResult<FineTuningEvent> GetEvents(GetEventsOptions options, CancellationToken cancellationToken = default)
     {
-        options ??= new ListEventsOptions();
+        options ??= new GetEventsOptions();
         return (CollectionResult<FineTuningEvent>)GetEvents(options.AfterEventId, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
     /// <summary>
     /// List the checkpoints for a fine-tuning job.
     /// </summary>
-    /// <param name="options"> Filter parameters via <see cref="ListCheckpointsOptions"/>. </param>
+    /// <param name="options"> Filter parameters via <see cref="GetCheckpointsOptions"/>. </param>
     /// <param name="cancellationToken"> The cancellation token to use. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual AsyncCollectionResult<FineTuningCheckpoint> GetCheckpointsAsync(ListCheckpointsOptions? options = null, CancellationToken cancellationToken = default)
+    public virtual AsyncCollectionResult<FineTuningCheckpoint> GetCheckpointsAsync(GetCheckpointsOptions? options = null, CancellationToken cancellationToken = default)
     {
-        options ??= new ListCheckpointsOptions();
+        options ??= new GetCheckpointsOptions();
         return (AsyncCollectionResult<FineTuningCheckpoint>)GetCheckpointsAsync(options.AfterCheckpointId, options.PageSize, cancellationToken.ToRequestOptions());
 
     }
@@ -134,13 +156,13 @@ public partial class FineTuningJob : OperationResult
     /// <summary>
     /// List the checkpoints for a fine-tuning job.
     /// </summary>
-    /// <param name="options"> Filter parameters via <see cref="ListCheckpointsOptions"/>. </param>
+    /// <param name="options"> Filter parameters via <see cref="GetCheckpointsOptions"/>. </param>
     /// <param name="cancellationToken"> The cancellation token to use. </param>
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
-    public virtual CollectionResult<FineTuningCheckpoint> GetCheckpoints(ListCheckpointsOptions? options = null, CancellationToken cancellationToken = default)
+    public virtual CollectionResult<FineTuningCheckpoint> GetCheckpoints(GetCheckpointsOptions? options = null, CancellationToken cancellationToken = default)
     {
-        options ??= new ListCheckpointsOptions();
+        options ??= new GetCheckpointsOptions();
         return (CollectionResult<FineTuningCheckpoint>)GetCheckpoints(options.AfterCheckpointId, options.PageSize, cancellationToken.ToRequestOptions());
     }
 

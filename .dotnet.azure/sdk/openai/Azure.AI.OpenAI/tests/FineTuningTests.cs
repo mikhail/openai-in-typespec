@@ -53,7 +53,7 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
 
         int count = 25;
 
-        await foreach (FineTuningJob job in client.ListJobsAsync(options: new() { PageSize = 10 }))
+        await foreach (FineTuningJob job in client.GetJobsAsync(options: new() { PageSize = 10 }))
         {
             if (count-- <= 0)
             {
@@ -72,7 +72,7 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
         //string fineTunedModel = GetFineTunedModel();
         FineTuningClient client = GetTestClient();
 
-        FineTuningJob job = await client.ListJobsAsync(options: new() { PageSize = 10 })
+        FineTuningJob job = await client.GetJobsAsync(options: new() { PageSize = 10 })
                                         .FirstOrDefaultAsync(j => j.Status == "succeeded");
 
         Assert.That(job, Is.Not.Null);
@@ -116,7 +116,7 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
         FineTuningClient client = GetTestClient();
 
         // Check if the model exists by searching all jobs
-        var alljobs = client.ListJobsAsync();
+        var alljobs = client.GetJobsAsync();
 
         await alljobs.ToListAsync();
 
@@ -164,7 +164,7 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
         FineTuningJob job = await client.FineTuneAsync(
             "gpt-4o-mini",
             uploadedFile.Id,
-            new() { TrainingMethod = FineTuningTrainingMethod.CreateSupervised() });
+            waitUntilCompleted: false, new() { TrainingMethod = FineTuningTrainingMethod.CreateSupervised() });
 
         Assert.That(job.JobId, Is.Not.Null.Or.Empty);
         Assert.That(job.Status, !(Is.Null.Or.EqualTo("failed").Or.EqualTo("cancelled")));
@@ -200,7 +200,7 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
         });
 
         // Check if the model exists by searching all jobs
-        FineTuningJob? job = await client.ListJobsAsync()
+        FineTuningJob? job = await client.GetJobsAsync()
             .FirstOrDefaultAsync(j => j.Value == fineTunedModel);
         Assert.That(job, Is.Not.Null);
         Assert.That(job!.Status, Is.EqualTo("succeeded"));

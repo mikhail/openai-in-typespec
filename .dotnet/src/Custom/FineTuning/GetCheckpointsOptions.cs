@@ -3,7 +3,7 @@
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-public class ListCheckpointsOptions
+public class GetCheckpointsOptions
 {
     public string AfterCheckpointId { get; set; }
 

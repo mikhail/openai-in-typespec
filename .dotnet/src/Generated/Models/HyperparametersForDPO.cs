@@ -7,21 +7,22 @@ using System.Collections.Generic;
 
 namespace OpenAI.FineTuning
 {
-    internal partial class InternalFineTuningJobRequestMethodSupervised
+    public partial class HyperparametersForDPO
     {
         private protected IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        public InternalFineTuningJobRequestMethodSupervised()
+        public HyperparametersForDPO()
         {
         }
 
-        internal InternalFineTuningJobRequestMethodSupervised(HyperparametersForSupervised hyperparameters, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        internal HyperparametersForDPO(BinaryData batchSize, BinaryData nEpochs, BinaryData learningRateMultiplier, BinaryData beta, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            Hyperparameters = hyperparameters;
+            _BatchSize = batchSize;
+            _NEpochs = nEpochs;
+            _LearningRateMultiplier = learningRateMultiplier;
+            _Beta = beta;
             _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
-
-        public HyperparametersForSupervised Hyperparameters { get; set; }
 
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData
         {

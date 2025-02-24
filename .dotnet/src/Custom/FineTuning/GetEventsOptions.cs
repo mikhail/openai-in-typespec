@@ -7,7 +7,7 @@ namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
 [CodeGenModel("ListFineTuningJobEventsRequest")]
-public class ListEventsOptions
+public class GetEventsOptions
 {
     [CodeGenMember("JobId")]
     internal string JobId { get; set; }

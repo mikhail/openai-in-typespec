@@ -857,6 +857,18 @@ namespace OpenAI
             return new FineTuningTrainingMethod(@type, supervised, dpo, additionalBinaryDataProperties: null);
         }
 
+        public static HyperparametersForSupervised HyperparametersForSupervised(BinaryData batchSize = default, BinaryData nEpochs = default, BinaryData learningRateMultiplier = default)
+        {
+
+            return new HyperparametersForSupervised(batchSize, nEpochs, learningRateMultiplier, additionalBinaryDataProperties: null);
+        }
+
+        public static HyperparametersForDPO HyperparametersForDPO(BinaryData batchSize = default, BinaryData nEpochs = default, BinaryData learningRateMultiplier = default, BinaryData beta = default)
+        {
+
+            return new HyperparametersForDPO(batchSize, nEpochs, learningRateMultiplier, beta, additionalBinaryDataProperties: null);
+        }
+
         public static FineTuningError FineTuningError(string code = default, string message = default, string invalidParameter = default)
         {
 

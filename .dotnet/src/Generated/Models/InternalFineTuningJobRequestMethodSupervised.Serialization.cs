@@ -72,7 +72,7 @@ namespace OpenAI.FineTuning
             {
                 return null;
             }
-            InternalFineTuneSupervisedMethodHyperparameters hyperparameters = default;
+            HyperparametersForSupervised hyperparameters = default;
             IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
             foreach (var prop in element.EnumerateObject())
             {
@@ -82,7 +82,7 @@ namespace OpenAI.FineTuning
                     {
                         continue;
                     }
-                    hyperparameters = InternalFineTuneSupervisedMethodHyperparameters.DeserializeInternalFineTuneSupervisedMethodHyperparameters(prop.Value, options);
+                    hyperparameters = HyperparametersForSupervised.DeserializeHyperparametersForSupervised(prop.Value, options);
                     continue;
                 }
                 if (true)

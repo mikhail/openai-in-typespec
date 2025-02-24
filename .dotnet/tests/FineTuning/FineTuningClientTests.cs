@@ -66,10 +66,9 @@ public class FineTuningClientTests
     [Parallelizable(ParallelScope.All)]
     public async Task MinimalRequiredParams([Values(Method.Sync, Method.Async)] Method method)
     {
-
         FineTuningJob ft = method.IsAsync()
-            ? await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id)
-            : client.FineTune("gpt-3.5-turbo", sampleFile.Id);
+            ? await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id, false)
+            : client.FineTune("gpt-3.5-turbo", sampleFile.Id, false);
 
         // Assert.AreEqual(0, ft.Hyperparameters.CycleCount);
         Assert.True(ft.Status.InProgress);
@@ -103,17 +102,32 @@ public class FineTuningClientTests
             Seed = 1234567
         };
 
+
         FineTuningJob ft = method.IsAsync()
-            ? await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id, options)
-            : client.FineTune("gpt-3.5-turbo", sampleFile.Id, options);
-        // Assert.AreEqual(1, ft.Hyperparameters.CycleCount);
-        // Assert.AreEqual(2, ft.Hyperparameters.BatchSize);
-        // Assert.AreEqual(3, ft.Hyperparameters.LearningRateMultiplier);
+            ? await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id, false, options)
+            : client.FineTune("gpt-3.5-turbo", sampleFile.Id, false, options);
+
+        ft.CancelAndUpdate();
+
+        Assert.AreEqual(1, ft.Hyperparameters.CycleCount);
+        Assert.AreEqual(2, ft.Hyperparameters.BatchSize);
+        Assert.AreEqual(3, ft.Hyperparameters.LearningRateMultiplier);
+
+
+        if (ft.MethodHyperparameters is HyperparametersForSupervised hp)
+        {
+            Assert.AreEqual(1, hp.CycleCount);
+            Assert.AreEqual(2, hp.BatchSize);
+            Assert.AreEqual(3, hp.LearningRateMultiplier);
+        }
+        else
+        {
+            Assert.Fail($"Expected HyperparametersForSupervised, got {ft.MethodHyperparameters?.GetType().ToString() ?? "null"}");
+        }
+
         Assert.AreEqual(ft.UserProvidedSuffix, "TestFTJob");
         Assert.AreEqual(1234567, ft.Seed);
         Assert.AreEqual(validationFile.Id, ft.ValidationFileId);
-
-        ft.CancelAndUpdate();
     }
 
     [Test]
@@ -124,11 +138,11 @@ public class FineTuningClientTests
         FineTuningJob ft;
         try
         {
-            ft = client.ListJobs(options: new() { PageSize = 100 }).Where((job) => job.Status == "succeeded").First();
+            ft = client.GetJobs(options: new() { PageSize = 100 }).Where((job) => job.Status == "succeeded").First();
         }
         catch (InvalidOperationException)
         {
-            ft = await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id);
+            ft = await client.FineTuneAsync("gpt-3.5-turbo", sampleFile.Id, false);
         }
 
         // Act
@@ -149,7 +163,7 @@ public class FineTuningClientTests
         FineTuningJob job = client.FineTune(
             "gpt-3.5-turbo",
             sampleFile.Id,
-            options: new()
+            false, options: new()
             {
                 Integrations = { new WeightsAndBiasesIntegration("ft-tests") },
             }
@@ -162,7 +176,7 @@ public class FineTuningClientTests
     public void ExceptionThrownOnInvalidFileName()
     {
         Assert.Throws<ClientResultException>(() =>
-            client.FineTune(baseModel: "gpt-3.5-turbo", trainingFileId: "Invalid File Name")
+            client.FineTune(baseModel: "gpt-3.5-turbo", trainingFileId: "Invalid File Name", waitUntilCompleted: false)
         );
     }
 
@@ -171,7 +185,7 @@ public class FineTuningClientTests
     public void ExceptionThrownOnInvalidModelName()
     {
         Assert.Throws<ClientResultException>(() =>
-            client.FineTune(baseModel: "gpt-nonexistent", trainingFileId: sampleFile.Id)
+            client.FineTune(baseModel: "gpt-nonexistent", trainingFileId: sampleFile.Id, waitUntilCompleted: false)
         );
     }
 
@@ -184,7 +198,7 @@ public class FineTuningClientTests
             client.FineTune(
                 "gpt-3.5-turbo",
                 sampleFile.Id,
-                new() { ValidationFile = "7" }
+                false, new() { ValidationFile = "7" }
             );
         });
     }
@@ -198,7 +212,7 @@ public class FineTuningClientTests
             await client.FineTuneAsync(
                 "gpt-3.5-turbo",
                 sampleFile.Id,
-                new() { ValidationFile = "7" }
+                false, new() { ValidationFile = "7" }
             );
         });
     }
@@ -210,8 +224,8 @@ public class FineTuningClientTests
         // Arrange
         Console.WriteLine("Getting jobs");
         var jobs = method.IsAsync()
-            ? client.ListJobsAsync().Take(10).ToBlockingEnumerable()
-            : client.ListJobs().Take(10);
+            ? client.GetJobsAsync().Take(10).ToBlockingEnumerable()
+            : client.GetJobs().Take(10);
 
         Console.WriteLine("Got jobs");
 
@@ -235,13 +249,13 @@ public class FineTuningClientTests
     [Parallelizable]
     public void GetJobsWithAfter()
     {
-        var firstJob = client.ListJobs().First();
+        var firstJob = client.GetJobs().First();
 
         if (firstJob is null)
         {
             Assert.Fail("No jobs found. At least 2 jobs have to be found to run this test.");
         }
-        var secondJob = client.ListJobs(new() { AfterJobId = firstJob.JobId }).First();
+        var secondJob = client.GetJobs(new() { AfterJobId = firstJob.JobId }).First();
 
         Assert.AreNotEqual(firstJob.JobId, secondJob.JobId);
         // Can't assert that one was created after the next because they might be created at the same second.
@@ -257,9 +271,9 @@ public class FineTuningClientTests
     public void GetJobEvents([Values(Method.Sync, Method.Async)] Method method)
     {
         // Arrange
-        FineTuningJob job = client.FineTune("gpt-3.5-turbo", sampleFile.Id);
+        FineTuningJob job = client.FineTune("gpt-3.5-turbo", sampleFile.Id, false);
 
-        ListEventsOptions options = new()
+        GetEventsOptions options = new()
         {
             PageSize = 1
         };
@@ -285,7 +299,7 @@ public class FineTuningClientTests
     {
         // Arrange
         // TODO: When `status` option becomes available, use it to get a succeeded job
-        FineTuningJob job = client.ListJobs(new() { PageSize = 100 })
+        FineTuningJob job = client.GetJobs(new() { PageSize = 100 })
                                   .Where((job) => job.Status == "succeeded")
                                   .First();
 

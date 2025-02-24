@@ -15,13 +15,13 @@ namespace OpenAI.FineTuning
         {
         }
 
-        internal InternalFineTuningJobRequestMethodDpo(InternalFineTuningJobRequestMethodDpoDpoHyperparameters hyperparameters, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        internal InternalFineTuningJobRequestMethodDpo(HyperparametersForDPO hyperparameters, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Hyperparameters = hyperparameters;
             _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        public InternalFineTuningJobRequestMethodDpoDpoHyperparameters Hyperparameters { get; set; }
+        public HyperparametersForDPO Hyperparameters { get; set; }
 
         internal IDictionary<string, BinaryData> SerializedAdditionalRawData
         {

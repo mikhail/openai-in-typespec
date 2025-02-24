@@ -75,11 +75,7 @@ internal readonly partial struct InternalFineTuneMethodType { }
 [CodeGenModel("FineTuneSupervisedMethod")]
 internal partial class InternalFineTuningJobRequestMethodSupervised { }
 
-[CodeGenModel("FineTuneSupervisedMethodHyperparameters")]
-internal partial class InternalFineTuneSupervisedMethodHyperparameters { }
 
 [CodeGenModel("FineTuneDPOMethod")]
 internal partial class InternalFineTuningJobRequestMethodDpo { }
 
-[CodeGenModel("FineTuneDPOMethodHyperparameters")]
-internal partial class InternalFineTuningJobRequestMethodDpoDpoHyperparameters { }
