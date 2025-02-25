@@ -13,6 +13,10 @@ namespace OpenAI.Assistants
 {
     public partial class RunStepFileSearchResultContent : IJsonModel<RunStepFileSearchResultContent>
     {
+        internal RunStepFileSearchResultContent()
+        {
+        }
+
         void IJsonModel<RunStepFileSearchResultContent>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
@@ -27,7 +31,7 @@ namespace OpenAI.Assistants
             {
                 throw new FormatException($"The model {nameof(RunStepFileSearchResultContent)} does not support writing '{format}' format.");
             }
-            if (Optional.IsDefined(Text) && _additionalBinaryDataProperties?.ContainsKey("text") != true)
+            if (_additionalBinaryDataProperties?.ContainsKey("text") != true)
             {
                 writer.WritePropertyName("text"u8);
                 writer.WriteStringValue(Text);
@@ -37,7 +41,7 @@ namespace OpenAI.Assistants
                 writer.WritePropertyName("type"u8);
                 writer.WriteStringValue(Kind.ToSerialString());
             }
-            if (true && _additionalBinaryDataProperties != null)
+            if (_additionalBinaryDataProperties != null)
             {
                 foreach (var item in _additionalBinaryDataProperties)
                 {
@@ -92,10 +96,7 @@ namespace OpenAI.Assistants
                     kind = prop.Value.GetString().ToRunStepFileSearchResultContentKind();
                     continue;
                 }
-                if (true)
-                {
-                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
-                }
+                additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
             }
             return new RunStepFileSearchResultContent(text, kind, additionalBinaryDataProperties);
         }

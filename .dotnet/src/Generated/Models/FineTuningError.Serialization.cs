@@ -53,7 +53,7 @@ namespace OpenAI.FineTuning
                     writer.WriteNull("param"u8);
                 }
             }
-            if (true && _additionalBinaryDataProperties != null)
+            if (_additionalBinaryDataProperties != null)
             {
                 foreach (var item in _additionalBinaryDataProperties)
                 {
@@ -119,10 +119,7 @@ namespace OpenAI.FineTuning
                     invalidParameter = prop.Value.GetString();
                     continue;
                 }
-                if (true)
-                {
-                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
-                }
+                additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
             }
             return new FineTuningError(code, message, invalidParameter, additionalBinaryDataProperties);
         }

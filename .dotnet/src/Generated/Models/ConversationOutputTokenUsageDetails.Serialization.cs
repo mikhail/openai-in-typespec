@@ -13,10 +13,6 @@ namespace OpenAI.RealtimeConversation
 {
     public partial class ConversationOutputTokenUsageDetails : IJsonModel<ConversationOutputTokenUsageDetails>
     {
-        internal ConversationOutputTokenUsageDetails()
-        {
-        }
-
         void IJsonModel<ConversationOutputTokenUsageDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
@@ -34,14 +30,14 @@ namespace OpenAI.RealtimeConversation
             if (_additionalBinaryDataProperties?.ContainsKey("text_tokens") != true)
             {
                 writer.WritePropertyName("text_tokens"u8);
-                writer.WriteNumberValue(TextTokens);
+                writer.WriteNumberValue(TextTokenCount);
             }
             if (_additionalBinaryDataProperties?.ContainsKey("audio_tokens") != true)
             {
                 writer.WritePropertyName("audio_tokens"u8);
-                writer.WriteNumberValue(AudioTokens);
+                writer.WriteNumberValue(AudioTokenCount);
             }
-            if (true && _additionalBinaryDataProperties != null)
+            if (_additionalBinaryDataProperties != null)
             {
                 foreach (var item in _additionalBinaryDataProperties)
                 {
@@ -81,27 +77,32 @@ namespace OpenAI.RealtimeConversation
             {
                 return null;
             }
-            int textTokens = default;
-            int audioTokens = default;
+            int textTokenCount = default;
+            int audioTokenCount = default;
             IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
             foreach (var prop in element.EnumerateObject())
             {
                 if (prop.NameEquals("text_tokens"u8))
                 {
-                    textTokens = prop.Value.GetInt32();
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    textTokenCount = prop.Value.GetInt32();
                     continue;
                 }
                 if (prop.NameEquals("audio_tokens"u8))
                 {
-                    audioTokens = prop.Value.GetInt32();
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    audioTokenCount = prop.Value.GetInt32();
                     continue;
                 }
-                if (true)
-                {
-                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
-                }
+                additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
             }
-            return new ConversationOutputTokenUsageDetails(textTokens, audioTokens, additionalBinaryDataProperties);
+            return new ConversationOutputTokenUsageDetails(textTokenCount, audioTokenCount, additionalBinaryDataProperties);
         }
 
         BinaryData IPersistableModel<ConversationOutputTokenUsageDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);

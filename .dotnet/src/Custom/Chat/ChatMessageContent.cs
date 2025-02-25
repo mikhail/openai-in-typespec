@@ -9,7 +9,7 @@ namespace OpenAI.Chat;
 public partial class ChatMessageContent : Collection<ChatMessageContentPart>
 {
     public ChatMessageContent()
-        : this(Array.Empty<ChatMessageContentPart>())
+        : base(new ChangeTrackingList<ChatMessageContentPart>())
     {
     }
 
@@ -27,6 +27,10 @@ public partial class ChatMessageContent : Collection<ChatMessageContentPart>
         : base(new ChangeTrackingList<ChatMessageContentPart>((IList<ChatMessageContentPart>)[.. contentParts]))
     {
     }
+
+    internal ChatMessageContent(IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        : this()
+    { }
 
     internal bool IsInnerCollectionDefined()
     {

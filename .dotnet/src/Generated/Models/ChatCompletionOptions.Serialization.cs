@@ -90,15 +90,15 @@ namespace OpenAI.Chat
                 }
                 writer.WriteEndArray();
             }
-            if (_additionalBinaryDataProperties?.ContainsKey("messages") != true)
+            if (Optional.IsCollectionDefined(Messages) && _additionalBinaryDataProperties?.ContainsKey("messages") != true)
             {
                 writer.WritePropertyName("messages"u8);
                 this.SerializeMessagesValue(writer, options);
             }
-            if (_additionalBinaryDataProperties?.ContainsKey("model") != true)
+            if (Optional.IsDefined(Model) && _additionalBinaryDataProperties?.ContainsKey("model") != true)
             {
                 writer.WritePropertyName("model"u8);
-                writer.WriteStringValue(Model.ToString());
+                writer.WriteStringValue(Model.Value.ToString());
             }
             if (Optional.IsDefined(N) && _additionalBinaryDataProperties?.ContainsKey("n") != true)
             {
@@ -252,26 +252,19 @@ namespace OpenAI.Chat
             }
             if (Optional.IsCollectionDefined(Metadata) && _additionalBinaryDataProperties?.ContainsKey("metadata") != true)
             {
-                if (Metadata != null)
+                writer.WritePropertyName("metadata"u8);
+                writer.WriteStartObject();
+                foreach (var item in Metadata)
                 {
-                    writer.WritePropertyName("metadata"u8);
-                    writer.WriteStartObject();
-                    foreach (var item in Metadata)
+                    writer.WritePropertyName(item.Key);
+                    if (item.Value == null)
                     {
-                        writer.WritePropertyName(item.Key);
-                        if (item.Value == null)
-                        {
-                            writer.WriteNullValue();
-                            continue;
-                        }
-                        writer.WriteStringValue(item.Value);
+                        writer.WriteNullValue();
+                        continue;
                     }
-                    writer.WriteEndObject();
+                    writer.WriteStringValue(item.Value);
                 }
-                else
-                {
-                    writer.WriteNull("metadata"u8);
-                }
+                writer.WriteEndObject();
             }
             if (Optional.IsDefined(StoredOutputEnabled) && _additionalBinaryDataProperties?.ContainsKey("store") != true)
             {
@@ -283,6 +276,52 @@ namespace OpenAI.Chat
                 else
                 {
                     writer.WriteNull("store"u8);
+                }
+            }
+            if (Optional.IsDefined(ReasoningEffortLevel) && _additionalBinaryDataProperties?.ContainsKey("reasoning_effort") != true)
+            {
+                writer.WritePropertyName("reasoning_effort"u8);
+                writer.WriteStringValue(ReasoningEffortLevel.Value.ToString());
+            }
+            if (Optional.IsCollectionDefined(InternalModalities) && _additionalBinaryDataProperties?.ContainsKey("modalities") != true)
+            {
+                if (InternalModalities != null)
+                {
+                    writer.WritePropertyName("modalities"u8);
+                    writer.WriteStartArray();
+                    foreach (InternalCreateChatCompletionRequestModality item in InternalModalities)
+                    {
+                        writer.WriteStringValue(item.ToString());
+                    }
+                    writer.WriteEndArray();
+                }
+                else
+                {
+                    writer.WriteNull("modalities"u8);
+                }
+            }
+            if (Optional.IsDefined(AudioOptions) && _additionalBinaryDataProperties?.ContainsKey("audio") != true)
+            {
+                if (AudioOptions != null)
+                {
+                    writer.WritePropertyName("audio"u8);
+                    writer.WriteObjectValue<ChatAudioOptions>(AudioOptions, options);
+                }
+                else
+                {
+                    writer.WriteNull("audio"u8);
+                }
+            }
+            if (Optional.IsDefined(OutputPrediction) && _additionalBinaryDataProperties?.ContainsKey("prediction") != true)
+            {
+                if (OutputPrediction != null)
+                {
+                    writer.WritePropertyName("prediction"u8);
+                    writer.WriteObjectValue<ChatOutputPrediction>(OutputPrediction, options);
+                }
+                else
+                {
+                    writer.WriteNull("prediction"u8);
                 }
             }
             if (Optional.IsDefined(_serviceTier) && _additionalBinaryDataProperties?.ContainsKey("service_tier") != true)
@@ -297,36 +336,7 @@ namespace OpenAI.Chat
                     writer.WriteNull("serviceTier"u8);
                 }
             }
-            if (Optional.IsCollectionDefined(_internalModalities) && _additionalBinaryDataProperties?.ContainsKey("modalities") != true)
-            {
-                if (_internalModalities != null)
-                {
-                    writer.WritePropertyName("modalities"u8);
-                    writer.WriteStartArray();
-                    foreach (InternalCreateChatCompletionRequestModality item in _internalModalities)
-                    {
-                        writer.WriteStringValue(item.ToString());
-                    }
-                    writer.WriteEndArray();
-                }
-                else
-                {
-                    writer.WriteNull("modalities"u8);
-                }
-            }
-            if (Optional.IsDefined(_audioOptions) && _additionalBinaryDataProperties?.ContainsKey("audio") != true)
-            {
-                if (_audioOptions != null)
-                {
-                    writer.WritePropertyName("audio"u8);
-                    writer.WriteObjectValue<ChatAudioOptions>(_audioOptions, options);
-                }
-                else
-                {
-                    writer.WriteNull("audio"u8);
-                }
-            }
-            if (true && _additionalBinaryDataProperties != null)
+            if (_additionalBinaryDataProperties != null)
             {
                 foreach (var item in _additionalBinaryDataProperties)
                 {
@@ -373,7 +383,7 @@ namespace OpenAI.Chat
             float? topP = default;
             IList<ChatTool> tools = default;
             IList<ChatMessage> messages = default;
-            InternalCreateChatCompletionRequestModel model = default;
+            InternalCreateChatCompletionRequestModel? model = default;
             int? n = default;
             bool? stream = default;
             InternalChatCompletionStreamOptions streamOptions = default;
@@ -391,9 +401,11 @@ namespace OpenAI.Chat
             IList<ChatFunction> functions = default;
             IDictionary<string, string> metadata = default;
             bool? storedOutputEnabled = default;
-            InternalCreateChatCompletionRequestServiceTier? serviceTier = default;
+            ChatReasoningEffortLevel? reasoningEffortLevel = default;
             IList<InternalCreateChatCompletionRequestModality> internalModalities = default;
             ChatAudioOptions audioOptions = default;
+            ChatOutputPrediction outputPrediction = default;
+            InternalCreateChatCompletionRequestServiceTier? serviceTier = default;
             IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
             foreach (var prop in element.EnumerateObject())
             {
@@ -642,14 +654,13 @@ namespace OpenAI.Chat
                     storedOutputEnabled = prop.Value.GetBoolean();
                     continue;
                 }
-                if (prop.NameEquals("service_tier"u8))
+                if (prop.NameEquals("reasoning_effort"u8))
                 {
                     if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        serviceTier = null;
                         continue;
                     }
-                    serviceTier = new InternalCreateChatCompletionRequestServiceTier(prop.Value.GetString());
+                    reasoningEffortLevel = new ChatReasoningEffortLevel(prop.Value.GetString());
                     continue;
                 }
                 if (prop.NameEquals("modalities"u8))
@@ -676,10 +687,27 @@ namespace OpenAI.Chat
                     audioOptions = ChatAudioOptions.DeserializeChatAudioOptions(prop.Value, options);
                     continue;
                 }
-                if (true)
+                if (prop.NameEquals("prediction"u8))
                 {
-                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        outputPrediction = null;
+                        continue;
+                    }
+                    outputPrediction = ChatOutputPrediction.DeserializeChatOutputPrediction(prop.Value, options);
+                    continue;
                 }
+                if (prop.NameEquals("service_tier"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        serviceTier = null;
+                        continue;
+                    }
+                    serviceTier = new InternalCreateChatCompletionRequestServiceTier(prop.Value.GetString());
+                    continue;
+                }
+                additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
             }
             return new ChatCompletionOptions(
                 frequencyPenalty,
@@ -707,9 +735,11 @@ namespace OpenAI.Chat
                 functions ?? new ChangeTrackingList<ChatFunction>(),
                 metadata ?? new ChangeTrackingDictionary<string, string>(),
                 storedOutputEnabled,
-                serviceTier,
-                internalModalities,
+                reasoningEffortLevel,
+                internalModalities ?? new ChangeTrackingList<InternalCreateChatCompletionRequestModality>(),
                 audioOptions,
+                outputPrediction,
+                serviceTier,
                 additionalBinaryDataProperties);
         }
 

@@ -79,3 +79,11 @@ internal partial class InternalFineTuningJobRequestMethodSupervised { }
 [CodeGenModel("FineTuneDPOMethod")]
 internal partial class InternalFineTuningJobRequestMethodDpo { }
 
+// TODO: not yet integrated
+
+[CodeGenModel("FineTuneChatRequestInput")]
+internal partial class InternalTodoFineTuneChatRequestInput { }
+
+[CodeGenModel("FineTuneCompletionRequestInput")]
+internal partial class InternalTodoFineTuneCompletionRequestInput { }
+

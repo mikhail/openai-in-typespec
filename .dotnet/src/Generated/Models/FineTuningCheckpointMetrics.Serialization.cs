@@ -62,7 +62,7 @@ namespace OpenAI.FineTuning
                 writer.WritePropertyName("step"u8);
                 writer.WriteNumberValue(StepNumber);
             }
-            if (true && _additionalBinaryDataProperties != null)
+            if (_additionalBinaryDataProperties != null)
             {
                 foreach (var item in _additionalBinaryDataProperties)
                 {
@@ -175,10 +175,7 @@ namespace OpenAI.FineTuning
                     stepNumber = prop.Value.GetInt32();
                     continue;
                 }
-                if (true)
-                {
-                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
-                }
+                additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
             }
             return new FineTuningCheckpointMetrics(
                 trainLoss,

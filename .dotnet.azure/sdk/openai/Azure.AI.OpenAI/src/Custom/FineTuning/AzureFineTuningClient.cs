@@ -20,7 +20,14 @@ internal partial class AzureFineTuningClient : FineTuningClient
     [Experimental("OPENAI001")]
     internal AzureFineTuningClient(ClientPipeline pipeline, Uri endpoint)
         : base(pipeline, new OpenAIClientOptions() { Endpoint = endpoint })
-    { }
+    {
+        Argument.AssertNotNull(pipeline, nameof(pipeline));
+        Argument.AssertNotNull(endpoint, nameof(endpoint));
+        options ??= new();
+
+        _endpoint = endpoint;
+        _apiVersion = options.GetRawServiceApiValueForClient(this);
+    }
 
     [Experimental("OPENAI001")]
     protected AzureFineTuningClient()

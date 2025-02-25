@@ -37,7 +37,7 @@ namespace OpenAI.FineTuning
                 writer.WritePropertyName("after"u8);
                 writer.WriteStringValue(After);
             }
-            if (true && _additionalBinaryDataProperties != null)
+            if (_additionalBinaryDataProperties != null)
             {
                 foreach (var item in _additionalBinaryDataProperties)
                 {
@@ -96,10 +96,7 @@ namespace OpenAI.FineTuning
                     after = prop.Value.GetString();
                     continue;
                 }
-                if (true)
-                {
-                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
-                }
+                additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
             }
             return new InternalFineTuningJobsPageToken(limit, after, additionalBinaryDataProperties);
         }
