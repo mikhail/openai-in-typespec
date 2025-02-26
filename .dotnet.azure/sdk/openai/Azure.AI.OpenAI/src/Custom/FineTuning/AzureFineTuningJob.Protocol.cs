@@ -20,17 +20,19 @@ internal class AzureFineTuningJob : FineTuningJob
     private readonly PipelineMessageClassifier _deleteJobClassifier;
     private readonly ClientPipeline _pipeline;
     private readonly Uri _endpoint;
+    private readonly string _apiVersion;
 
     internal AzureFineTuningJob(
         ClientPipeline pipeline,
         Uri endpoint,
-        PipelineResponse response)
+        PipelineResponse response,
+        string apiVersion)
         : base(pipeline, endpoint, response)
     {
         _pipeline = pipeline;
         _endpoint = endpoint;
+        _apiVersion = apiVersion;
 
-        
         _deleteJobClassifier = PipelineMessageClassifier.Create(stackalloc ushort[] { 204 });
     }
 

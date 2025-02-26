@@ -21,12 +21,12 @@ internal partial class AzureFineTuningClient : FineTuningClient
     private readonly string _apiVersion;
 
     [Experimental("OPENAI001")]
-    internal AzureFineTuningClient(ClientPipeline pipeline, Uri endpoint)
+    internal AzureFineTuningClient(ClientPipeline pipeline, Uri endpoint, AzureOpenAIClientOptions options)
         : base(pipeline, new OpenAIClientOptions() { Endpoint = endpoint })
     {
         Argument.AssertNotNull(pipeline, nameof(pipeline));
         Argument.AssertNotNull(endpoint, nameof(endpoint));
-        AzureOpenAIClientOptions options = new();
+        options ??= new();
 
         _endpoint = endpoint;
         _apiVersion = options.GetRawServiceApiValueForClient(this);
@@ -39,7 +39,7 @@ internal partial class AzureFineTuningClient : FineTuningClient
     [Experimental("OPENAI001")]
     internal override FineTuningJob CreateJobFromResponse(PipelineResponse response)
     {
-        return new AzureFineTuningJob(Pipeline, _endpoint, response);
+        return new AzureFineTuningJob(Pipeline, _endpoint, response, _apiVersion);
     }
 }
 

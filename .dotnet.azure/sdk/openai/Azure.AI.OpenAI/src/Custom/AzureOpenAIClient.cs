@@ -51,19 +51,6 @@ public partial class AzureOpenAIClient : OpenAIClient
     private readonly ApiKeyCredential _keyCredential;
     private readonly TokenCredential _tokenCredential;
 
-    internal static Uri AddVersion(Uri endpoint, string apiVersion)
-    {
-        var uriBuilder = new UriBuilder(endpoint);
-
-        uriBuilder.Path = uriBuilder.Path.TrimEnd('/') + "/openai/";
-
-        var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-        query["api-version"] = apiVersion;
-        uriBuilder.Query = query.ToString();
-
-        return uriBuilder.Uri;
-    }
-
     /// <summary>
     /// Creates a new instance of <see cref="AzureOpenAIClient"/> that will connect to a specified Azure OpenAI
     /// service resource endpoint using an API key.
@@ -225,7 +212,7 @@ public partial class AzureOpenAIClient : OpenAIClient
     [Experimental("OPENAI001")]
     public override FineTuningClient GetFineTuningClient()
 #if !AZURE_OPENAI_GA
-        => new AzureFineTuningClient(Pipeline, _endpoint);
+        => new AzureFineTuningClient(Pipeline, _endpoint, _options);
 #else
         => throw new InvalidOperationException($"Fine-tuning is not yet supported in the GA version of the library. Please use a preview version.");
 #endif

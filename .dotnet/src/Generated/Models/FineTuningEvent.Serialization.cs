@@ -46,11 +46,6 @@ namespace OpenAI.FineTuning
                 writer.WritePropertyName("message"u8);
                 writer.WriteStringValue(Message);
             }
-            if (Optional.IsDefined(Type) && _additionalBinaryDataProperties?.ContainsKey("type") != true)
-            {
-                writer.WritePropertyName("type"u8);
-                writer.WriteStringValue(Type.Value.ToString());
-            }
             if (Optional.IsDefined(Data) && _additionalBinaryDataProperties?.ContainsKey("data") != true)
             {
                 writer.WritePropertyName("data"u8);
@@ -62,6 +57,11 @@ namespace OpenAI.FineTuning
                     JsonSerializer.Serialize(writer, document.RootElement);
                 }
 #endif
+            }
+            if (Optional.IsDefined(Kind) && _additionalBinaryDataProperties?.ContainsKey("type") != true)
+            {
+                writer.WritePropertyName("type"u8);
+                writer.WriteStringValue(Kind.Value.ToString());
             }
             if (_additionalBinaryDataProperties?.ContainsKey("level") != true)
             {
@@ -116,8 +116,8 @@ namespace OpenAI.FineTuning
             string id = default;
             DateTimeOffset createdAt = default;
             string message = default;
-            FineTuningJobEventType? @type = default;
             BinaryData data = default;
+            FineTuningJobEventKind? kind = default;
             string level = default;
             string @object = default;
             IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
@@ -138,15 +138,6 @@ namespace OpenAI.FineTuning
                     message = prop.Value.GetString();
                     continue;
                 }
-                if (prop.NameEquals("type"u8))
-                {
-                    if (prop.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        continue;
-                    }
-                    @type = new FineTuningJobEventType(prop.Value.GetString());
-                    continue;
-                }
                 if (prop.NameEquals("data"u8))
                 {
                     if (prop.Value.ValueKind == JsonValueKind.Null)
@@ -154,6 +145,15 @@ namespace OpenAI.FineTuning
                         continue;
                     }
                     data = BinaryData.FromString(prop.Value.GetRawText());
+                    continue;
+                }
+                if (prop.NameEquals("type"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    kind = new FineTuningJobEventKind(prop.Value.GetString());
                     continue;
                 }
                 if (prop.NameEquals("level"u8))
@@ -172,8 +172,8 @@ namespace OpenAI.FineTuning
                 id,
                 createdAt,
                 message,
-                @type,
                 data,
+                kind,
                 level,
                 @object,
                 additionalBinaryDataProperties);

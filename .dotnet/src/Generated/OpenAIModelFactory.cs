@@ -932,15 +932,15 @@ namespace OpenAI
                 additionalBinaryDataProperties: null);
         }
 
-        public static FineTuningEvent FineTuningEvent(string id = default, DateTimeOffset createdAt = default, string message = default, FineTuningJobEventType? @type = default, BinaryData data = default, string level = default, string @object = default)
+        public static FineTuningEvent FineTuningEvent(string id = default, DateTimeOffset createdAt = default, string message = default, BinaryData data = default, FineTuningJobEventKind? kind = default, string level = default, string @object = default)
         {
 
             return new FineTuningEvent(
                 id,
                 createdAt,
                 message,
-                @type,
                 data,
+                kind,
                 level,
                 @object,
                 additionalBinaryDataProperties: null);
