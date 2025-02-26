@@ -32,7 +32,6 @@ using Azure.AI.OpenAI.Embeddings;
 using Azure.AI.OpenAI.Files;
 using Azure.AI.OpenAI.Images;
 using Azure.Core;
-using System.Web;
 
 #pragma warning disable AZC0007
 

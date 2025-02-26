@@ -5,7 +5,6 @@
 
 using Azure.Core;
 using System.ClientModel;
-using System.Web;
 
 namespace Azure.AI.OpenAI.RealtimeConversation;
 
@@ -53,9 +52,6 @@ internal partial class AzureRealtimeConversationClient : RealtimeConversationCli
     private static Uri GetEndpoint(Uri endpoint, string deploymentName, string apiVersion)
     {
         UriBuilder uriBuilder = new(endpoint);
-        var queryBuilder = HttpUtility.ParseQueryString(uriBuilder.Query);
-        bool isLegacyNoDeployment = string.IsNullOrEmpty(deploymentName);
-
         uriBuilder.Scheme = uriBuilder.Scheme switch
         {
             "http" => "ws",
@@ -63,33 +59,28 @@ internal partial class AzureRealtimeConversationClient : RealtimeConversationCli
             _ => uriBuilder.Scheme,
         };
 
-        uriBuilder.Path = uriBuilder.Path.TrimEnd('/');
+        bool isLegacyNoDeployment = string.IsNullOrEmpty(deploymentName);
+
+        string requiredPathSuffix = isLegacyNoDeployment ? "realtime" : "openai/realtime";
+        if (!uriBuilder.Path.EndsWith($"/{requiredPathSuffix}"))
+        {
+            uriBuilder.Path += uriBuilder.Path[uriBuilder.Path.Length - 1] == '/' ? requiredPathSuffix : $"/{requiredPathSuffix}";
+        }
 
         if (isLegacyNoDeployment)
         {
-            uriBuilder.Path = TrimEnd(uriBuilder.Path, "openai");
             apiVersion = "alpha";
         }
-        else
+
+        uriBuilder.Query = "";
+        uriBuilder.Query += $"api-version={apiVersion}";
+
+        if (!isLegacyNoDeployment)
         {
-            queryBuilder["deployment"] = deploymentName;
+            uriBuilder.Query += $"&deployment={deploymentName}";
         }
-
-        queryBuilder["api-version"] = apiVersion;
-
-        uriBuilder.Path += "/realtime";
-        uriBuilder.Query = queryBuilder.ToString();
 
         return uriBuilder.Uri;
-    }
-
-    private static string TrimEnd(string original, string value)
-    {
-        if (original.EndsWith(value))
-        {
-            return original.Remove(original.Length - value.Length);
-        }
-        return original;
     }
 }
 

@@ -12,9 +12,9 @@ namespace Azure.AI.OpenAI.FineTuning;
 internal partial class AzureFineTuningClient : FineTuningClient
 {
     public override async Task<FineTuningJob> FineTuneAsync(
-    BinaryContent content,
-    bool waitUntilCompleted,
-    RequestOptions options = null)
+        BinaryContent content,
+        bool waitUntilCompleted,
+        RequestOptions options = null)
     {
         Argument.AssertNotNull(content, nameof(content));
 
@@ -48,7 +48,7 @@ internal partial class AzureFineTuningClient : FineTuningClient
     }
 
     internal override PipelineMessage PostJobPipelineMessage(BinaryContent content, RequestOptions options)
-        => new AzureOpenAIPipelineMessageBuilder(Pipeline, _endpoint)
+        => new AzureOpenAIPipelineMessageBuilder(Pipeline, _endpoint, _apiVersion)
             .WithMethod("POST")
             .WithPath("fine_tuning", "jobs")
             .WithContent(content, "application/json")
@@ -57,7 +57,7 @@ internal partial class AzureFineTuningClient : FineTuningClient
             .Build();
 
     internal override PipelineMessage GetJobsPipelineMessage(string after, int? limit, RequestOptions options)
-        => new AzureOpenAIPipelineMessageBuilder(Pipeline, _endpoint)
+        => new AzureOpenAIPipelineMessageBuilder(Pipeline, _endpoint, _apiVersion)
             .WithMethod("GET")
             .WithPath("fine_tuning", "jobs")
             .WithOptionalQueryParameter("after", after)
@@ -65,6 +65,36 @@ internal partial class AzureFineTuningClient : FineTuningClient
             .WithAccept("application/json")
             .WithOptions(options)
             .Build();
+
+    //internal static new PipelineMessage GetJobPipelineMessage(ClientPipeline clientPipeline, Uri endpoint, string fineTuningJobId, RequestOptions options)
+    //    => new AzureOpenAIPipelineMessageBuilder(clientPipeline, endpoint, _apiVersion)
+    //        .WithMethod("GET")
+    //        .WithPath("fine_tuning", "jobs", fineTuningJobId)
+    //        .WithAccept("application/json")
+    //        .WithOptions(options)
+    //        .Build();
+
+    private static bool TryGetLastId(ClientResult previous, out string lastId)
+    {
+        Argument.AssertNotNull(previous, nameof(previous));
+
+        using JsonDocument json = JsonDocument.Parse(previous.GetRawResponse().Content);
+        if (!json.RootElement.GetProperty("has_more"u8).GetBoolean())
+        {
+            lastId = null;
+            return false;
+        }
+
+        if (json?.RootElement.TryGetProperty("data", out JsonElement dataElement) == true
+            && dataElement.EnumerateArray().LastOrDefault().TryGetProperty("id", out JsonElement idElement) == true)
+        {
+            lastId = idElement.GetString();
+            return true;
+        }
+
+        lastId = null;
+        return false;
+    }
 }
 
 #endif

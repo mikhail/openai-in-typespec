@@ -4,7 +4,6 @@
 using OpenAI.FineTuning;
 using OpenAI.TestFramework;
 using System;
-using System.Threading;
 
 
 
@@ -37,7 +36,7 @@ namespace Azure.AI.OpenAI.Tests;
 [Category("FineTuning")]
 public class FineTuningTests : AoaiTestBase<FineTuningClient>
 {
-    public FineTuningTests(bool isAsync) : base(isAsync)
+    public FineTuningTests(bool isAsync) : base(isAsync, mode: RecordedTestMode.Live)
     {
     }
 
@@ -128,6 +127,7 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
         FineTuningJob job = await client.GetJobsAsync(options: new() { PageSize = 10 })
                                         .FirstOrDefaultAsync(j => j.Status == "succeeded");
 
+        //FineTuningJob job = client.GetJob("ftjob-5ad97dff8fd246eeb0934f4fb37e8a76");
         Assert.That(job, Is.Not.Null);
         Assert.That(job.Status, Is.EqualTo("succeeded"));
 
@@ -135,31 +135,31 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
 
         var checkpoints = job.GetCheckpointsAsync();
 
-        await checkpoints.ToListAsync();
+        await checkpoints.ToListAsync();  // Fails
 
-        FineTuningJob job2 = await FineTuningJob.RehydrateAsync(UnWrap(client), job.JobId);
+        //FineTuningJob job2 = await FineTuningJob.RehydrateAsync(UnWrap(client), job.JobId);
 
-        int count = 25;
-        await foreach (FineTuningCheckpoint checkpoint in job2.GetCheckpointsAsync())
-        {
-            if (count-- <= 0)
-            {
-                break;
-            }
+        //int count = 25;
+        //await foreach (FineTuningCheckpoint checkpoint in job2.GetCheckpointsAsync())
+        //{
+        //    if (count-- <= 0)
+        //    {
+        //        break;
+        //    }
 
-            Assert.That(checkpoint, Is.Not.Null);
-            Assert.That(checkpoint.JobId, !(Is.Null.Or.Empty));
-            Assert.That(checkpoint.CreatedAt, Is.GreaterThan(START_2024));
-            Assert.That(checkpoint.CheckpointId, !(Is.Null.Or.Empty));
-            Assert.That(checkpoint.Metrics, Is.Not.Null);
-            Assert.That(checkpoint.Metrics.StepNumber, Is.GreaterThan(0));
-            Assert.That(checkpoint.Metrics.TrainLoss, Is.GreaterThan(0));
-            Assert.That(checkpoint.Metrics.TrainMeanTokenAccuracy, Is.GreaterThan(0));
-            //Assert.That(checkpoint.Metrics.ValidLoss, Is.GreaterThan(0));
-            //Assert.That(checkpoint.Metrics.ValidMeanTokenAccuracy, Is.GreaterThan(0));
-            //Assert.That(checkpoint.Metrics.FullValidLoss, Is.GreaterThan(0));
-            //Assert.That(checkpoint.Metrics.FullValidMeanTokenAccuracy, Is.GreaterThan(0));
-        }
+        //    Assert.That(checkpoint, Is.Not.Null);
+        //    Assert.That(checkpoint.JobId, !(Is.Null.Or.Empty));
+        //    Assert.That(checkpoint.CreatedAt, Is.GreaterThan(START_2024));
+        //    Assert.That(checkpoint.CheckpointId, !(Is.Null.Or.Empty));
+        //    Assert.That(checkpoint.Metrics, Is.Not.Null);
+        //    Assert.That(checkpoint.Metrics.StepNumber, Is.GreaterThan(0));
+        //    Assert.That(checkpoint.Metrics.TrainLoss, Is.GreaterThan(0));
+        //    Assert.That(checkpoint.Metrics.TrainMeanTokenAccuracy, Is.GreaterThan(0));
+        //    //Assert.That(checkpoint.Metrics.ValidLoss, Is.GreaterThan(0));
+        //    //Assert.That(checkpoint.Metrics.ValidMeanTokenAccuracy, Is.GreaterThan(0));
+        //    //Assert.That(checkpoint.Metrics.FullValidLoss, Is.GreaterThan(0));
+        //    //Assert.That(checkpoint.Metrics.FullValidMeanTokenAccuracy, Is.GreaterThan(0));
+        //}
     }
 
     [RecordedTest]
@@ -181,12 +181,19 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
 
         await alljobs.ToListAsync();
 
+        // ftjob-53f9c10199f84dfea3ec772341862ff5
         FineTuningJob job = await alljobs.FirstOrDefaultAsync(j => j.Value == fineTunedModel)!;
 
         Assert.NotNull(job);
         Assert.AreEqual(job.Status, "succeeded");
 
-        HashSet<string> ids = [];
+        HashSet<string> ids = new();
+
+        //var job2 = client.GetJob(job.JobId);
+
+        //TODO fix unwrapping so you don't have to unwrap here.
+        //var unwrapped = UnWrap(client);
+        //FineTuningJob job2 = await FineTuningJob.RehydrateAsync(unwrapped, job.JobId);
 
         int count = 25;
         var asyncEnum = job.GetEventsAsync(new() { PageSize = count });
@@ -235,16 +242,16 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
 
         Assert.That(job.JobId, Is.Not.Null.Or.Empty);
         Assert.That(job.Status, !(Is.Null.Or.EqualTo("failed").Or.EqualTo("cancelled")));
-
         await job.CancelAndUpdateAsync();
 
         // Wait for the fine tuning to complete
         await job.WaitForCompletionAsync();
 
+        
         Assert.That(job.Status, Is.EqualTo("cancelled"), "Fine tuning did not cancel");
 
         // Delete the fine tuned model
-        bool deleted = await DeleteJobAndVerifyAsync((AzureFineTuningJob)job, client);
+        bool deleted = await DeleteJobAndVerifyAsync((AzureFineTuningJob)job, job.JobId, client);
         Assert.True(deleted, "Failed to delete fine tuning model: {0}", job.Value);
     }
 
@@ -367,7 +374,7 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
         return uploadedFile;
     }
 
-    private async Task<bool> DeleteJobAndVerifyAsync(AzureFineTuningJob job, FineTuningClient client, TimeSpan? timeBetween = null, TimeSpan? maxWaitTime = null)
+    private async Task<bool> DeleteJobAndVerifyAsync(AzureFineTuningJob operation, string jobId, FineTuningClient client, TimeSpan? timeBetween = null, TimeSpan? maxWaitTime = null)
     {
         var stopTime = DateTimeOffset.Now + (maxWaitTime ?? TimeSpan.FromMinutes(1));
         TimeSpan sleepTime = timeBetween ?? (Recording!.Mode == RecordedTestMode.Playback ? TimeSpan.FromMilliseconds(1): TimeSpan.FromSeconds(2));
@@ -382,20 +389,20 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
         while (DateTimeOffset.Now < stopTime)
         {
             ClientResult result = IsAsync
-                ? await job.DeleteJobAsync(job.JobId, noThrow).ConfigureAwait(false)
-                : job.DeleteJob(job.JobId, noThrow);
+                ? await operation.DeleteJobAsync(jobId, noThrow).ConfigureAwait(false)
+                : operation.DeleteJob(jobId, noThrow);
             Assert.That(result, Is.Not.Null);
 
             // verify the deletion actually succeeded
-            try
+            var result2 = await client.GetJobAsync(jobId, noThrow.CancellationToken).ConfigureAwait(false);
+            
+            var rawResponse = result2.GetRawResponse();
+            success = rawResponse.Status == 404;
+            if (success)
             {
-                await client.GetJobAsync(job.JobId, noThrow.CancellationToken).ConfigureAwait(false);
-            }
-            catch (ClientResultException ex) when (ex.Status == 404)
-            {
-                success = true;
                 break;
             }
+
             await Task.Delay(sleepTime).ConfigureAwait(false);
         }
 

@@ -94,7 +94,7 @@ public partial class FineTuningJob : OperationResult
     /// <inheritdoc/>
     public override async ValueTask<ClientResult> UpdateStatusAsync(RequestOptions? options)
     {
-        options ??= new RequestOptions();
+        options = options ?? new RequestOptions();
         ClientResult result = await GetJobAsync(options).ConfigureAwait(false);
         var response = result.GetRawResponse();
         SetRawResponse(response);
@@ -107,7 +107,7 @@ public partial class FineTuningJob : OperationResult
     /// <inheritdoc/>
     public override ClientResult UpdateStatus(RequestOptions? options)
     {
-        options ??= new RequestOptions();
+        options = options ?? new RequestOptions();
         ClientResult result = GetJob(options);
         var response = result.GetRawResponse();
         SetRawResponse(response);
