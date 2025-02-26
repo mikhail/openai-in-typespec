@@ -17,13 +17,16 @@ namespace Azure.AI.OpenAI.FineTuning;
 [Experimental("OPENAI001")]
 internal partial class AzureFineTuningClient : FineTuningClient
 {
+    private readonly Uri _endpoint;
+    private readonly string _apiVersion;
+
     [Experimental("OPENAI001")]
     internal AzureFineTuningClient(ClientPipeline pipeline, Uri endpoint)
         : base(pipeline, new OpenAIClientOptions() { Endpoint = endpoint })
     {
         Argument.AssertNotNull(pipeline, nameof(pipeline));
         Argument.AssertNotNull(endpoint, nameof(endpoint));
-        options ??= new();
+        AzureOpenAIClientOptions options = new();
 
         _endpoint = endpoint;
         _apiVersion = options.GetRawServiceApiValueForClient(this);

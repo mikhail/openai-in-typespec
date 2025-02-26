@@ -23,10 +23,6 @@ namespace OpenAI.FineTuning;
 [CodeGenSuppress("ListFineTuningJobCheckpoints", typeof(string), typeof(string), typeof(int?), typeof(RequestOptions))]
 public partial class FineTuningClient
 {
-    // CUSTOM:
-    // - Converted from private to internal.
-    internal readonly Uri _endpoint;
-
     /// <summary>
     /// [Protocol Method] Creates a fine-tuning job which begins the process of creating a new model from a given dataset.
     ///

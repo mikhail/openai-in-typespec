@@ -41,7 +41,6 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
     {
     }
 
-#if !AZURE_OPENAI_GA
     [Test]
     [Category("Smoke")]
     public void CanCreateClient() => Assert.That(GetTestClient(), Is.InstanceOf<FineTuningClient>());
@@ -405,7 +404,6 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
 
     #endregion
 
-#else
 
     [Test]
     [SyncOnly]
@@ -422,5 +420,4 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
 
     }
 
-#endif
 }

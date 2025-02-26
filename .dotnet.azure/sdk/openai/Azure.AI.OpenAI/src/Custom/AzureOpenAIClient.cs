@@ -15,10 +15,6 @@ global using OpenAI.Moderations;
 global using OpenAI.VectorStores;
 #if !AZURE_OPENAI_GA
 global using OpenAI.RealtimeConversation;
-#endif
-
-#if !AZURE_OPENAI_GA
-global using OpenAI.RealtimeConversation;
 using Azure.AI.OpenAI.Assistants;
 using Azure.AI.OpenAI.FineTuning;
 using Azure.AI.OpenAI.RealtimeConversation;
@@ -37,14 +33,6 @@ using Azure.AI.OpenAI.Files;
 using Azure.AI.OpenAI.Images;
 using Azure.Core;
 using System.Web;
-
-#if !AZURE_OPENAI_GA
-global using OpenAI.RealtimeConversation;
-using Azure.AI.OpenAI.Assistants;
-using Azure.AI.OpenAI.FineTuning;
-using Azure.AI.OpenAI.RealtimeConversation;
-using Azure.AI.OpenAI.VectorStores;
-#endif
 
 #pragma warning disable AZC0007
 
@@ -156,13 +144,13 @@ public partial class AzureOpenAIClient : OpenAIClient
     /// <param name="endpoint"> The endpoint to use. </param>
     /// <param name="options"> The additional client options to use. </param>
     protected AzureOpenAIClient(ClientPipeline pipeline, Uri endpoint, AzureOpenAIClientOptions options)
-        : base(pipeline, new OpenAIClientOptions() { Endpoint = AddVersion(endpoint, options.Version) })
+        : base(pipeline, new OpenAIClientOptions() { Endpoint = endpoint })
     {
         Argument.AssertNotNull(pipeline, nameof(pipeline));
         Argument.AssertNotNull(endpoint, nameof(endpoint));
         options ??= new();
 
-        _endpoint = AddVersion(endpoint, options.Version);
+        _endpoint = endpoint;
         _options = options;
     }
 
