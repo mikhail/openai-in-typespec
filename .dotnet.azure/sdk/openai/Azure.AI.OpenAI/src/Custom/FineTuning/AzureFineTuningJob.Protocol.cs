@@ -15,7 +15,7 @@ namespace Azure.AI.OpenAI.FineTuning;
 /// A long-running operation for creating a new model from a given dataset.
 /// </summary>
 [Experimental("OPENAI001")]
-internal class AzureFineTuningJob : FineTuningJob
+internal partial class AzureFineTuningJob : FineTuningJob
 {
     private readonly PipelineMessageClassifier _deleteJobClassifier;
     private readonly ClientPipeline _pipeline;
@@ -60,9 +60,8 @@ internal class AzureFineTuningJob : FineTuningJob
         .WithOptions(options)
         .Build();
 
-    
-
-    internal override PipelineMessage CancelPipelineMessage(string fineTuningJobId, RequestOptions? options)
+    // TODO use this
+    internal PipelineMessage CancelPipelineMessage(string fineTuningJobId, RequestOptions? options)
     => new AzureOpenAIPipelineMessageBuilder(_pipeline, _endpoint, _apiVersion)
         .WithMethod("POST")
         .WithPath("fine_tuning", "jobs", fineTuningJobId, "cancel")
@@ -70,7 +69,48 @@ internal class AzureFineTuningJob : FineTuningJob
         .WithOptions(options)
         .Build();
 
-    internal override PipelineMessage GetCheckpointsPipelineMessage(string fineTuningJobId, string? after, int? limit, RequestOptions? options)
+    /// <summary>
+    /// [Protocol Method] List the checkpoints for a fine-tuning job.
+    /// </summary>
+    /// <param name="after"> Identifier for the last checkpoint ID from the previous pagination request. </param>
+    /// <param name="limit"> Number of checkpoints to retrieve. </param>
+    /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
+    /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
+    /// <returns> The response returned from the service. </returns>
+    public override AsyncCollectionResult GetCheckpointsAsync(string? after, int? limit, RequestOptions? options)
+    {
+        return new AsyncFineTuningCheckpointCollectionResult(this, options, limit, after);
+    }
+
+    /// <summary>
+    /// [Protocol Method] List the checkpoints for a fine-tuning job.
+    /// </summary>
+    /// <param name="after"> Identifier for the last checkpoint ID from the previous pagination request. </param>
+    /// <param name="limit"> Number of checkpoints to retrieve. </param>
+    /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
+    /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
+    /// <returns> The response returned from the service. </returns>
+    internal override async Task<ClientResult> GetCheckpointsPageAsync(string? after, int? limit, RequestOptions? options)
+    {
+        using PipelineMessage message = GetCheckpointsPipelineMessage(JobId, after, limit, options);
+        return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
+    }
+
+    /// <summary>
+    /// [Protocol Method] List the checkpoints for a fine-tuning job.
+    /// </summary>
+    /// <param name="after"> Identifier for the last checkpoint ID from the previous pagination request. </param>
+    /// <param name="limit"> Number of checkpoints to retrieve. </param>
+    /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
+    /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
+    /// <returns> The response returned from the service. </returns>
+    internal override ClientResult GetCheckpointsPage(string? after, int? limit, RequestOptions? options)
+    {
+        using PipelineMessage message = GetCheckpointsPipelineMessage(JobId, after, limit, options);
+        return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
+    }
+
+    internal PipelineMessage GetCheckpointsPipelineMessage(string fineTuningJobId, string? after, int? limit, RequestOptions? options)
     => new AzureOpenAIPipelineMessageBuilder(_pipeline, _endpoint, _apiVersion)
         .WithMethod("GET")
         .WithPath("fine_tuning", "jobs", fineTuningJobId, "checkpoints")
@@ -80,7 +120,19 @@ internal class AzureFineTuningJob : FineTuningJob
         .WithOptions(options)
         .Build();
 
-    internal override PipelineMessage GetEventsPipelineMessage(string fineTuningJobId, string? after, int? limit, RequestOptions? options)
+    internal override async Task<ClientResult> GetEventsPageAsync(string? after, int? limit, RequestOptions? options)
+    {
+        using PipelineMessage message = GetEventsPipelineMessage(JobId, after, limit, options);
+        return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
+    }
+
+    internal override ClientResult GetEventsPage(string? after, int? limit, RequestOptions? options)
+    {
+        using PipelineMessage message = GetEventsPipelineMessage(JobId, after, limit, options);
+        return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
+    }
+
+    internal PipelineMessage GetEventsPipelineMessage(string fineTuningJobId, string? after, int? limit, RequestOptions? options)
     => new AzureOpenAIPipelineMessageBuilder(_pipeline, _endpoint, _apiVersion)
         .WithMethod("GET")
         .WithPath("fine_tuning", "jobs", fineTuningJobId, "events")

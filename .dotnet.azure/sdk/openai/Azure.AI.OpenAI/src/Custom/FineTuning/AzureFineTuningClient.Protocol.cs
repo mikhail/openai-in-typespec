@@ -6,6 +6,8 @@
 using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Text.Json;
+using System.Linq;
+using Azure.AI.OpenAI.Utility;
 
 namespace Azure.AI.OpenAI.FineTuning;
 
@@ -45,6 +47,21 @@ internal partial class AzureFineTuningClient : FineTuningClient
 
         AzureFineTuningJob operation = new(Pipeline, _endpoint, response, _apiVersion);
         return operation.WaitUntil(waitUntilCompleted, options);
+    }
+
+    internal override AsyncCollectionResult GetJobsAsync(string afterJobId, int? pageSize, RequestOptions options)
+    {
+        //var result = new AsyncFineTuningJobCollectionResult(this, Pipeline, options, pageSize, afterJobId);
+        return (AsyncCollectionResult<AzureFineTuningJob>)new AzureAsyncCollectionResult<AzureFineTuningJob, FineTuningCollectionPageToken>(
+            Pipeline,
+            options,
+            continuation => GetJobsPipelineMessage(continuation?.After, pageSize, options),
+            page => FineTuningCollectionPageToken.FromResponse(page, pageSize),
+            page => (IEnumerable<AzureFineTuningJob>)ModelReaderWriter.Read<InternalListPaginatedFineTuningJobsResponse>(page.GetRawResponse().Content).Data,
+            options?.CancellationToken ?? default
+            );
+
+
     }
 
     internal override PipelineMessage PostJobPipelineMessage(BinaryContent content, RequestOptions options)

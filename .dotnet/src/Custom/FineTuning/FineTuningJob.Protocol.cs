@@ -20,6 +20,7 @@ public partial class FineTuningJob : OperationResult
 {
     private readonly ClientPipeline _pipeline;
     private readonly Uri _endpoint;
+    private readonly FineTuningClient _client;
 
     /// <inheritdoc/>
     public override ContinuationToken? RehydrationToken { get; protected set; }
@@ -170,7 +171,8 @@ public partial class FineTuningJob : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual async Task<ClientResult> CancelAsync(RequestOptions options)
     {
-        using PipelineMessage message = CancelPipelineMessage(JobId, options);
+        // Create FineTuningClient from _endpoint and _pipeline
+        using PipelineMessage message = _client.CreateCancelFineTuningJobRequest(JobId, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
     }
 
@@ -182,7 +184,7 @@ public partial class FineTuningJob : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual ClientResult Cancel(RequestOptions options)
     {
-        using PipelineMessage message = CancelPipelineMessage(JobId, options);
+        using PipelineMessage message = _client.CreateCancelFineTuningJobRequest(JobId, options);
         PipelineResponse response = _pipeline.ProcessMessage(message, options);
         return ClientResult.FromResponse(response);
     }
@@ -242,22 +244,8 @@ public partial class FineTuningJob : OperationResult
     /// <returns> The response returned from the service. </returns>
     internal virtual async Task<ClientResult> GetCheckpointsPageAsync(string? after, int? limit, RequestOptions? options)
     {
-        using PipelineMessage message = GetCheckpointsPipelineMessage(JobId, after, limit, options);
+        using PipelineMessage message = _client.CreateListFineTuningJobCheckpointsRequest(JobId, after, limit, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
-    }
-
-    /// <summary>
-    /// [Protocol Method] List the checkpoints for a fine-tuning job.
-    /// </summary>
-    /// <param name="after"> Identifier for the last checkpoint ID from the previous pagination request. </param>
-    /// <param name="limit"> Number of checkpoints to retrieve. </param>
-    /// <param name="options"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
-    /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
-    /// <returns> The response returned from the service. </returns>
-    internal virtual ClientResult GetPageCheckpoints(string? after, int? limit, RequestOptions? options)
-    {
-        using PipelineMessage message = GetCheckpointsPipelineMessage(JobId, after, limit, options);
-        return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
     /// <summary>
@@ -270,92 +258,23 @@ public partial class FineTuningJob : OperationResult
     /// <returns> The response returned from the service. </returns>
     internal virtual ClientResult GetCheckpointsPage(string? after, int? limit, RequestOptions? options)
     {
-        using PipelineMessage message = GetCheckpointsPipelineMessage(JobId, after, limit, options);
+        using PipelineMessage message = _client.CreateListFineTuningJobCheckpointsRequest(JobId, after, limit, options);
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
     internal virtual async Task<ClientResult> GetEventsPageAsync(string? after, int? limit, RequestOptions? options)
     {
-        using PipelineMessage message = GetEventsPipelineMessage(JobId, after, limit, options);
+        using PipelineMessage message = _client.CreateListFineTuningEventsRequest(JobId, after, limit, options);
         return ClientResult.FromResponse(await _pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
     }
 
     internal virtual ClientResult GetEventsPage(string? after, int? limit, RequestOptions? options)
     {
-        using PipelineMessage message = GetEventsPipelineMessage(JobId, after, limit, options);
+        using PipelineMessage message = _client.CreateListFineTuningEventsRequest(JobId, after, limit, options);
         return ClientResult.FromResponse(_pipeline.ProcessMessage(message, options));
     }
 
-    internal virtual PipelineMessage CancelPipelineMessage(string JobId, RequestOptions? options)
-    {
-        var message = _pipeline.CreateMessage();
-        message.ResponseClassifier = PipelineMessageClassifier200;
-        var request = message.Request;
-        request.Method = "POST";
-        var uri = new ClientUriBuilder();
-        uri.Reset(_endpoint);
-        uri.AppendPath("/fine_tuning/jobs/", false);
-        uri.AppendPath(JobId, true);
-        uri.AppendPath("/cancel", false);
-        request.Uri = uri.ToUri();
-        request.Headers.Set("Accept", "application/json");
-        message.Apply(options);
-        return message;
-    }
-
-    internal virtual PipelineMessage GetCheckpointsPipelineMessage(string JobId, string? after, int? limit, RequestOptions? options)
-    {
-        var message = _pipeline.CreateMessage();
-        message.ResponseClassifier = PipelineMessageClassifier200;
-        var request = message.Request;
-        request.Method = "GET";
-
-        var uriBuilder = new UriBuilder(_endpoint);
-        var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-        
-        uriBuilder.Path += "/fine_tuning/jobs/" + JobId + "/checkpoints";
-
-        if (after != null)
-        {
-            query["after"] = after;
-        }
-        if (limit != null)
-        {
-            query["limit"] = limit.ToString();
-        }
-        uriBuilder.Query = query.ToString();
-        request.Uri = uriBuilder.Uri;
-        request.Headers.Set("Accept", "application/json");
-        message.Apply(options);
-        return message;
-    }
-
-    internal virtual PipelineMessage GetEventsPipelineMessage(string jobId, string? after, int? limit, RequestOptions? options)
-    {
-        var message = _pipeline.CreateMessage();
-        message.ResponseClassifier = PipelineMessageClassifier200;
-        var request = message.Request;
-        request.Method = "GET";
-        var uri = new ClientUriBuilder();
-        uri.Reset(_endpoint);
-        uri.AppendPath("/fine_tuning/jobs/", false);
-        uri.AppendPath(jobId, true);
-        uri.AppendPath("/events", false);
-        if (after != null)
-        {
-            uri.AppendQuery("after", after, true);
-        }
-        if (limit != null)
-        {
-            uri.AppendQuery("limit", limit.Value, true);
-        }
-        request.Uri = uri.ToUri();
-        request.Headers.Set("Accept", "application/json");
-        message.Apply(options);
-        return message;
-    }
+    
 
 
-    private static PipelineMessageClassifier? _pipelineMessageClassifier200;
-    private static PipelineMessageClassifier PipelineMessageClassifier200 => _pipelineMessageClassifier200 ??= PipelineMessageClassifier.Create(stackalloc ushort[] { 200 });
 }

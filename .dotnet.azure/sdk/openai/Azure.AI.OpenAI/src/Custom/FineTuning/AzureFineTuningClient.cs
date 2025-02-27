@@ -6,6 +6,7 @@
 using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace Azure.AI.OpenAI.FineTuning;
 
@@ -23,6 +24,7 @@ internal partial class AzureFineTuningClient : FineTuningClient
 
     [Experimental("OPENAI001")]
     internal AzureFineTuningClient(ClientPipeline pipeline, Uri endpoint, AzureOpenAIClientOptions options)
+//        : base(pipeline, new OpenAIClientOptions() { Endpoint = endpoint })
         : base(pipeline, new OpenAIClientOptions() { Endpoint = endpoint })
     {
         Argument.AssertNotNull(pipeline, nameof(pipeline));
@@ -36,6 +38,37 @@ internal partial class AzureFineTuningClient : FineTuningClient
     [Experimental("OPENAI001")]
     protected AzureFineTuningClient()
     { }
+
+    /// <summary>
+    /// Get FineTuningJob for a previously started fine-tuning job.
+    ///
+    /// [Learn more about fine-tuning](/docs/guides/fine-tuning)
+    /// </summary>
+    /// <param name="JobId"> The ID of the fine-tuning job. </param>
+    /// <param name="cancellationToken"> The cancellation token. </param>
+    public override FineTuningJob GetJob(string JobId, CancellationToken cancellationToken = default)
+    {
+        return AzureFineTuningJob.Rehydrate(this, JobId, cancellationToken.ToRequestOptions());
+    }
+
+    /// <summary>
+    /// Get FineTuningJob for a previously started fine-tuning job.
+    ///
+    /// [Learn more about fine-tuning](/docs/guides/fine-tuning)
+    /// </summary>
+    /// <param name="JobId"> The ID of the fine-tuning job. </param>
+    /// <param name="cancellationToken"> The cancellation token. </param>
+    public override async Task<FineTuningJob> GetJobAsync(string JobId, CancellationToken cancellationToken = default)
+    {
+        return await AzureFineTuningJob.RehydrateAsync(this, JobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
+    }
+
+    //public override AsyncCollectionResult<AzureFineTuningJob> GetJobsAsync(FineTuningJobCollectionOptions options = default, CancellationToken cancellationToken = default)
+    //{
+    //    options ??= new FineTuningJobCollectionOptions();
+    //    AsyncCollectionResult<AzureFineTuningJob> jobs = (AsyncCollectionResult<AzureFineTuningJob>)GetJobsAsync(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
+    //    return (AsyncCollectionResult<AzureFineTuningJob>)jobs;
+    //}
 
     [Experimental("OPENAI001")]
     internal override FineTuningJob CreateJobFromResponse(PipelineResponse response)

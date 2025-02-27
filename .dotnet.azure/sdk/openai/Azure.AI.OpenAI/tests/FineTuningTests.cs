@@ -122,17 +122,20 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
     [TestCase(null)]
     public async Task CheckpointsFineTuning(AzureOpenAIClientOptions.ServiceVersion? version)
     {
-        FineTuningClient client = GetTestClient(GetTestClientOptions(version));
+        AzureFineTuningClient client = (AzureFineTuningClient)UnWrap(GetTestClient(GetTestClientOptions(version)));
 
-        FineTuningJob job = await client.GetJobsAsync(options: new() { PageSize = 10 })
-                                        .FirstOrDefaultAsync(j => j.Status == "succeeded");
+        FineTuningJob job = await client.GetJobsAsync(options: new FineTuningJobCollectionOptions() { PageSize = 10 })
+            .FirstOrDefaultAsync(j => j.Status == "succeeded");
 
         //FineTuningJob job = client.GetJob("ftjob-5ad97dff8fd246eeb0934f4fb37e8a76");
         Assert.That(job, Is.Not.Null);
         Assert.That(job.Status, Is.EqualTo("succeeded"));
 
         Console.WriteLine("Job id: " + job.JobId);
-
+        if (job is AzureFineTuningJob azureJob)
+        {
+            azureJob.GetCheckpointsAsync();
+        }
         var checkpoints = job.GetCheckpointsAsync();
 
         await checkpoints.ToListAsync();  // Fails

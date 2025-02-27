@@ -17,7 +17,6 @@ namespace OpenAI.FineTuning;
 public partial class FineTuningJob : OperationResult
 {
     public string? Value = null;
-
     public string JobId { get; private set; } = null!;
     public string BaseModel { get; private set; } = null!;
     public DateTimeOffset? EstimatedFinishAt { get; private set; }
@@ -63,12 +62,8 @@ public partial class FineTuningJob : OperationResult
     internal FineTuningJob(
             ClientPipeline pipeline,
             Uri endpoint,
-            PipelineResponse response) : base(response)
+            PipelineResponse response) : this(pipeline, endpoint, (InternalFineTuningJob)ClientResult.FromResponse(response), response)
     {
-        _pipeline = pipeline;
-        _endpoint = endpoint;
-        var job = (InternalFineTuningJob)ClientResult.FromResponse(response);
-        CopyLocalParameters(response, job);
     }
 
     /// <summary>
@@ -87,6 +82,7 @@ public partial class FineTuningJob : OperationResult
     {
         _pipeline = pipeline;
         _endpoint = endpoint;
+        _client = new FineTuningClient(_pipeline, _endpoint);
         CopyLocalParameters(response, job);
     }
 
@@ -229,8 +225,8 @@ public partial class FineTuningJob : OperationResult
     /// <exception cref="ClientResultException"> Service returned a non-success status code. </exception>
     /// <returns> The response returned from the service. </returns>
     public virtual ClientResult CancelAndUpdate(CancellationToken cancellationToken = default)
-    {
-        using PipelineMessage message = CancelPipelineMessage(JobId, cancellationToken.ToRequestOptions());
+    {   
+        using PipelineMessage message = _client.CreateCancelFineTuningJobRequest(JobId, cancellationToken.ToRequestOptions());
         PipelineResponse response = _pipeline.ProcessMessage(message, cancellationToken.ToRequestOptions());
         CopyLocalParameters(response, (InternalFineTuningJob)ClientResult.FromResponse(response));
         return ClientResult.FromResponse(response);
@@ -244,7 +240,7 @@ public partial class FineTuningJob : OperationResult
     /// <returns> The response returned from the service. </returns>
     public virtual async Task<ClientResult> CancelAndUpdateAsync(CancellationToken cancellationToken = default)
     {
-        using PipelineMessage message = CancelPipelineMessage(JobId, cancellationToken.ToRequestOptions());
+        using PipelineMessage message = _client.CreateCancelFineTuningJobRequest(JobId, cancellationToken.ToRequestOptions());
         PipelineResponse response = await _pipeline.ProcessMessageAsync(message, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
         CopyLocalParameters(response, (InternalFineTuningJob)ClientResult.FromResponse(response));
         return ClientResult.FromResponse(response);

@@ -83,6 +83,15 @@ public partial class FineTuningClient
         _endpoint = OpenAIClient.GetEndpoint(options);
     }
 
+    protected internal FineTuningClient(ClientPipeline pipeline, Uri endpoint)
+    {
+        Argument.AssertNotNull(pipeline, nameof(pipeline));
+        Argument.AssertNotNull(endpoint, nameof(endpoint));
+
+        Pipeline = pipeline;
+        _endpoint = endpoint;
+    }
+
     /// <summary> Creates a job with a training file and base model. </summary>
     /// <param name="baseModel"> The original model to use as a starting base to fine-tune. String such as "gpt-3.5-turbo" </param>
     /// <param name="trainingFileId"> The training file Id that is already uploaded. String should match pattern '^file-[a-zA-Z0-9]{24}$'. </param>
@@ -124,7 +133,7 @@ public partial class FineTuningClient
     /// </summary>
     /// <param name="JobId"> The ID of the fine-tuning job. </param>
     /// <param name="cancellationToken"> The cancellation token. </param>
-    public FineTuningJob GetJob(string JobId, CancellationToken cancellationToken = default)
+    public virtual FineTuningJob GetJob(string JobId, CancellationToken cancellationToken = default)
     {
         return FineTuningJob.Rehydrate(this, JobId, cancellationToken.ToRequestOptions());
     }
@@ -136,7 +145,7 @@ public partial class FineTuningClient
     /// </summary>
     /// <param name="JobId"> The ID of the fine-tuning job. </param>
     /// <param name="cancellationToken"> The cancellation token. </param>
-    public async Task<FineTuningJob> GetJobAsync(string JobId, CancellationToken cancellationToken = default)
+    public async virtual Task<FineTuningJob> GetJobAsync(string JobId, CancellationToken cancellationToken = default)
     {
         return await FineTuningJob.RehydrateAsync(this, JobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
