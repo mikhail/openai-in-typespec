@@ -55,6 +55,20 @@ internal partial class AzureFineTuningJob : FineTuningJob
         _deleteJobClassifier = PipelineMessageClassifier.Create(stackalloc ushort[] { 204 });
     }
 
+    internal AzureFineTuningJob(
+        ClientPipeline pipeline,
+        Uri endpoint,
+        string apiVersion,
+        InternalFineTuningJob job,
+        PipelineResponse response)
+            : base(pipeline, endpoint, job, response)
+    {
+        _pipeline = pipeline;
+        _endpoint = endpoint;
+        _apiVersion = apiVersion;
+        _deleteJobClassifier = PipelineMessageClassifier.Create(stackalloc ushort[] { 204 });
+    }
+
     [Experimental("AOAI001")]
     public virtual ClientResult DeleteJob(string fineTuningJobId, RequestOptions? options)
     {
