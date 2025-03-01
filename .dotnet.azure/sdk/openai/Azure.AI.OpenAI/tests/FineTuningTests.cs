@@ -230,10 +230,12 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
     [TestCase(null)]
     public async Task CreateCancelDelete(AzureOpenAIClientOptions.ServiceVersion? version)
     {
-        FineTuningClient client = GetTestClient(GetTestClientOptions(version));
+
+        FineTuningClient wrapped = GetTestClient(GetTestClientOptions(version));
+        AzureFineTuningClient client = (AzureFineTuningClient)base.UnWrap(wrapped);
         var fineTuningFile = Assets.FineTuning;
 
-        OpenAIFileClient fileClient = GetTestClientFrom<OpenAIFileClient>(client);
+        OpenAIFileClient fileClient = GetTestClientFrom<OpenAIFileClient>(wrapped);
 
         var uploadedFile = await UploadAndWaitForCompleteOrFail(fileClient, Assets.FineTuning.RelativePath);
 
@@ -252,10 +254,15 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
 
         
         Assert.That(job.Status, Is.EqualTo("cancelled"), "Fine tuning did not cancel");
+        
+        
 
         // Delete the fine tuned model
         bool deleted = await DeleteJobAndVerifyAsync((AzureFineTuningJob)job, job.JobId, client);
         Assert.True(deleted, "Failed to delete fine tuning model: {0}", job.Value);
+
+        FileDeletionResult success = await fileClient.DeleteFileAsync(uploadedFile.Id);
+        Assert.That(success.Deleted, Is.True);
     }
 
     [RecordedTest]
@@ -396,11 +403,15 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
                 : operation.DeleteJob(jobId, noThrow);
             Assert.That(result, Is.Not.Null);
 
-            // verify the deletion actually succeeded
-            var result2 = await client.GetJobAsync(jobId, noThrow.CancellationToken).ConfigureAwait(false);
-            
-            var rawResponse = result2.GetRawResponse();
-            success = rawResponse.Status == 404;
+            try 
+            { 
+                await client.GetJobAsync(jobId, noThrow.CancellationToken).ConfigureAwait(false);
+            }
+            catch (ClientResultException ex) when (ex.Status == 404)
+            {
+                success = true;
+            }
+
             if (success)
             {
                 break;

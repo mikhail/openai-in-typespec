@@ -18,9 +18,10 @@ namespace Azure.AI.OpenAI.FineTuning;
 internal partial class AzureFineTuningJob : FineTuningJob
 {
     private readonly PipelineMessageClassifier _deleteJobClassifier;
-    private readonly ClientPipeline _pipeline;
+    internal new readonly ClientPipeline _pipeline;
     private readonly Uri _endpoint;
     private readonly string _apiVersion;
+    internal new readonly FineTuningClient _client;
 
     internal AzureFineTuningJob(
         ClientPipeline pipeline,
@@ -32,6 +33,24 @@ internal partial class AzureFineTuningJob : FineTuningJob
         _pipeline = pipeline;
         _endpoint = endpoint;
         _apiVersion = apiVersion;
+        _client = new AzureFineTuningClient(_pipeline, _endpoint, null);
+
+        _deleteJobClassifier = PipelineMessageClassifier.Create(stackalloc ushort[] { 204 });
+
+    }
+
+    internal AzureFineTuningJob(
+        ClientPipeline pipeline,
+        Uri endpoint,
+        PipelineResponse response,
+        string apiVersion,
+        InternalFineTuningJob internalJob)
+            : base(pipeline, endpoint, internalJob, response)
+    {
+        _pipeline = pipeline;
+        _endpoint = endpoint;
+        _apiVersion = apiVersion;
+        _client = new AzureFineTuningClient(_pipeline, _endpoint, null);
 
         _deleteJobClassifier = PipelineMessageClassifier.Create(stackalloc ushort[] { 204 });
     }

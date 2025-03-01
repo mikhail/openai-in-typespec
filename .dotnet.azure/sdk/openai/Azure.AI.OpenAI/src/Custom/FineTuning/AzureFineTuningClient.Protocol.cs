@@ -51,19 +51,21 @@ internal partial class AzureFineTuningClient : FineTuningClient
 
     internal override AsyncCollectionResult GetJobsAsync(string afterJobId, int? pageSize, RequestOptions options)
     {
-        //var result = new AsyncFineTuningJobCollectionResult(this, Pipeline, options, pageSize, afterJobId);
-        return (AsyncCollectionResult<AzureFineTuningJob>)new AzureAsyncCollectionResult<AzureFineTuningJob, FineTuningCollectionPageToken>(
+        return new AzureAsyncCollectionResult<FineTuningJob, FineTuningCollectionPageToken>(
             Pipeline,
             options,
             continuation => GetJobsPipelineMessage(continuation?.After, pageSize, options),
             page => FineTuningCollectionPageToken.FromResponse(page, pageSize),
-            page => (IEnumerable<AzureFineTuningJob>)ModelReaderWriter.Read<InternalListPaginatedFineTuningJobsResponse>(page.GetRawResponse().Content).Data,
+            page => GetJobsFromResponse(page.GetRawResponse()),
             options?.CancellationToken ?? default
             );
-
-
     }
 
+    private IEnumerable<FineTuningJob> GetJobsFromResponse(PipelineResponse response)
+    {
+        InternalListPaginatedFineTuningJobsResponse jobs = ModelReaderWriter.Read<InternalListPaginatedFineTuningJobsResponse>(response.Content)!;
+        return jobs.Data.Select(job => new AzureFineTuningJob(Pipeline, _endpoint, response, _apiVersion, job));
+    }
     internal override PipelineMessage PostJobPipelineMessage(BinaryContent content, RequestOptions options)
         => new AzureOpenAIPipelineMessageBuilder(Pipeline, _endpoint, _apiVersion)
             .WithMethod("POST")

@@ -86,7 +86,7 @@ public partial class FineTuningJob : OperationResult
         CopyLocalParameters(response, job);
     }
 
-    private void CopyLocalParameters(PipelineResponse response, InternalFineTuningJob job)
+    internal void CopyLocalParameters(PipelineResponse response, InternalFineTuningJob job)
     {
         Value = job.FineTunedModel;
 

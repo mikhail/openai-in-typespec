@@ -3,6 +3,7 @@ using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text.Json;
 
 #nullable enable
@@ -83,7 +84,8 @@ internal class FineTuningCollectionPageToken : ContinuationToken
     {
         PipelineResponse response = result.GetRawResponse();
         using JsonDocument doc = JsonDocument.Parse(response.Content);
-        string lastId = doc.RootElement.GetProperty("last_id"u8).GetString()!;
+        string? lastId;
+        bool hasLast = TryGetLastId(doc, out lastId);
         bool hasMore = doc.RootElement.GetProperty("has_more"u8).GetBoolean();
 
         if (!hasMore || lastId is null)
@@ -92,5 +94,24 @@ internal class FineTuningCollectionPageToken : ContinuationToken
         }
 
         return new(limit, lastId);
+    }
+
+    private static bool TryGetLastId(JsonDocument json, out string? lastId)
+    {
+        if (!json.RootElement.GetProperty("has_more"u8).GetBoolean())
+        {
+            lastId = null;
+            return false;
+        }
+
+        if (json?.RootElement.TryGetProperty("data", out JsonElement dataElement) == true
+            && dataElement.EnumerateArray().LastOrDefault().TryGetProperty("id", out JsonElement idElement) == true)
+        {
+            lastId = idElement.GetString();
+            return true;
+        }
+
+        lastId = null;
+        return false;
     }
 }

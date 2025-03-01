@@ -18,9 +18,9 @@ namespace OpenAI.FineTuning;
 [Experimental("OPENAI001")]
 public partial class FineTuningJob : OperationResult
 {
-    private readonly ClientPipeline _pipeline;
+    internal readonly ClientPipeline _pipeline;
     private readonly Uri _endpoint;
-    private readonly FineTuningClient _client;
+    internal readonly FineTuningClient _client;
 
     /// <inheritdoc/>
     public override ContinuationToken? RehydrationToken { get; protected set; }
