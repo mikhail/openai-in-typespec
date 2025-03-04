@@ -65,7 +65,7 @@ public class FineTuningTests : AoaiTestBase<FineTuningClient>
 
         TimeSpan filePollingInterval = Recording!.Mode == RecordedTestMode.Playback ? TimeSpan.FromMilliseconds(1) : TimeSpan.FromSeconds(5);
 
-        for (int i = 0; i < 60 && azureStatus == AzureOpenAIFileStatus.Pending; i++)
+        for (int i = 0; i < 60 && (azureStatus == AzureOpenAIFileStatus.Pending || azureStatus == AzureOpenAIFileStatus.Running); i++)
         {
             await Task.Delay(filePollingInterval);
             newFile = await fileClient.GetFileAsync(newFile.Id);
