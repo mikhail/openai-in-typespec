@@ -94,7 +94,7 @@ public class FineTuningClientTests
         var options = new FineTuningOptions()
         {
             TrainingMethod = FineTuningTrainingMethod.CreateSupervised(
-                cycleCount: 1,
+                epochCount: 1,
                 batchSize: 2,
                 learningRate: 3),
             Suffix = "TestFTJob",
@@ -109,14 +109,14 @@ public class FineTuningClientTests
 
         ft.CancelAndUpdate();
 
-        Assert.AreEqual(1, ft.Hyperparameters.CycleCount);
+        Assert.AreEqual(1, ft.Hyperparameters.EpochCount);
         Assert.AreEqual(2, ft.Hyperparameters.BatchSize);
         Assert.AreEqual(3, ft.Hyperparameters.LearningRateMultiplier);
 
 
         if (ft.MethodHyperparameters is HyperparametersForSupervised hp)
         {
-            Assert.AreEqual(1, hp.CycleCount);
+            Assert.AreEqual(1, hp.EpochCount);
             Assert.AreEqual(2, hp.BatchSize);
             Assert.AreEqual(3, hp.LearningRateMultiplier);
         }

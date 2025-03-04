@@ -862,10 +862,10 @@ namespace OpenAI
                 additionalBinaryDataProperties: null);
         }
 
-        public static FineTuningIntegration FineTuningIntegration(string @type = default)
+        public static FineTuningIntegration FineTuningIntegration(string kind = default)
         {
 
-            return new UnknownCreateFineTuningJobRequestIntegration(@type, additionalBinaryDataProperties: null);
+            return new UnknownCreateFineTuningJobRequestIntegration(kind, additionalBinaryDataProperties: null);
         }
 
         public static WeightsAndBiasesIntegration WeightsAndBiasesIntegration(string @type = default, InternalCreateFineTuningJobRequestWandbIntegrationWandb wandb = default)
@@ -874,10 +874,10 @@ namespace OpenAI
             return new WeightsAndBiasesIntegration(@type, serializedAdditionalRawData: null, wandb);
         }
 
-        public static FineTuningTrainingMethod FineTuningTrainingMethod(InternalFineTuneMethodType? @type = default, InternalFineTuningJobRequestMethodSupervised supervised = default, InternalFineTuningJobRequestMethodDpo dpo = default)
+        public static FineTuningTrainingMethod FineTuningTrainingMethod(InternalFineTuneMethodType? kind = default, InternalFineTuningJobRequestMethodSupervised supervised = default, InternalFineTuningJobRequestMethodDpo dpo = default)
         {
 
-            return new FineTuningTrainingMethod(@type, supervised, dpo, additionalBinaryDataProperties: null);
+            return new FineTuningTrainingMethod(kind, supervised, dpo, additionalBinaryDataProperties: null);
         }
 
         public static HyperparametersForSupervised HyperparametersForSupervised(BinaryData batchSize = default, BinaryData nEpochs = default, BinaryData learningRateMultiplier = default)
@@ -898,19 +898,19 @@ namespace OpenAI
             return new FineTuningError(code, message, invalidParameter, additionalBinaryDataProperties: null);
         }
 
-        public static FineTuningHyperparameters FineTuningHyperparameters(BinaryData cycleCount = default, BinaryData batchSize = default, BinaryData learningRateMultiplier = default)
+        public static FineTuningHyperparameters FineTuningHyperparameters(BinaryData epochCount = default, BinaryData batchSize = default, BinaryData learningRateMultiplier = default)
         {
 
-            return new FineTuningHyperparameters(cycleCount, batchSize, learningRateMultiplier, additionalBinaryDataProperties: null);
+            return new FineTuningHyperparameters(epochCount, batchSize, learningRateMultiplier, additionalBinaryDataProperties: null);
         }
 
-        public static FineTuningCheckpoint FineTuningCheckpoint(string checkpointId = default, DateTimeOffset createdAt = default, string fineTunedModelCheckpointId = default, int stepNumber = default, FineTuningCheckpointMetrics metrics = default, string jobId = default, string @object = default)
+        public static FineTuningCheckpoint FineTuningCheckpoint(string id = default, DateTimeOffset createdAt = default, string modelId = default, int stepNumber = default, FineTuningCheckpointMetrics metrics = default, string jobId = default, string @object = default)
         {
 
             return new FineTuningCheckpoint(
-                checkpointId,
+                id,
                 createdAt,
-                fineTunedModelCheckpointId,
+                modelId,
                 stepNumber,
                 metrics,
                 jobId,

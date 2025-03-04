@@ -11,16 +11,16 @@ namespace OpenAI.FineTuning
     {
         private readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        internal FineTuningHyperparameters(BinaryData cycleCount, BinaryData batchSize, BinaryData learningRateMultiplier)
+        internal FineTuningHyperparameters(BinaryData epochCount, BinaryData batchSize, BinaryData learningRateMultiplier)
         {
-            _CycleCount = cycleCount;
+            _EpochCount = epochCount;
             _BatchSize = batchSize;
             _LearningRateMultiplier = learningRateMultiplier;
         }
 
-        internal FineTuningHyperparameters(BinaryData cycleCount, BinaryData batchSize, BinaryData learningRateMultiplier, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        internal FineTuningHyperparameters(BinaryData epochCount, BinaryData batchSize, BinaryData learningRateMultiplier, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            _CycleCount = cycleCount;
+            _EpochCount = epochCount;
             _BatchSize = batchSize;
             _LearningRateMultiplier = learningRateMultiplier;
             _additionalBinaryDataProperties = additionalBinaryDataProperties;

@@ -41,11 +41,11 @@ public partial class FineTuningJob : OperationResult
             {
                 return null;
             }
-            if (TrainingMethod.Type == InternalFineTuneMethodType.Supervised)
+            if (TrainingMethod.Kind == InternalFineTuneMethodType.Supervised)
             {
                 return TrainingMethod.Supervised.Hyperparameters;
             }
-            else if (TrainingMethod.Type == InternalFineTuneMethodType.Dpo)
+            else if (TrainingMethod.Kind == InternalFineTuneMethodType.Dpo)
             {
                 return TrainingMethod.Dpo.Hyperparameters;
             }

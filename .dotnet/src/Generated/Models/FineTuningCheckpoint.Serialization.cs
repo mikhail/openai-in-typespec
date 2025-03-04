@@ -34,7 +34,7 @@ namespace OpenAI.FineTuning
             if (_additionalBinaryDataProperties?.ContainsKey("id") != true)
             {
                 writer.WritePropertyName("id"u8);
-                writer.WriteStringValue(CheckpointId);
+                writer.WriteStringValue(Id);
             }
             if (_additionalBinaryDataProperties?.ContainsKey("created_at") != true)
             {
@@ -44,7 +44,7 @@ namespace OpenAI.FineTuning
             if (_additionalBinaryDataProperties?.ContainsKey("fine_tuned_model_checkpoint") != true)
             {
                 writer.WritePropertyName("fine_tuned_model_checkpoint"u8);
-                writer.WriteStringValue(FineTunedModelCheckpointId);
+                writer.WriteStringValue(ModelId);
             }
             if (_additionalBinaryDataProperties?.ContainsKey("step_number") != true)
             {
@@ -106,9 +106,9 @@ namespace OpenAI.FineTuning
             {
                 return null;
             }
-            string checkpointId = default;
+            string id = default;
             DateTimeOffset createdAt = default;
-            string fineTunedModelCheckpointId = default;
+            string modelId = default;
             int stepNumber = default;
             FineTuningCheckpointMetrics metrics = default;
             string jobId = default;
@@ -118,7 +118,7 @@ namespace OpenAI.FineTuning
             {
                 if (prop.NameEquals("id"u8))
                 {
-                    checkpointId = prop.Value.GetString();
+                    id = prop.Value.GetString();
                     continue;
                 }
                 if (prop.NameEquals("created_at"u8))
@@ -128,7 +128,7 @@ namespace OpenAI.FineTuning
                 }
                 if (prop.NameEquals("fine_tuned_model_checkpoint"u8))
                 {
-                    fineTunedModelCheckpointId = prop.Value.GetString();
+                    modelId = prop.Value.GetString();
                     continue;
                 }
                 if (prop.NameEquals("step_number"u8))
@@ -154,9 +154,9 @@ namespace OpenAI.FineTuning
                 additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
             }
             return new FineTuningCheckpoint(
-                checkpointId,
+                id,
                 createdAt,
-                fineTunedModelCheckpointId,
+                modelId,
                 stepNumber,
                 metrics,
                 jobId,

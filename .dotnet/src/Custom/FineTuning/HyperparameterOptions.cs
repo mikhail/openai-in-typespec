@@ -9,7 +9,7 @@ namespace OpenAI.FineTuning;
 internal partial class HyperparameterOptions
 {
     [CodeGenMember("NEpochs")]
-    public HyperparameterCycleCount CycleCount { get; set; }
+    public HyperparameterEpochCount EpochCount { get; set; }
 
     [CodeGenMember("BatchSize")]
     public HyperparameterBatchSize BatchSize { get; set; }

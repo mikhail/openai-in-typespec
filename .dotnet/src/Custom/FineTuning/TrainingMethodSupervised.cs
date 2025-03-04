@@ -19,7 +19,7 @@ public partial class HyperparametersForSupervised : MethodHyperparameters
     [CodeGenMember("LearningRateMultiplier")]
     internal BinaryData _LearningRateMultiplier { get; set; }
     public int BatchSize => (int)HandleDefaults(_BatchSize);
-    public int CycleCount => (int)HandleDefaults(_NEpochs);
+    public int EpochCount => (int)HandleDefaults(_NEpochs);
     public float LearningRateMultiplier => HandleDefaults(_LearningRateMultiplier);
 
 }

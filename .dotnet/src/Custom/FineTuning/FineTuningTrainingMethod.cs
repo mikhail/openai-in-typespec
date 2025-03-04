@@ -10,7 +10,8 @@ public partial class FineTuningTrainingMethod
 {
     private static readonly BinaryData Auto = new("\"auto\"");
 
-    internal InternalFineTuneMethodType? Type { get; set; }
+    [CodeGenMember("Type")]
+    internal InternalFineTuneMethodType? Kind { get; set; }
 
     internal InternalFineTuningJobRequestMethodSupervised Supervised { get; set; }
 
@@ -18,16 +19,16 @@ public partial class FineTuningTrainingMethod
 
     public static FineTuningTrainingMethod CreateSupervised(
         HyperparameterBatchSize batchSize = null,
-        HyperparameterCycleCount cycleCount = null,
+        HyperparameterEpochCount epochCount = null,
         HyperparameterLearningRate learningRate = null)
     {
         return new FineTuningTrainingMethod()
         {
-            Type = InternalFineTuneMethodType.Supervised,
+            Kind = InternalFineTuneMethodType.Supervised,
             Supervised = new() {
                 Hyperparameters = new() {
                     _BatchSize = batchSize is not null ? ModelReaderWriter.Write(batchSize) : null,
-                    _NEpochs = cycleCount is not null ? ModelReaderWriter.Write(cycleCount) : null,
+                    _NEpochs = epochCount is not null ? ModelReaderWriter.Write(epochCount) : null,
                     _LearningRateMultiplier = learningRate is not null ? ModelReaderWriter.Write(learningRate) : null,
                 },
             },
@@ -36,18 +37,18 @@ public partial class FineTuningTrainingMethod
 
     public static FineTuningTrainingMethod CreateDirectPreferenceOptimization(
         HyperparameterBatchSize batchSize = null,
-        HyperparameterCycleCount cycleCount = null,
+        HyperparameterEpochCount epochCount = null,
         HyperparameterLearningRate learningRate = null,
         HyperparameterBetaFactor betaFactor = null)
     {
         return new FineTuningTrainingMethod()
         {
-            Type = InternalFineTuneMethodType.Dpo,
+            Kind = InternalFineTuneMethodType.Dpo,
             Dpo = new() {
                 Hyperparameters = new() {
                     _Beta = betaFactor is not null ? ModelReaderWriter.Write(betaFactor) : null,
                     _BatchSize = batchSize is not null ? ModelReaderWriter.Write(batchSize) : null,
-                    _NEpochs = cycleCount is not null ? ModelReaderWriter.Write(cycleCount) : null,
+                    _NEpochs = epochCount is not null ? ModelReaderWriter.Write(epochCount) : null,
                     _LearningRateMultiplier = learningRate is not null ? ModelReaderWriter.Write(learningRate) : null,
                 },
             },

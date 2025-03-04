@@ -31,13 +31,13 @@ namespace OpenAI.FineTuning
             {
                 throw new FormatException($"The model {nameof(FineTuningHyperparameters)} does not support writing '{format}' format.");
             }
-            if (Optional.IsDefined(_CycleCount) && _additionalBinaryDataProperties?.ContainsKey("n_epochs") != true)
+            if (Optional.IsDefined(_EpochCount) && _additionalBinaryDataProperties?.ContainsKey("n_epochs") != true)
             {
                 writer.WritePropertyName("n_epochs"u8);
 #if NET6_0_OR_GREATER
-                writer.WriteRawValue(_CycleCount);
+                writer.WriteRawValue(_EpochCount);
 #else
-                using (JsonDocument document = JsonDocument.Parse(_CycleCount))
+                using (JsonDocument document = JsonDocument.Parse(_EpochCount))
                 {
                     JsonSerializer.Serialize(writer, document.RootElement);
                 }
@@ -107,7 +107,7 @@ namespace OpenAI.FineTuning
             {
                 return default;
             }
-            BinaryData cycleCount = default;
+            BinaryData epochCount = default;
             BinaryData batchSize = default;
             BinaryData learningRateMultiplier = default;
             IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
@@ -119,7 +119,7 @@ namespace OpenAI.FineTuning
                     {
                         continue;
                     }
-                    cycleCount = BinaryData.FromString(prop.Value.GetRawText());
+                    epochCount = BinaryData.FromString(prop.Value.GetRawText());
                     continue;
                 }
                 if (prop.NameEquals("batch_size"u8))
@@ -142,7 +142,7 @@ namespace OpenAI.FineTuning
                 }
                 additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
             }
-            return new FineTuningHyperparameters(cycleCount, batchSize, learningRateMultiplier, additionalBinaryDataProperties);
+            return new FineTuningHyperparameters(epochCount, batchSize, learningRateMultiplier, additionalBinaryDataProperties);
         }
 
         BinaryData IPersistableModel<FineTuningHyperparameters>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);

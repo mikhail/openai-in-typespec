@@ -12,28 +12,28 @@ internal readonly partial struct InternalCreateFineTuningJobRequestHyperparamete
 
 [Experimental("OPENAI001")]
 [CodeGenModel("CreateFineTuningJobRequestHyperparametersNEpochsOption")]
-public partial class HyperparameterCycleCount : IEquatable<int>, IEquatable<string>, IJsonModel<HyperparameterCycleCount>
+public partial class HyperparameterEpochCount : IEquatable<int>, IEquatable<string>, IJsonModel<HyperparameterEpochCount>
 {
     private readonly string _stringValue;
     private readonly int? _intValue;
 
-    internal HyperparameterCycleCount(string predefinedLabel)
+    internal HyperparameterEpochCount(string predefinedLabel)
     {
         _stringValue = predefinedLabel;
     }
 
-    public HyperparameterCycleCount(int epochCount)
+    public HyperparameterEpochCount(int epochCount)
     {
         _intValue = epochCount;
     }
 
-    public static HyperparameterCycleCount CreateAuto() => new(InternalCreateFineTuningJobRequestHyperparametersNEpochsChoiceEnum.Auto.ToString());
-    public static HyperparameterCycleCount CreateEpochCount(int epochCount) => new(epochCount);
+    public static HyperparameterEpochCount CreateAuto() => new(InternalCreateFineTuningJobRequestHyperparametersNEpochsChoiceEnum.Auto.ToString());
+    public static HyperparameterEpochCount CreateEpochCount(int epochCount) => new(epochCount);
 
-    public static implicit operator HyperparameterCycleCount(int epochCount) => new(epochCount);
+    public static implicit operator HyperparameterEpochCount(int epochCount) => new(epochCount);
     
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static bool operator ==(HyperparameterCycleCount first, HyperparameterCycleCount second)
+    public static bool operator ==(HyperparameterEpochCount first, HyperparameterEpochCount second)
     {
         if (first is null && second is null) return true;
         if (first is null || second is null) return false;
@@ -42,28 +42,28 @@ public partial class HyperparameterCycleCount : IEquatable<int>, IEquatable<stri
         return first._stringValue == second._stringValue;
     }
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static bool operator !=(HyperparameterCycleCount first, HyperparameterCycleCount second) => !(first == second);
+    public static bool operator !=(HyperparameterEpochCount first, HyperparameterEpochCount second) => !(first == second);
     [EditorBrowsable(EditorBrowsableState.Never)]
     public bool Equals(int other) => _intValue == other;
     [EditorBrowsable(EditorBrowsableState.Never)]
     public bool Equals(string other) => _intValue is null && _stringValue == other;
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public override bool Equals(object other) => other is HyperparameterCycleCount cc && cc == this;
+    public override bool Equals(object other) => other is HyperparameterEpochCount cc && cc == this;
     [EditorBrowsable(EditorBrowsableState.Never)]
     public override int GetHashCode() => _intValue?.GetHashCode() ?? _stringValue.GetHashCode();
 
-    void IJsonModel<HyperparameterCycleCount>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+    void IJsonModel<HyperparameterEpochCount>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
     {
-        SerializeHyperparameterCycleCount(this, writer, options);
+        SerializeHyperparameterEpochCount(this, writer, options);
     }
 
-    HyperparameterCycleCount IJsonModel<HyperparameterCycleCount>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+    HyperparameterEpochCount IJsonModel<HyperparameterEpochCount>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
     {
         using JsonDocument document = JsonDocument.ParseValue(ref reader);
-        return DeserializeHyperparameterCycleCount(document.RootElement, options);
+        return DeserializeHyperparameterEpochCount(document.RootElement, options);
     }
 
-    internal static void SerializeHyperparameterCycleCount(HyperparameterCycleCount instance, Utf8JsonWriter writer, ModelReaderWriterOptions options)
+    internal static void SerializeHyperparameterEpochCount(HyperparameterEpochCount instance, Utf8JsonWriter writer, ModelReaderWriterOptions options)
     {
         if (instance._intValue is not null)
         {
@@ -75,13 +75,13 @@ public partial class HyperparameterCycleCount : IEquatable<int>, IEquatable<stri
         }
     }
 
-    BinaryData IPersistableModel<HyperparameterCycleCount>.Write(ModelReaderWriterOptions options)
+    BinaryData IPersistableModel<HyperparameterEpochCount>.Write(ModelReaderWriterOptions options)
         => CustomSerializationHelpers.SerializeInstance(this, options);
 
-    HyperparameterCycleCount IPersistableModel<HyperparameterCycleCount>.Create(BinaryData data, ModelReaderWriterOptions options)
-        => CustomSerializationHelpers.DeserializeNewInstance(this, DeserializeHyperparameterCycleCount, data, options);
+    HyperparameterEpochCount IPersistableModel<HyperparameterEpochCount>.Create(BinaryData data, ModelReaderWriterOptions options)
+        => CustomSerializationHelpers.DeserializeNewInstance(this, DeserializeHyperparameterEpochCount, data, options);
 
-    internal static HyperparameterCycleCount DeserializeHyperparameterCycleCount(JsonElement element, ModelReaderWriterOptions options = null)
+    internal static HyperparameterEpochCount DeserializeHyperparameterEpochCount(JsonElement element, ModelReaderWriterOptions options = null)
     {
         options ??= ModelSerializationExtensions.WireOptions;
 
@@ -89,9 +89,9 @@ public partial class HyperparameterCycleCount : IEquatable<int>, IEquatable<stri
         {
             JsonValueKind.Number => new(element.GetInt32()),
             JsonValueKind.String => new(element.GetString()),
-            _ => throw new ArgumentException($"Unsupported JsonValueKind", nameof(HyperparameterCycleCount))
+            _ => throw new ArgumentException($"Unsupported JsonValueKind", nameof(HyperparameterEpochCount))
         };
     }
 
-    string IPersistableModel<HyperparameterCycleCount>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+    string IPersistableModel<HyperparameterEpochCount>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
 }

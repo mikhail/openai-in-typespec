@@ -13,7 +13,7 @@ public readonly partial struct FineTuningHyperparameters
     private static readonly BinaryData Auto = new("\"auto\"");
 
     [CodeGenMember("NEpochs")]
-    internal BinaryData _CycleCount { get; }
+    internal BinaryData _EpochCount { get; }
 
     [CodeGenMember("BatchSize")]
     internal BinaryData _BatchSize { get; }
@@ -43,7 +43,7 @@ public readonly partial struct FineTuningHyperparameters
         }
     }
 
-    public int CycleCount => (int)HandleDefaults(_CycleCount);
+    public int EpochCount => (int)HandleDefaults(_EpochCount);
     public int BatchSize => (int)HandleDefaults(_BatchSize);
     public float LearningRateMultiplier => HandleDefaults(_LearningRateMultiplier);
 }

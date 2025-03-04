@@ -13,4 +13,10 @@ namespace OpenAI.FineTuning;
 /// </summary>
 [Experimental("OPENAI001")]
 [CodeGenModel("CreateFineTuningJobRequestIntegration")]
-public partial class FineTuningIntegration { }
+public partial class FineTuningIntegration {
+
+    [CodeGenMember("Type")]
+    internal string Kind { get; set; }
+
+
+}

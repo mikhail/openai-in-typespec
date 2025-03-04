@@ -15,9 +15,9 @@ namespace OpenAI.FineTuning
         {
         }
 
-        internal FineTuningTrainingMethod(InternalFineTuneMethodType? @type, InternalFineTuningJobRequestMethodSupervised supervised, InternalFineTuningJobRequestMethodDpo dpo, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        internal FineTuningTrainingMethod(InternalFineTuneMethodType? kind, InternalFineTuningJobRequestMethodSupervised supervised, InternalFineTuningJobRequestMethodDpo dpo, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            Type = @type;
+            Kind = kind;
             Supervised = supervised;
             Dpo = dpo;
             _additionalBinaryDataProperties = additionalBinaryDataProperties;

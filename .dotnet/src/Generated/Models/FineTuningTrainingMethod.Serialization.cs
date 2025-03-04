@@ -27,10 +27,10 @@ namespace OpenAI.FineTuning
             {
                 throw new FormatException($"The model {nameof(FineTuningTrainingMethod)} does not support writing '{format}' format.");
             }
-            if (Optional.IsDefined(Type) && _additionalBinaryDataProperties?.ContainsKey("type") != true)
+            if (Optional.IsDefined(Kind) && _additionalBinaryDataProperties?.ContainsKey("type") != true)
             {
                 writer.WritePropertyName("type"u8);
-                writer.WriteStringValue(Type.Value.ToString());
+                writer.WriteStringValue(Kind.Value.ToString());
             }
             if (Optional.IsDefined(Supervised) && _additionalBinaryDataProperties?.ContainsKey("supervised") != true)
             {
@@ -82,7 +82,7 @@ namespace OpenAI.FineTuning
             {
                 return null;
             }
-            InternalFineTuneMethodType? @type = default;
+            InternalFineTuneMethodType? kind = default;
             InternalFineTuningJobRequestMethodSupervised supervised = default;
             InternalFineTuningJobRequestMethodDpo dpo = default;
             IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
@@ -94,7 +94,7 @@ namespace OpenAI.FineTuning
                     {
                         continue;
                     }
-                    @type = new InternalFineTuneMethodType(prop.Value.GetString());
+                    kind = new InternalFineTuneMethodType(prop.Value.GetString());
                     continue;
                 }
                 if (prop.NameEquals("supervised"u8))
@@ -117,7 +117,7 @@ namespace OpenAI.FineTuning
                 }
                 additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
             }
-            return new FineTuningTrainingMethod(@type, supervised, dpo, additionalBinaryDataProperties);
+            return new FineTuningTrainingMethod(kind, supervised, dpo, additionalBinaryDataProperties);
         }
 
         BinaryData IPersistableModel<FineTuningTrainingMethod>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);

@@ -25,7 +25,7 @@ public partial class HyperparametersForDPO : MethodHyperparameters
 
 
     public int BatchSize => (int)HandleDefaults(_BatchSize);
-    public int CycleCount => (int)HandleDefaults(_NEpochs);
+    public int EpochCount => (int)HandleDefaults(_NEpochs);
     public float LearningRateMultiplier => HandleDefaults(_LearningRateMultiplier);
     public float Beta => HandleDefaults(_Beta);
 }
