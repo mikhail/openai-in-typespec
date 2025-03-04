@@ -29,7 +29,7 @@ namespace Azure.AI.OpenAI.Tests;
 [Category("FineTuning")]
 public class FineTuningTests : AoaiTestBase<FineTuningClient>
 {
-    public FineTuningTests(bool isAsync) : base(isAsync, mode: RecordedTestMode.Record)
+    public FineTuningTests(bool isAsync) : base(isAsync)
     {
     }
 
