@@ -152,7 +152,6 @@ internal class TestConfig
                 prevWasUpper = false;
             }
         }
-        Console.WriteLine("TClient ToKey: " + builder.ToString());
         return builder.ToString();
     }
 

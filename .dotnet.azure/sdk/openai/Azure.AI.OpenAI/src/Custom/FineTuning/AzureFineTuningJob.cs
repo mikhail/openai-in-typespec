@@ -3,6 +3,7 @@ using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,6 +19,17 @@ internal partial class AzureFineTuningJob : FineTuningJob
         return (AsyncCollectionResult<FineTuningCheckpoint>)GetCheckpointsAsync(options.AfterCheckpointId, options.PageSize, cancellationToken.ToRequestOptions());
     }
 
+    public override AsyncCollectionResult<FineTuningEvent> GetEventsAsync(GetEventsOptions? options = null, CancellationToken cancellationToken = default)
+    {
+        options ??= new GetEventsOptions();
+        return (AsyncCollectionResult<FineTuningEvent>)GetEventsAsync(options.AfterEventId, options.PageSize, cancellationToken.ToRequestOptions());
+    }
+
+    public override CollectionResult<FineTuningEvent> GetEvents(GetEventsOptions? options = null, CancellationToken cancellationToken = default)
+    {
+        options ??= new GetEventsOptions();
+        return (CollectionResult<FineTuningEvent>)GetEvents(options.AfterEventId, options.PageSize, cancellationToken.ToRequestOptions());
+    }
     public override ClientResult CancelAndUpdate(CancellationToken cancellationToken = default)
     {
         using PipelineMessage message = CancelPipelineMessage(JobId, cancellationToken.ToRequestOptions());

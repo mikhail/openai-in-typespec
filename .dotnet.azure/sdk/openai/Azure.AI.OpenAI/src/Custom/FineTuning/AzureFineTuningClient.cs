@@ -63,12 +63,11 @@ internal partial class AzureFineTuningClient : FineTuningClient
         return await AzureFineTuningJob.RehydrateAsync(this, JobId, cancellationToken.ToRequestOptions()).ConfigureAwait(false);
     }
 
-    //public override AsyncCollectionResult<AzureFineTuningJob> GetJobsAsync(FineTuningJobCollectionOptions options = default, CancellationToken cancellationToken = default)
-    //{
-    //    options ??= new FineTuningJobCollectionOptions();
-    //    AsyncCollectionResult<AzureFineTuningJob> jobs = (AsyncCollectionResult<AzureFineTuningJob>)GetJobsAsync(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
-    //    return (AsyncCollectionResult<AzureFineTuningJob>)jobs;
-    //}
+    public override AsyncCollectionResult<FineTuningJob> GetJobsAsync(FineTuningJobCollectionOptions options = default, CancellationToken cancellationToken = default)
+    {
+        options ??= new FineTuningJobCollectionOptions();
+        return (AsyncCollectionResult<FineTuningJob>)GetJobsAsync(options.AfterJobId, options.PageSize, cancellationToken.ToRequestOptions());
+    }
 
     [Experimental("OPENAI001")]
     internal override FineTuningJob CreateJobFromResponse(PipelineResponse response)
