@@ -12,8 +12,8 @@ namespace OpenAI.Audio;
 // - Suppressed constructor that takes endpoint parameter; endpoint is now a property in the options class.
 // - Suppressed methods that only take the options parameter.
 /// <summary> The service client for OpenAI audio operations. </summary>
-[CodeGenClient("Audio")]
-[CodeGenSuppress("AudioClient", typeof(ClientPipeline), typeof(ApiKeyCredential), typeof(Uri))]
+[CodeGenType("Audio")]
+[CodeGenSuppress("AudioClient", typeof(ClientPipeline), typeof(Uri))]
 [CodeGenSuppress("CreateSpeechAsync", typeof(SpeechGenerationOptions), typeof(CancellationToken))]
 [CodeGenSuppress("CreateSpeech", typeof(SpeechGenerationOptions), typeof(CancellationToken))]
 public partial class AudioClient

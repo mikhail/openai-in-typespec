@@ -1,12 +1,10 @@
-using Microsoft.Generator.CSharp.ClientModel;
-using Microsoft.Generator.CSharp.Expressions;
-using Microsoft.Generator.CSharp.Providers;
-using Microsoft.Generator.CSharp.Snippets;
-using Microsoft.Generator.CSharp.Statements;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using static Microsoft.Generator.CSharp.Snippets.Snippet;
+using Microsoft.TypeSpec.Generator.ClientModel;
+using Microsoft.TypeSpec.Generator.Expressions;
+using Microsoft.TypeSpec.Generator.Providers;
+using Microsoft.TypeSpec.Generator.Statements;
+using static Microsoft.TypeSpec.Generator.Snippets.Snippet;
 using static OpenAILibraryPlugin.Visitors.VisitorHelpers;
 
 namespace OpenAILibraryPlugin.Visitors;
@@ -17,7 +15,7 @@ namespace OpenAILibraryPlugin.Visitors;
 /// </summary>
 public class CollectionInitializationVisitor : ScmLibraryVisitor
 {
-    protected override ConstructorProvider? Visit(ConstructorProvider constructor)
+    protected override ConstructorProvider? VisitConstructor(ConstructorProvider constructor)
     {
         IEnumerable<ParameterProvider> applicableParameters
             = constructor.Signature.Parameters

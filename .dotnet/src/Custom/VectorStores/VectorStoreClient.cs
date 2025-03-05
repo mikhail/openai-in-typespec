@@ -13,8 +13,8 @@ namespace OpenAI.VectorStores;
 /// The service client for OpenAI vector store operations.
 /// </summary>
 [Experimental("OPENAI001")]
-[CodeGenClient("VectorStores")]
-[CodeGenSuppress("VectorStoreClient", typeof(ClientPipeline), typeof(ApiKeyCredential), typeof(Uri))]
+[CodeGenType("VectorStores")]
+[CodeGenSuppress("VectorStoreClient", typeof(ClientPipeline), typeof(Uri))]
 [CodeGenSuppress("CreateVectorStoreAsync", typeof(VectorStoreCreationOptions), typeof(CancellationToken))]
 [CodeGenSuppress("CreateVectorStore", typeof(VectorStoreCreationOptions), typeof(CancellationToken))]
 [CodeGenSuppress("ListVectorStoresAsync", typeof(int?), typeof(VectorStoreCollectionOrder?), typeof(string), typeof(string), typeof(CancellationToken))]
