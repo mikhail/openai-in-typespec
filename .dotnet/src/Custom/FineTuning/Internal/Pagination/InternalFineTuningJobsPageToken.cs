@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-[CodeGenModel("FineTuningJobsPageToken")]
+[CodeGenType("FineTuningJobsPageToken")]
 internal partial class InternalFineTuningJobsPageToken : ContinuationToken
 {
     public InternalFineTuningJobsPageToken? GetNextPageToken(bool hasMore, string? after)

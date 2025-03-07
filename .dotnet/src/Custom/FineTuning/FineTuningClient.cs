@@ -17,8 +17,8 @@ namespace OpenAI.FineTuning;
 // - Suppressed convenience methods for now.
 /// <summary> The service client for OpenAI fine-tuning jobs. </summary>
 [Experimental("OPENAI001")]
-[CodeGenClient("FineTuning")]
-[CodeGenSuppress("FineTuningClient", typeof(ClientPipeline), typeof(ApiKeyCredential), typeof(Uri))]
+[CodeGenType("FineTuning")]
+[CodeGenSuppress("FineTuningClient", typeof(ClientPipeline), typeof(Uri))]
 [CodeGenSuppress("CreateFineTuningJobAsync", typeof(FineTuningOptions), typeof(CancellationToken))]
 [CodeGenSuppress("CreateFineTuningJob", typeof(FineTuningOptions), typeof(CancellationToken))]
 [CodeGenSuppress("ListPaginatedFineTuningJobsAsync", typeof(string), typeof(int?), typeof(CancellationToken))]

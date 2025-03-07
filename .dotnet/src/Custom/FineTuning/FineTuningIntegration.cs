@@ -12,7 +12,7 @@ namespace OpenAI.FineTuning;
 /// Use <see cref="WeightsAndBiasesIntegration" /> to create a Weights & Biases integration.
 /// </summary>
 [Experimental("OPENAI001")]
-[CodeGenModel("CreateFineTuningJobRequestIntegration")]
+[CodeGenType("CreateFineTuningJobRequestIntegration")]
 public partial class FineTuningIntegration {
 
     [CodeGenMember("Type")]

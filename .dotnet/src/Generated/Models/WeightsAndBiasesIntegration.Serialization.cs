@@ -31,7 +31,7 @@ namespace OpenAI.FineTuning
             if (_additionalBinaryDataProperties?.ContainsKey("wandb") != true)
             {
                 writer.WritePropertyName("wandb"u8);
-                writer.WriteObjectValue<InternalCreateFineTuningJobRequestWandbIntegrationWandb>(_innerWandb, options);
+                writer.WriteObjectValue(_innerWandb, options);
             }
         }
 

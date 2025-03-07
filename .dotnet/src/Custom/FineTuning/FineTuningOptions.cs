@@ -8,7 +8,7 @@ namespace OpenAI.FineTuning;
 /// Represents additional options available when creating a <see cref="InternalFineTuningJob"/>.
 /// </summary>
 [Experimental("OPENAI001")]
-[CodeGenModel("CreateFineTuningJobRequest")]
+[CodeGenType("CreateFineTuningJobRequest")]
 public partial class FineTuningOptions
 {
     [CodeGenMember("CreateFineTuningJobRequestModel")]

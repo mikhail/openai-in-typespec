@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-[CodeGenModel("CreateFineTuningJobRequestHyperparameters")]
+[CodeGenType("CreateFineTuningJobRequestHyperparameters")]
 internal partial class HyperparameterOptions
 {
     [CodeGenMember("NEpochs")]

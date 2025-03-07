@@ -35,12 +35,12 @@ namespace OpenAI.FineTuning
             if (Optional.IsDefined(Supervised) && _additionalBinaryDataProperties?.ContainsKey("supervised") != true)
             {
                 writer.WritePropertyName("supervised"u8);
-                writer.WriteObjectValue<InternalFineTuningJobRequestMethodSupervised>(Supervised, options);
+                writer.WriteObjectValue(Supervised, options);
             }
             if (Optional.IsDefined(Dpo) && _additionalBinaryDataProperties?.ContainsKey("dpo") != true)
             {
                 writer.WritePropertyName("dpo"u8);
-                writer.WriteObjectValue<InternalFineTuningJobRequestMethodDpo>(Dpo, options);
+                writer.WriteObjectValue(Dpo, options);
             }
             if (_additionalBinaryDataProperties != null)
             {

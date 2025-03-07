@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-[CodeGenModel("FineTuningJobHyperparameters")]
+[CodeGenType("FineTuningJobHyperparameters")]
 [StructLayout(LayoutKind.Auto)]
 public readonly partial struct FineTuningHyperparameters
 {

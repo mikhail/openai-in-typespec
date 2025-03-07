@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-[CodeGenModel("FineTuningJobStatus")]
+[CodeGenType("FineTuningJobStatus")]
 public readonly partial struct FineTuningStatus : IEquatable<string>
 {
     public bool InProgress =>

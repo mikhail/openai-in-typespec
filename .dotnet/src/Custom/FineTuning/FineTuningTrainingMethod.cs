@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-[CodeGenModel("FineTuneMethod")]
+[CodeGenType("FineTuneMethod")]
 public partial class FineTuningTrainingMethod
 {
     private static readonly BinaryData Auto = new("\"auto\"");

@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-[CodeGenModel("FineTuningJobError")]
+[CodeGenType("FineTuningJobError1")]
 public partial class FineTuningError
 {
     [CodeGenMember("Param")]

@@ -7,11 +7,11 @@ using System.Text.Json;
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-[CodeGenModel("CreateFineTuningJobRequestHyperparametersLearningRateMultiplierChoiceEnum")]
+[CodeGenType("CreateFineTuningJobRequestHyperparametersLearningRateMultiplierChoiceEnum")]
 internal readonly partial struct InternalCreateFineTuningJobRequestHyperparametersLearningRateMultiplierChoiceEnum { }
 
 [Experimental("OPENAI001")]
-[CodeGenModel("CreateFineTuningJobRequestHyperparametersLearningRateMultiplierOption")]
+[CodeGenType("CreateFineTuningJobRequestHyperparametersLearningRateMultiplierOption")]
 public partial class HyperparameterLearningRate : IEquatable<double>, IEquatable<int>, IEquatable<string>, IJsonModel<HyperparameterLearningRate>
 {
     private readonly string _stringValue;

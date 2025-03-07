@@ -54,7 +54,7 @@ namespace OpenAI.FineTuning
             if (_additionalBinaryDataProperties?.ContainsKey("metrics") != true)
             {
                 writer.WritePropertyName("metrics"u8);
-                writer.WriteObjectValue<FineTuningCheckpointMetrics>(Metrics, options);
+                writer.WriteObjectValue(Metrics, options);
             }
             if (_additionalBinaryDataProperties?.ContainsKey("fine_tuning_job_id") != true)
             {

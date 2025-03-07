@@ -7,7 +7,7 @@ namespace OpenAI.FineTuning;
 
 
 [Experimental("OPENAI001")]
-[CodeGenModel("FineTuningJob")]
+[CodeGenType("FineTuningJob")]
 internal partial class InternalFineTuningJob
 {
     [CodeGenMember("Id")]

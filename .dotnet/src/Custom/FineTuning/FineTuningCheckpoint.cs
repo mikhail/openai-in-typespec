@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-[CodeGenModel("FineTuningJobCheckpoint")]
+[CodeGenType("FineTuningJobCheckpoint")]
 public partial class FineTuningCheckpoint
 {
     [CodeGenMember("Id")]

@@ -6,7 +6,7 @@ using System.Text;
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-[CodeGenModel("FineTuningJobCheckpointMetrics")]
+[CodeGenType("FineTuningJobCheckpointMetrics")]
 public partial class FineTuningCheckpointMetrics
 {
     [CodeGenMember("Step")]

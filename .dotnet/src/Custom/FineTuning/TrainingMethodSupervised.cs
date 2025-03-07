@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OpenAI.FineTuning;
 
-[CodeGenModel("FineTuneSupervisedMethodHyperparameters")]
+[CodeGenType("FineTuneSupervisedMethodHyperparameters")]
 public partial class HyperparametersForSupervised : MethodHyperparameters
 {
     [CodeGenMember("BatchSize")]

@@ -7,11 +7,11 @@ using System.Text.Json;
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-[CodeGenModel("CreateFineTuningJobRequestHyperparametersBatchSizeChoiceEnum")]
+[CodeGenType("CreateFineTuningJobRequestHyperparametersBatchSizeChoiceEnum")]
 internal readonly partial struct InternalCreateFineTuningJobRequestHyperparametersBatchSizeChoiceEnum { }
 
 [Experimental("OPENAI001")]
-[CodeGenModel("CreateFineTuningJobRequestHyperparametersBatchSizeOption")]
+[CodeGenType("CreateFineTuningJobRequestHyperparametersBatchSizeOption")]
 public partial class HyperparameterBatchSize : IEquatable<int>, IEquatable<string>, IJsonModel<HyperparameterBatchSize>
 {
     private readonly string _stringValue;

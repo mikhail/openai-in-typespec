@@ -6,7 +6,7 @@ using System.Text;
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-[CodeGenModel("ListFineTuningJobEventsRequest")]
+[CodeGenType("ListFineTuningJobEventsRequest")]
 public class GetEventsOptions
 {
     [CodeGenMember("JobId")]

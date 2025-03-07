@@ -7,11 +7,11 @@ using System.Text.Json;
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-[CodeGenModel("CreateFineTuningJobRequestHyperparametersNEpochsChoiceEnum")]
+[CodeGenType("CreateFineTuningJobRequestHyperparametersNEpochsChoiceEnum")]
 internal readonly partial struct InternalCreateFineTuningJobRequestHyperparametersNEpochsChoiceEnum { }
 
 [Experimental("OPENAI001")]
-[CodeGenModel("CreateFineTuningJobRequestHyperparametersNEpochsOption")]
+[CodeGenType("CreateFineTuningJobRequestHyperparametersNEpochsOption")]
 public partial class HyperparameterEpochCount : IEquatable<int>, IEquatable<string>, IJsonModel<HyperparameterEpochCount>
 {
     private readonly string _stringValue;

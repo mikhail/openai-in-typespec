@@ -3,7 +3,7 @@
 namespace OpenAI.FineTuning;
 
 [Experimental("OPENAI001")]
-[CodeGenModel("FineTuningJobEventType")]
+[CodeGenType("FineTuningJobEventType")]
 public readonly partial struct FineTuningJobEventKind
 {
 }
